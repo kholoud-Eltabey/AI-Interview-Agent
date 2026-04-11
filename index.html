@@ -188,7 +188,8 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .prog-row  { width: 100%; display: flex; justify-content: center; margin-top: 8px; }
 .prog-wrap { width: 100%; max-width: 260px; }
 .prog-lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-align: center; margin-bottom: 4px; }
-.prog-track { background: var(--border); border-radius: 20px; height: 8px; overflow: hidden; }
+.prog-track { background: var(--border); border-radius: 20px; height: 8px; overflow: hidden; position: relative; }
+.prog-pct  { position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.9); line-height: 1; pointer-events: none; }
 .prog-fill {
   height: 100%; border-radius: 20px;
   background: var(--primary);
@@ -263,7 +264,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .end-btn {
   background: var(--surface); color: var(--muted);
   border: 1.5px solid var(--border);
-  padding: 10px 28px; border-radius: var(--rsm); font-size: 14px; font-weight: 600;
+  padding: 8px 22px; border-radius: var(--rsm); font-size: 12px; font-weight: 400;
   cursor: pointer; font-family: inherit; transition: all var(--tr);
 }
 .end-btn:hover  { border-color: var(--primary); color: var(--primary); background: var(--plight); }
@@ -684,7 +685,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
     <div class="prog-row">
       <div class="prog-wrap">
         <div class="prog-lbl" id="prog-lbl"></div>
-        <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"><span class="prog-pct" id="prog-pct"></span></div></div>
       </div>
     </div>
   </div>
@@ -1145,8 +1146,10 @@ Strict rules:
 function renderProg() {
   const cur = Math.min(S.mainAsked, S.numQ);
   const pct = S.numQ > 0 ? Math.round((cur / S.numQ) * 100) : 0;
-  document.getElementById('prog-lbl').textContent  = t('progLbl', cur, S.numQ) + ' · ' + pct + '%';
+  document.getElementById('prog-lbl').textContent  = t('progLbl', cur, S.numQ);
   document.getElementById('prog-fill').style.width = pct + '%';
+  const pctEl = document.getElementById('prog-pct');
+  if (pctEl) pctEl.textContent = pct > 10 ? pct + '%' : '';
   if (S.mainAsked >= 4) document.getElementById('end-row').style.display = 'block';
 }
 
@@ -1275,8 +1278,8 @@ async function askQuestion() {
         : `Ask question ${S.mainAsked} of ${S.numQ}. Start with an unexplored agenda area. One short sentence only. No greeting. English only.`;
     } else if (isFollowUp) {
       inst = ar
-        ? `بناءً على الإجابة الأخيرة، اطرح سؤالاً متابعاً واحداً قصيراً للتعمق. الرد بالعربية فقط.`
-        : `Based on the last answer, ask one short targeted follow-up question to go deeper. English only.`;
+        ? `بناءً على الإجابة الأخيرة، ابدأ بعبارة طبيعية قصيرة تُظهر الاهتمام مثل: "آه، فاهم"، "واضح"، "ما شاء الله"، "عجبني"، "ها، وش بعدين؟" — ثم اطرح سؤالاً متابعاً واحداً قصيراً للتعمق. الرد بالعربية الخليجية فقط.`
+        : `Based on the last answer, start with a short natural acknowledgment like: "Oh got it", "I see", "That makes sense", "Interesting", "Ah okay" — then ask one short follow-up question to go deeper. English only.`;
     } else {
       S.mainAsked++;
       renderProg();
