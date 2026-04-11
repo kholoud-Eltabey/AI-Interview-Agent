@@ -4,214 +4,217 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-## 🗂️ Project Overview
+## Project Overview
 
-**Skoon Interview Agent** — أداة مقابلات مستخدمين مدعومة بالذكاء الاصطناعي لمنصة Skoon العقارية في السعودية.
+**Skoon Interview Agent** — an AI-powered user interview tool for Skoon, a Saudi rental property platform.
 
 | | |
 |---|---|
-| **الملف الوحيد** | `index.html` — كل HTML + CSS + JS داخل ملف واحد |
-| **لا يوجد** | Build step، framework، package.json، أو dependencies |
-| **الـ AI** | OpenAI GPT-4o عبر API مباشرة من المتصفح |
-| **اللغات** | عربية خليجية / إنجليزية — قابلة للتبديل في أي وقت |
-| **التشغيل** | افتح `index.html` مباشرة في المتصفح أو عبر `npx serve .` |
+| **Single file** | `index.html` — all HTML, CSS, and JS inline in one file |
+| **No tooling** | No build step, no framework, no package.json, no dependencies |
+| **AI model** | OpenAI GPT-4o — called directly from the browser |
+| **Languages** | Gulf Arabic / English — switchable at any time |
+| **Run** | Open `index.html` directly in a browser, or `npx serve .` |
 
 ---
 
-## 1️⃣ تدفق الصفحات الأربع
+## 1. Four-Page Flow
 
-> التطبيق يعرض صفحة واحدة في كل وقت — يتنقل بينها عبر `goTo(pageId)`
+The app renders one `<div class="page">` at a time, navigating via `goTo(pageId)`:
 
 ```
-page-setup  →  page-chat  →  page-results  (باحث فقط)
-                          ↘  page-done      (مستخدم عادي)
+page-setup  →  page-chat  →  page-results  (researcher only)
+                          ↘  page-done      (regular user)
 ```
 
-| الصفحة | الـ ID | وظيفتها |
-|--------|--------|---------|
-| الإعداد | `page-setup` | إدخال API Key + ضبط المقابلة (الهدف، الجمهور، عدد الأسئلة) |
-| المحادثة | `page-chat` | المقابلة الحية مع المستخدم — سؤال وجواب |
-| النتائج | `page-results` | لوحة تحليل للباحث — مقفلة بباسكود |
-| الانتهاء | `page-done` | شاشة شكر تظهر للمستخدم العادي بعد انتهاء المقابلة |
+| Page | ID | Purpose |
+|------|----|---------|
+| Setup | `page-setup` | API key entry + interview config (goal, audience, question count) |
+| Chat | `page-chat` | Live interview conversation — question and answer |
+| Results | `page-results` | Researcher analysis dashboard — passcode protected |
+| Done | `page-done` | Thank-you screen shown to regular users after interview ends |
 
 ---
 
-## 2️⃣ كائن الحالة `S`
+## 2. State Object `S`
 
-> **المصدر الوحيد للحقيقة** — كل بيانات التطبيق تعيش هنا
+Single source of truth for all runtime state:
 
 ```js
 const S = {
-  lang: 'en',            // اللغة الحالية: 'en' أو 'ar'
-  theme: 'light',        // الثيم: 'light' أو 'dark'
-  apiKey: '',            // مفتاح OpenAI
-  numQ: 10,              // عدد الأسئلة المطلوبة
-  goal: '',              // هدف المقابلة (يحدده الباحث)
-  audience: '',          // الجمهور المستهدف
-  biz: 'Skoon',          // اسم المنتج
-  msgs: [],              // سجل كامل لرسائل المحادثة
-  mainAsked: 0,          // عدد الأسئلة الرئيسية المطروحة
-  followUps: 0,          // عدد أسئلة المتابعة
+  lang: 'en',            // current language: 'en' or 'ar'
+  theme: 'light',        // 'light' or 'dark'
+  apiKey: '',            // OpenAI API key
+  numQ: 10,              // number of questions requested
+  goal: '',              // interview goal (set by researcher)
+  audience: '',          // target audience description
+  biz: 'Skoon',          // product name
+  msgs: [],              // full conversation message history
+  mainAsked: 0,          // number of main questions asked so far
+  followUps: 0,          // number of follow-up questions asked
   maxFollowUps: 0,
   waitingForAnswer: false,
   done: false,
   isResearcher: localStorage.getItem('researcher_access') === 'true',
-  _iid: undefined,       // ID فريد لكل مقابلة — يُضبط في startInterview()
+  _iid: undefined,       // unique interview ID — set at startInterview()
 };
 ```
 
 ---
 
-## 3️⃣ نظام الترجمة `TR` و `t()`
+## 3. Translations `TR` / `t()`
 
-> **قاعدة ذهبية:** أي نص يظهر للمستخدم يجب أن يمر عبر `t('key')` — لا hardcode أبداً
+**Golden rule:** every string visible to the user must go through `t('key')` — never hardcode text in render functions.
 
-- كل النصوص موجودة في كائن `TR` بداخله `TR.en` و `TR.ar`
-- `t('key')` تقرأ `TR[S.lang][key]` تلقائياً
-- عند إضافة أي نص جديد → أضفه في **كلا اللغتين** في نفس الوقت
-
----
-
-## 4️⃣ التخزين المحلي `localStorage`
-
-> كل بيانات التطبيق تُحفظ في المتصفح — لا سيرفر، لا قاعدة بيانات
-
-| المفتاح | ما يخزنه |
-|---------|----------|
-| `skoon_api_key` | مفتاح OpenAI API |
-| `skoon_theme` | الثيم المختار (`light` / `dark`) |
-| `skoon_lang` | اللغة المختارة (`en` / `ar`) |
-| `researcher_access` | `'true'` إذا تم إدخال باسكود الباحث |
-| `skoon_session` | مقابلة جارية (JSON) — تُحذف عند الانتهاء |
-| `skoon_interviews` | مصفوفة تراكمية لكل المقابلات المكتملة — لا تُحذف أبداً |
+- All strings live in the `TR` object with `TR.en` and `TR.ar` sub-objects
+- `t('key')` reads `TR[S.lang][key]` automatically
+- When adding any new string → add it to **both languages** at the same time
 
 ---
 
-## 5️⃣ حفظ المقابلات
+## 4. localStorage Keys
 
-> كل مقابلة مكتملة تُضاف لـ `skoon_interviews` — **لا شيء يُحذف أو يُستبدل**
+All app data is saved in the browser — no server, no database.
+
+| Key | Stores |
+|-----|--------|
+| `skoon_api_key` | OpenAI API key |
+| `skoon_theme` | Selected theme (`light` / `dark`) |
+| `skoon_lang` | Selected language (`en` / `ar`) |
+| `researcher_access` | `'true'` when researcher passcode has been entered |
+| `skoon_session` | In-progress interview (JSON) — cleared on completion |
+| `skoon_interviews` | Append-only array of all completed interviews — never deleted |
+
+---
+
+## 5. Interview Persistence
+
+Every completed interview is appended to `skoon_interviews` — **nothing is ever deleted or overwritten.**
 
 ```js
-// شكل كل سجل محفوظ
+// Shape of each saved record
 {
-  id,           // ID فريد (S._iid)
-  date,         // تاريخ ISO
-  lang,         // اللغة وقت المقابلة
-  completed,    // true دائماً
-  goal,         // هدف المقابلة
-  audience,     // الجمهور
-  answers: [{ q, a }],   // كل سؤال مع جوابه
-  analysis: null | {...}  // نتائج GPT-4o (للباحث فقط)
+  id,           // unique ID (S._iid)
+  date,         // ISO date string
+  lang,         // language at interview time
+  completed,    // always true
+  goal,         // interview goal
+  audience,     // target audience
+  answers: [{ q, a }],   // every question paired with its answer
+  analysis: null | {...}  // GPT-4o results (researcher only)
 }
 ```
 
-- `saveInterview(analysis)` تتحقق من `S._iid` قبل الحفظ لمنع التكرار
-- `extractQA()` تستخرج أزواج سؤال/جواب من `S.msgs`
+- `saveInterview(analysis)` checks `S._iid` before saving to prevent duplicates
+- `extractQA()` pulls question/answer pairs out of `S.msgs`
 
 ---
 
-## 6️⃣ وصول الباحث (مخفي)
+## 6. Researcher Access (Hidden)
 
-> المستخدمون العاديون لا يرون أي زر admin — الوصول مخفي تماماً
+Regular users see no admin button — access is completely hidden.
 
-**الطريقة:**
-1. **ثلاث نقرات متتالية** على كلمة "Skoon" في الشريط العلوي
-2. تظهر نافذة باسكود
-3. أدخل `1589`
-4. يُفتح مباشرة `renderResults({})` — لوحة الباحث
+**How to access:**
+1. **Triple-click** the "Skoon" brand name in the topbar
+2. A passcode modal appears
+3. Enter `1589`
+4. `renderResults({})` is called directly — researcher dashboard opens
 
-**ما يميز وضع الباحث:**
-- قسم التاريخ `renderHistory()` — كل المقابلات السابقة
-- 5 أقسام إضافية: Personas، Empathy Map، User Journey، Impact vs Effort، User Flow
-- هذه الأقسام **لا تُضاف للـ DOM** نهائياً للمستخدم العادي (مش CSS hidden — مش موجودة أصلاً)
+**What researcher mode adds:**
+- `renderHistory()` panel — all past interviews with stats
+- 5 extra sections: Personas, Empathy Map, User Journey, Impact vs Effort, User Flow
+- These sections are **never added to the DOM** for regular users — not CSS-hidden, simply never rendered
 
 ---
 
-## 7️⃣ مسار التحليل
+## 7. Analysis Pipeline
 
-> ما يحدث بعد انتهاء المقابلة يعتمد على نوع المستخدم
+What happens after the interview ends depends on user type:
 
 ```
 concludeInterview()
     │
     ├── isResearcher = true
-    │       └── analyze()              ← يرسل المحادثة لـ GPT-4o
+    │       └── analyze()              ← sends conversation to GPT-4o
     │               └── renderResults(data)
-    │                       ├── renderHistory(S._iid)   ← تاريخ المقابلات
-    │                       └── renderAnalysis(data)    ← محتوى التحليل
+    │                       ├── renderHistory(S._iid)   ← interview history panel
+    │                       └── renderAnalysis(data)    ← analysis content
     │
     └── isResearcher = false
-            └── finishMsg()            ← يحفظ المقابلة ويعرض page-done
+            └── finishMsg()            ← saves interview, shows page-done
 ```
 
-**مهم:**
-- `renderResults()` = تنقل الصفحة + رسم التاريخ
-- `renderAnalysis()` = محتوى التحليل فقط داخل `#res-content`
-- عند تبديل مقابلة من التاريخ → استدعِ `renderAnalysis()` وحدها فقط
+**Important:**
+- `renderResults()` = page navigation + history rendering
+- `renderAnalysis()` = analysis content only, injected into `#res-content`
+- When switching between past interviews → call `renderAnalysis()` alone, not `renderResults()`
 
 ---
 
-## 8️⃣ الدعم الثنائي للغة (RTL / LTR)
+## 8. RTL / Bilingual Layout
 
-> التطبيق يدعم العربية والإنجليزية بشكل كامل — كل شيء يتبدل بنقرة
+The app fully supports Arabic and English — everything flips with one click.
 
-- `[dir="rtl"]` على `<html>` يتحكم في اتجاه كل التخطيط تلقائياً
-- **CSS logical properties دائماً** — لا تستخدم `left`/`right` في التخطيط:
+- `[dir="rtl"]` on `<html>` controls layout direction globally
+- **Always use CSS logical properties** — never directional ones for layout:
   - ✅ `margin-inline-start` / `padding-inline-end` / `border-inline-start`
   - ❌ `margin-left` / `padding-right`
-- الخط العربي: `IBM Plex Sans Arabic` — الخط الإنجليزي: `IBM Plex Sans`
-- `cycleLang()` تبدل `S.lang`، تحدث `dir`، وتعيد رسم الصفحة الحالية
+- Arabic font: `IBM Plex Sans Arabic` — English font: `IBM Plex Sans`
+- `cycleLang()` toggles `S.lang`, updates the `dir` attribute, and re-renders the current page
 
 ---
 
-## 9️⃣ بروميت المقابلة `buildSys()`
+## 9. Interview System Prompt `buildSys()`
 
-> الـ AI يلعب دور **صديق محادث فضولي** — مش باحث رسمي — عشان المستخدم يتكلم بحرية
+The AI plays the role of a **friendly, curious conversation partner** — not a formal researcher — so the participant feels comfortable speaking openly.
 
-يُبنى مرة واحدة في `startInterview()` ويُضخ كـ `{ role: 'system' }` في `S.msgs`.
-يُعاد بناؤه تلقائياً إذا بدّل المستخدم اللغة أثناء المقابلة.
+Built once in `startInterview()` and pushed as `{ role: 'system' }` into `S.msgs`. Rebuilt in-place automatically when the user switches language mid-session.
 
-**المحاور التي يستكشفها الـ AI بشكل طبيعي:**
-1. كيف يبحث المستخدم حالياً عن عقار
-2. أكثر شيء يضايقه في التجربة
-3. كيف يقارن الخيارات ويختار
-4. ما الذي يدفعه لاتخاذ القرار
-5. مدى ثقته بالصور والأوصاف
-6. تجربته مع الملاك أو الوسطاء
-7. ما يتمنى تغييره
-8. حالته العاطفية أثناء البحث
+**Topics the AI explores naturally through conversation:**
+1. How the user currently searches for a rental property
+2. What frustrates them most during the search
+3. How they compare options and make choices
+4. What makes them decide to reach out or commit
+5. How much they trust photos and descriptions online
+6. Their experience communicating with landlords or agents
+7. What they wish was different about the whole experience
+8. How they feel emotionally during the search
 
-**القواعد الصارمة للـ AI:**
-- سؤال واحد فقط في كل رسالة — جملة قصيرة (أقل من 15 كلمة)
-- أسئلة مفتوحة فقط — لا نعم/لا
-- يبني كل سؤال على ما قاله المستخدم للتو
-- لا مديح، لا تعليق — فقط السؤال التالي
+**Strict AI rules:**
+- One question per message only — short sentence (under 15 words)
+- Open-ended only — never yes/no
+- Each question must build on what the user just said
+- No praise, no commentary — just the next question
+
+**English prompt persona:** `"You are a friendly, curious conversation partner..."`
+
+**Arabic prompt persona:** `"أنت صديق محادث ودود..."` — Gulf/Saudi dialect, never Egyptian
 
 ---
 
-## 🔟 بروميت التحليل `analyze()`
+## 10. Analysis Prompt `analyze()`
 
-> يُرسل بعد انتهاء المقابلة للباحث فقط — يعطي GPT-4o المحادثة كاملة ويطلب JSON
+Sent after the interview ends, for researchers only. Passes the full conversation to GPT-4o and expects a JSON response.
 
 - `temperature: 0.2` — `max_tokens: 3000`
-- المخرج: **JSON صحيح فقط** — بدون أي نص خارجه
+- Output must be **valid JSON only** — no text outside the JSON block
 
-**الـ 10 حقول المطلوبة:**
+**10 required fields:**
 
-| الحقل | ما يحتويه |
+| Field | Contains |
 |-------|----------|
-| `summary` | ملخص 2-3 جمل للنتائج |
-| `insights` | أبرز الاستنتاجات |
-| `quotes` | اقتباسات حرفية من كلام المستخدم |
-| `patterns` | الأنماط والسلوكيات المتكررة |
-| `recommendations` | توصيات قابلة للتنفيذ |
-| `personas` | شخصية مستخدم مستخلصة من المقابلة |
-| `empathy` | خريطة تعاطف: thinks / feels / says / does |
-| `journey` | مراحل رحلة المستخدم مع sentiment لكل مرحلة |
-| `impactEffort` | توصيات مصنّفة حسب التأثير والجهد |
-| `userFlow` | الخطوات التسلسلية للمستخدم في رحلته الحالية |
+| `summary` | 2-3 sentence overview of key findings |
+| `insights` | Most important takeaways |
+| `quotes` | Verbatim quotes from the participant |
+| `patterns` | Recurring behaviours or attitudes |
+| `recommendations` | Concrete, actionable product team actions |
+| `personas` | 1-2 user personas derived from the interview |
+| `empathy` | Empathy map: thinks / feels / says / does |
+| `journey` | User journey phases with sentiment per phase |
+| `impactEffort` | Recommendations ranked by impact and effort |
+| `userFlow` | Sequential steps the user takes in their current flow |
 
-**قيم ثابتة لا تتغير (حتى في العربي):**
+**Fixed enum values — always in English, even in Arabic mode:**
 - `sentiment`: `positive` / `neutral` / `negative`
 - `impact` / `effort`: `High` / `Medium` / `Low`
 - `priority`: `Do First` / `Schedule` / `Delegate` / `Drop`
