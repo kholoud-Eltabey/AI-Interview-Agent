@@ -261,12 +261,14 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .send-btn:disabled { opacity: .4; cursor: not-allowed; }
 .end-row { width: 100%; padding: 14px 0 20px; text-align: center; }
 .end-btn {
-  background: var(--primary); color: #fff; border: none;
+  background: var(--surface); color: var(--muted);
+  border: 1.5px solid var(--border);
   padding: 10px 28px; border-radius: var(--rsm); font-size: 14px; font-weight: 600;
   cursor: pointer; font-family: inherit; transition: all var(--tr);
 }
-.end-btn:hover  { background: var(--phover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(11,94,87,0.28); }
-.end-btn:active { transform: none; box-shadow: none; }
+.end-btn:hover  { border-color: var(--primary); color: var(--primary); background: var(--plight); }
+.end-btn:focus  { outline: none; border-color: var(--primary); color: var(--primary); background: var(--plight); box-shadow: 0 0 0 3px var(--plight); }
+.end-btn:active { transform: none; box-shadow: 0 0 0 3px var(--plight); }
 
 /* ── RESULTS ── */
 .res-body   { display: flex; flex: 1; overflow: hidden; }
@@ -1071,7 +1073,7 @@ async function startInterview() {
 
   goTo('page-chat');
   document.getElementById('msgs').innerHTML = '';
-  document.getElementById('end-row').style.display = 'block';
+  document.getElementById('end-row').style.display = 'none';
   document.getElementById('prog-lbl').textContent = '';
   document.getElementById('prog-fill').style.width = '0%';
 
@@ -1145,6 +1147,7 @@ function renderProg() {
   const pct = S.numQ > 0 ? Math.round((cur / S.numQ) * 100) : 0;
   document.getElementById('prog-lbl').textContent  = t('progLbl', cur, S.numQ) + ' · ' + pct + '%';
   document.getElementById('prog-fill').style.width = pct + '%';
+  if (S.mainAsked >= 4) document.getElementById('end-row').style.display = 'block';
 }
 
 // ─── KEY PROMPT ───────────────────────────────────────────
@@ -1822,7 +1825,7 @@ function restoreSession() {
     // Re-render conversation from saved messages
     goTo('page-chat');
     document.getElementById('msgs').innerHTML = '';
-    document.getElementById('end-row').style.display = 'block';
+    document.getElementById('end-row').style.display = S.mainAsked >= 4 ? 'block' : 'none';
     S.msgs.filter(m => m.role !== 'system').forEach(m => addMsg(m.role, m.content));
     renderProg();
     S.waitingForAnswer = true; setSend(false);
