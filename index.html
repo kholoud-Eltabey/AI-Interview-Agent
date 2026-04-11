@@ -371,24 +371,26 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   align-items: center; justify-content: center;
   padding: 80px 24px 40px; text-align: center;
 }
-.done-wrap { max-width: 480px; width: 100%; }
+.done-wrap { max-width: 480px; width: 100%; text-align: center; }
 .done-title {
-  font-size: 34px; font-weight: 700; letter-spacing: -0.5px;
-  color: var(--text); margin-bottom: 20px;
+  font-size: 24px; font-weight: 700; letter-spacing: -0.3px;
+  color: var(--text); margin-bottom: 14px;
 }
 .done-body {
-  font-size: 16px; line-height: 1.9; color: var(--muted);
-  white-space: pre-line; margin-bottom: 36px;
+  font-size: 14px; line-height: 1.7; color: var(--muted);
+  margin-bottom: 32px;
 }
 .done-close {
-  display: block; margin: 0 auto;
-  background: var(--primary); border: none; color: #fff;
-  padding: 12px 40px; border-radius: var(--rsm);
-  font-size: 14px; font-weight: 600; font-family: inherit;
+  display: inline-block; margin: 0 auto;
+  background: var(--surface); color: var(--muted);
+  border: 1.5px solid var(--border);
+  padding: 8px 22px; border-radius: var(--rsm);
+  font-size: 12px; font-weight: 400; font-family: inherit;
   cursor: pointer; transition: all var(--tr);
 }
-.done-close:hover  { background: var(--phover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(11,94,87,0.28); }
-.done-close:active { transform: none; box-shadow: none; }
+.done-close:hover  { border-color: var(--primary); color: var(--primary); background: var(--plight); }
+.done-close:focus  { outline: none; border-color: var(--primary); color: var(--primary); background: var(--plight); box-shadow: 0 0 0 3px var(--plight); }
+.done-close:active { box-shadow: 0 0 0 3px var(--plight); }
 
 /* ── ANALYSIS ENHANCED ── */
 .ra-summary {
@@ -1334,8 +1336,8 @@ function finishMsg() {
   const ar = S.lang === 'ar';
   const title     = ar ? 'خلصنا ✨' : "We're finished ✨";
   const body      = ar
-    ? 'مرّة نقدر لك وقتك ومشاركتك معنا 💙\nإجاباتك فعلًا فرقت معنا وساعدتنا نفهم تجربتك بشكل أوضح'
-    : 'We truly appreciate you taking the time to share your experience with us 💙\nYour answers really helped us understand things better';
+    ? 'نقدر لك وقتك ومشاركتك — إجاباتك فعلًا ساعدتنا نفهم تجربتك أوضح 💙'
+    : 'We appreciate you sharing your experience with us — your answers really helped 💙';
   const finishLbl = ar ? 'إنهاء' : 'Finish';
 
   document.getElementById('done-title').textContent     = title;
