@@ -94,19 +94,22 @@ Every completed interview is appended to `skoon_interviews` — **nothing is eve
 ```js
 // Shape of each saved record
 {
-  id,           // unique ID (S._iid)
-  date,         // ISO date string
-  lang,         // language at interview time
-  completed,    // always true
-  goal,         // interview goal
-  audience,     // target audience
-  answers: [{ q, a }],   // every question paired with its answer
-  analysis: null | {...}  // GPT-4o results (researcher only)
+  id,                    // unique ID (S._iid)
+  date,                  // ISO date string
+  lang,                  // language at interview time
+  completed,             // always true
+  goal,                  // interview goal
+  audience,              // target audience
+  lastQuestionSeen,      // S.mainAsked at save time — how far the user got
+  totalQuestions,        // S.numQ — total questions configured
+  answers: [{ q, a }],  // every question paired with its answer
+  analysis: null | {...} // GPT-4o results (researcher only)
 }
 ```
 
 - `saveInterview(analysis)` checks `S._iid` before saving to prevent duplicates
 - `extractQA()` pulls question/answer pairs out of `S.msgs`
+- `renderAnalysis(d, iv)` receives the full record as `iv` to show the progress bar — `iv.lastQuestionSeen / iv.totalQuestions` rendered as "Q X of Y" + percentage bar at the top of the analysis, visible to researchers only
 
 ---
 
