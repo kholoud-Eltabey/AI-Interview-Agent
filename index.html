@@ -1142,8 +1142,9 @@ Strict rules:
 // ─── PROGRESS ─────────────────────────────────────────────
 function renderProg() {
   const cur = Math.min(S.mainAsked, S.numQ);
-  document.getElementById('prog-lbl').textContent  = t('progLbl', cur, S.numQ);
-  document.getElementById('prog-fill').style.width = (cur / S.numQ * 100) + '%';
+  const pct = S.numQ > 0 ? Math.round((cur / S.numQ) * 100) : 0;
+  document.getElementById('prog-lbl').textContent  = t('progLbl', cur, S.numQ) + ' · ' + pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
 }
 
 // ─── KEY PROMPT ───────────────────────────────────────────
