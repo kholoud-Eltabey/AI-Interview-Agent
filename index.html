@@ -185,11 +185,12 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .tb-right { display: none; }
 
 /* ── PROGRESS ── */
-.prog-row  { width: 100%; display: flex; justify-content: center; margin-top: 8px; }
-.prog-wrap { width: 100%; max-width: 260px; }
-.prog-lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-align: center; margin-bottom: 4px; }
-.prog-track { background: var(--border); border-radius: 20px; height: 5px; overflow: hidden; }
-.prog-pct  { display: none; }
+.prog-row  { width: 100%; padding: 6px 0 0; }
+.prog-wrap { width: 100%; }
+.prog-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.prog-lbl  { font-size: 11px; font-weight: 500; color: var(--muted); }
+.prog-pct  { font-size: 11px; font-weight: 500; color: var(--muted); }
+.prog-track { background: var(--border); border-radius: 20px; height: 4px; overflow: hidden; }
 .prog-fill {
   height: 100%; border-radius: 20px;
   background: var(--primary);
@@ -684,8 +685,11 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
     </div>
     <div class="prog-row">
       <div class="prog-wrap">
-        <div class="prog-lbl" id="prog-lbl"></div>
-        <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"><span class="prog-pct" id="prog-pct"></span></div></div>
+        <div class="prog-meta">
+          <span class="prog-lbl" id="prog-lbl"></span>
+          <span class="prog-pct" id="prog-pct"></span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
       </div>
     </div>
   </div>
@@ -1146,7 +1150,8 @@ Strict rules:
 function renderProg() {
   const cur = Math.min(S.mainAsked, S.numQ);
   const pct = S.numQ > 0 ? Math.round((cur / S.numQ) * 100) : 0;
-  document.getElementById('prog-lbl').textContent  = t('progLbl', cur, S.numQ) + ' · ' + pct + '%';
+  document.getElementById('prog-lbl').textContent  = t('progLbl', cur, S.numQ);
+  document.getElementById('prog-pct').textContent  = pct + '%';
   document.getElementById('prog-fill').style.width = pct + '%';
   if (S.mainAsked >= 4) document.getElementById('end-row').style.display = 'block';
 }
