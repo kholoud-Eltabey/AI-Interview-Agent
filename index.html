@@ -484,6 +484,31 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .ih-nodone  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
 .ih-empty   { font-size: 13px; color: var(--muted); font-style: italic; padding: 12px 0; }
 
+/* ── Research Notes ── */
+.rn-wrap       { margin-bottom: 32px; }
+.rn-hdr        { margin-bottom: 20px; }
+.rn-hdr-ttl    { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.rn-hdr-sub    { font-size: 13px; color: var(--muted); }
+.rn-list       { display: flex; flex-direction: column; gap: 16px; }
+.rn-card       { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+.rn-card-hdr   { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--bg); flex-wrap: wrap; }
+.rn-card-id    { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.6px; text-transform: uppercase; }
+.rn-card-date  { font-size: 12px; color: var(--muted); }
+.rn-card-dot   { width: 3px; height: 3px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+.rn-card-prog  { font-size: 12px; font-weight: 600; color: var(--primary); margin-inline-start: auto; }
+.rn-card-body  { display: flex; flex-direction: column; }
+.rn-section    { padding: 14px 18px; }
+.rn-section + .rn-section { border-top: 1px solid var(--border); }
+.rn-sec-lbl    { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.rn-bullets    { display: flex; flex-direction: column; gap: 6px; }
+.rn-bullet     { font-size: 13px; color: var(--text); line-height: 1.55; padding-inline-start: 14px; position: relative; }
+.rn-bullet::before { content: '•'; position: absolute; inset-inline-start: 0; color: var(--primary); font-weight: 700; }
+.rn-quote      { font-size: 13px; color: var(--text); line-height: 1.55; font-style: italic; padding: 8px 12px; background: var(--bg); border-radius: 8px; border-inline-start: 3px solid var(--primary); margin-bottom: 6px; }
+.rn-empty-msg  { font-size: 13px; color: var(--muted); font-style: italic; }
+.rn-status-done   { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: #dcfce7; color: #15803d; }
+.rn-status-part   { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+[data-theme="dark"] .rn-status-done { background: #14532d; color: #86efac; }
+
 /* Responsive */
 @media (max-width: 640px) {
   .grid2     { grid-template-columns: 1fr; }
@@ -673,6 +698,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
       <div class="res-sub" id="res-sub">Based on your interview session</div>
       <div id="res-history"></div>
       <div id="res-content"></div>
+      <div id="res-notes"></div>
       <div class="res-nav-row">
         <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
         <button class="btn btn-s" onclick="goHome()"><span class="home-btn-lbl">Home</span></button>
@@ -746,6 +772,11 @@ const TR = {
     ihTotal:   'Interviews', ihCompleted: 'Completed', ihAnalyzed: 'Analyzed', ihDone: 'Done',
     ihEmpty:   'No saved interviews yet.',
     stoppedAt: 'User reached', stoppedOf: 'of',
+    rnTitle:   'Research Notes', rnSub: 'All interviews — grouped and structured',
+    rnNotes:   'Notes', rnObs: 'Observations', rnQuotes: 'User Quotes',
+    rnCompleted: 'Completed', rnStopped: 'Stopped at Q',
+    rnEmpty:   'No interviews recorded yet.',
+    rnNoNotes: 'No answers recorded.', rnNoObs: 'No analysis available.', rnNoQuotes: 'No quotes captured.',
     homeBtn:   'Home',
     errNoKey:  'Please enter your OpenAI API key to continue.',
     errNoConv: 'Please answer at least a couple of questions first.',
@@ -796,6 +827,11 @@ const TR = {
     ihTotal:   'المقابلات', ihCompleted: 'مكتملة', ihAnalyzed: 'محلّلة', ihDone: 'مكتملة',
     ihEmpty:   'لا توجد مقابلات محفوظة بعد.',
     stoppedAt: 'وصل المستخدم إلى', stoppedOf: 'من',
+    rnTitle:   'ملاحظات البحث', rnSub: 'كل المقابلات — منظمة ومصنفة',
+    rnNotes:   'ملاحظات', rnObs: 'استنتاجات', rnQuotes: 'اقتباسات المستخدم',
+    rnCompleted: 'مكتملة', rnStopped: 'وقف عند السؤال',
+    rnEmpty:   'لا توجد مقابلات مسجلة بعد.',
+    rnNoNotes: 'لا توجد إجابات مسجلة.', rnNoObs: 'لا يوجد تحليل متاح.', rnNoQuotes: 'لا توجد اقتباسات.',
     homeBtn:   'الرئيسية',
     errNoKey:  'من فضلك أدخل مفتاح OpenAI API لتقدر تكمل.',
     errNoConv: 'جاوب على سؤال أو أكثر أولاً.',
@@ -1292,6 +1328,86 @@ function loadInterviewById(id) {
   renderHistory(id);
 }
 
+// ─── RESEARCH NOTES ───────────────────────────────────────
+function renderNotes() {
+  const el = document.getElementById('res-notes');
+  if (!el || !S.isResearcher) return;
+
+  const all = getAllInterviews().slice().reverse(); // newest first
+  const fmt = iso => new Date(iso).toLocaleString(
+    S.lang === 'ar' ? 'ar-SA' : 'en-US',
+    { dateStyle: 'medium', timeStyle: 'short' }
+  );
+
+  if (!all.length) {
+    el.innerHTML = `<div class="rn-wrap"><div class="rn-hdr">
+      <div class="rn-hdr-ttl">${t('rnTitle')}</div>
+      <div class="rn-hdr-sub">${t('rnSub')}</div>
+    </div><div class="rn-empty-msg">${t('rnEmpty')}</div></div>`;
+    return;
+  }
+
+  const cards = all.map(iv => {
+    const reached = iv.lastQuestionSeen || 0;
+    const total   = iv.totalQuestions   || 0;
+    const isDone  = reached >= total && total > 0;
+    const statusCls  = isDone ? 'rn-status-done' : 'rn-status-part';
+    const statusLbl  = isDone ? t('rnCompleted') : `${t('rnStopped')} ${reached}`;
+    const progLbl    = total > 0 ? `Q${reached} / ${total}` : `Q${reached}`;
+
+    // Notes — bullet from each answer
+    const answers = Array.isArray(iv.answers) ? iv.answers : [];
+    const notesBullets = answers.length
+      ? answers.map(qa => `<div class="rn-bullet">${esc(qa.a)}</div>`).join('')
+      : `<div class="rn-empty-msg">${t('rnNoNotes')}</div>`;
+
+    // Observations — from analysis.insights
+    const insights = iv.analysis && Array.isArray(iv.analysis.insights) ? iv.analysis.insights.filter(Boolean) : [];
+    const obsBullets = insights.length
+      ? insights.map(ins => `<div class="rn-bullet">${esc(ins)}</div>`).join('')
+      : `<div class="rn-empty-msg">${t('rnNoObs')}</div>`;
+
+    // User Quotes — from analysis.quotes
+    const quotes = iv.analysis && Array.isArray(iv.analysis.quotes) ? iv.analysis.quotes.filter(Boolean) : [];
+    const quotesHtml = quotes.length
+      ? quotes.map(q => `<div class="rn-quote">"${esc(q)}"</div>`).join('')
+      : `<div class="rn-empty-msg">${t('rnNoQuotes')}</div>`;
+
+    return `<div class="rn-card">
+      <div class="rn-card-hdr">
+        <span class="rn-card-id">#${iv.id}</span>
+        <span class="rn-card-dot"></span>
+        <span class="rn-card-date">${fmt(iv.date)}</span>
+        <span class="rn-card-dot"></span>
+        <span class="${statusCls}">${statusLbl}</span>
+        <span class="rn-card-prog">${progLbl}</span>
+      </div>
+      <div class="rn-card-body">
+        <div class="rn-section">
+          <div class="rn-sec-lbl">${t('rnNotes')}</div>
+          <div class="rn-bullets">${notesBullets}</div>
+        </div>
+        <div class="rn-section">
+          <div class="rn-sec-lbl">${t('rnObs')}</div>
+          <div class="rn-bullets">${obsBullets}</div>
+        </div>
+        <div class="rn-section">
+          <div class="rn-sec-lbl">${t('rnQuotes')}</div>
+          ${quotesHtml}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="rn-wrap">
+    <div class="rn-hdr">
+      <div class="rn-hdr-ttl">${t('rnTitle')}</div>
+      <div class="rn-hdr-sub">${t('rnSub')}</div>
+    </div>
+    <div class="rn-list">${cards}</div>
+  </div>`;
+}
+
 // ─── END / ANALYZE ────────────────────────────────────────
 function concludeInterview() {
   S.done = true;
@@ -1371,6 +1487,7 @@ function renderResults(d) {
   document.getElementById('res-sub').textContent = t('resSub');
   renderHistory(S._iid);
   renderAnalysis(d, { lastQuestionSeen: S.mainAsked, totalQuestions: S.numQ });
+  renderNotes();
 }
 
 function renderAnalysis(d, iv) {
