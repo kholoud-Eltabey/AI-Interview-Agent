@@ -371,15 +371,19 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   align-items: center; justify-content: center;
   padding: 80px 24px 40px; text-align: center;
 }
-.done-wrap { max-width: 480px; width: 100%; text-align: center; }
+.done-wrap { max-width: 420px; width: 100%; text-align: center; }
 .done-title {
-  font-size: 24px; font-weight: 700; letter-spacing: -0.3px;
-  color: var(--text); margin-bottom: 14px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 22px; font-weight: 600; letter-spacing: -0.2px;
+  color: var(--text); margin-bottom: 12px;
 }
+[dir="rtl"] .done-title { font-family: 'IBM Plex Sans Arabic', sans-serif; }
 .done-body {
-  font-size: 14px; line-height: 1.7; color: var(--muted);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px; font-weight: 400; line-height: 1.75; color: var(--muted);
   margin-bottom: 32px;
 }
+[dir="rtl"] .done-body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
 .done-close {
   display: inline-block; margin: 0 auto;
   background: var(--surface); color: var(--muted);
@@ -1334,11 +1338,11 @@ async function submitAnswer() {
 
 function finishMsg() {
   const ar = S.lang === 'ar';
-  const title     = ar ? 'خلصنا ✨' : "We're finished ✨";
+  const title     = ar ? 'شكراً لك 🙌' : 'That was great, thank you 🙌';
   const body      = ar
-    ? 'نقدر لك وقتك ومشاركتك — إجاباتك فعلًا ساعدتنا نفهم تجربتك أوضح 💙'
-    : 'We appreciate you sharing your experience with us — your answers really helped 💙';
-  const finishLbl = ar ? 'إنهاء' : 'Finish';
+    ? 'وقتك ومشاركتك تعني لنا الكثير. كلامك يساعدنا نبني تجربة أفضل لك ولكل الناس اللي مثلك 💙'
+    : 'Your time and honesty mean a lot to us. What you shared will genuinely help us build something better for everyone 💙';
+  const finishLbl = ar ? 'إنهاء' : 'Close';
 
   document.getElementById('done-title').textContent     = title;
   document.getElementById('done-body').textContent      = body;
