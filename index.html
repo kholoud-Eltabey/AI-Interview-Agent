@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skoon — AI Interview Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+
+:root {
+  --bg:      #F7F7FA;
+  --surface: #FFFFFF;
+  --border:  #ECECF2;
+  --text:    #2C2B3B;
+  --muted:   #6B7280;
+  --primary: #0B5E57;
+  --phover:  #094D47;
+  --plight:  rgba(11,94,87,0.08);
+  --accent:  #7C3AED;
+  --danger:  #DC2626;
+  --sh:  0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04);
+  --shlg: 0 12px 48px rgba(0,0,0,0.10);
+  --r:   14px;
+  --rsm:  9px;
+  --rxs:  6px;
+  --tr: 0.18s ease;
+}
+[data-theme="dark"] {
+  --bg:      #0F1414;
+  --surface: #121717;
+  --border:  #1F2A2A;
+  --text:    #E5E7EB;
+  --muted:   rgba(229,231,235,0.7);
+  --primary: #0F766E;
+  --phover:  #0D6560;
+  --plight:  rgba(15,118,110,0.12);
+  --accent:  #BC8CFF;
+  --sh:  0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3);
+  --shlg: 0 12px 48px rgba(0,0,0,0.6);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+  transition: background var(--tr), color var(--tr);
+}
+/* Smooth color transitions on all themed elements */
+.card, .rc, .full, .input-bar, .ov-card,
+.bbl, .typing-bbl, .chat-ta, .inp, .ic-btn, .end-btn, .btn-s {
+  transition: background var(--tr), border-color var(--tr), color var(--tr);
+}
+[dir="rtl"] body {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+/* Ensure all interactive elements inherit IBM Plex */
+button, input, textarea, select, table, th, td {
+  font-family: inherit;
+  font-weight: inherit;
+}
+
+/* ── PAGES ── */
+.page { display: none; min-height: 100vh; flex-direction: column; }
+.page.active { display: flex; }
+
+/* ── SETUP ── */
+#page-setup { align-items: center; padding: 40px 20px 64px; }
+.setup-wrap { width: 100%; max-width: 560px; }
+
+.hero { text-align: center; margin-bottom: 32px; }
+.brand {
+  font-size: 38px; font-weight: 700; letter-spacing: -1.5px;
+  color: var(--primary); display: block; margin-bottom: 6px;
+}
+.hero-sub { color: var(--muted); font-size: 14px; }
+
+.ic-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1.5px solid var(--border); background: var(--surface);
+  color: var(--text); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--tr); font-size: 16px; position: relative; flex-shrink: 0;
+}
+.ic-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Card */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 24px; box-shadow: var(--sh); margin-bottom: 14px;
+}
+.card-lbl {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 7px;
+}
+.card-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--primary); flex-shrink: 0; }
+
+.fg { margin-bottom: 16px; }
+.fg:last-child { margin-bottom: 0; }
+.fl { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.badge { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 8px; background: var(--plight); color: var(--primary); }
+
+.inp {
+  width: 100%; padding: 10px 13px;
+  border: 1.5px solid var(--border); border-radius: var(--rsm);
+  background: var(--bg); color: var(--text); font-size: 14px;
+  font-family: inherit; outline: none;
+  transition: border-color var(--tr), box-shadow var(--tr);
+}
+.inp:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--plight); }
+.inp::placeholder { color: var(--muted); }
+textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
+.inp[readonly] { opacity: 0.65; cursor: default; }
+
+.range-row { display: flex; align-items: center; gap: 12px; }
+.inp[type="range"] {
+  flex: 1; padding: 0; height: 5px; border: none; box-shadow: none; background: transparent;
+  accent-color: var(--primary); cursor: pointer;
+}
+.nq-count {
+  font-size: 12px; font-weight: 700; color: var(--primary);
+  background: var(--plight); border-radius: 5px;
+  padding: 2px 8px; margin-inline-start: auto; flex-shrink: 0;
+}
+.range-ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.key-wrap { position: relative; }
+.key-wrap .inp { padding-inline-end: 42px; }
+.key-eye {
+  position: absolute; inset-inline-end: 11px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; line-height: 1;
+  transition: color var(--tr);
+}
+.key-eye:hover { color: var(--primary); }
+.key-ok {
+  display: none; align-items: center; gap: 5px; margin-top: 7px;
+  font-size: 12px; padding: 7px 10px; border-radius: var(--rxs);
+  background: #d1fae5; color: #065f46; font-weight: 600;
+}
+[data-theme="dark"] .key-ok { background: #064e3b; color: #6ee7b7; }
+.key-acts { display: flex; gap: 8px; margin-top: 10px; }
+.hint { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+.errtxt { font-size: 12px; color: var(--danger); margin-top: 5px; display: none; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 20px; border-radius: var(--rsm); font-size: 14.5px; font-weight: 600;
+  cursor: pointer; border: none; font-family: inherit; white-space: nowrap;
+  transition: all var(--tr);
+}
+.btn-p { background: var(--primary); color: #fff; width: 100%; }
+.btn-p:hover { background: var(--phover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(11,94,87,0.30); }
+.btn-p:active { transform: none; }
+.btn-p:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-s {
+  background: var(--bg); color: var(--muted);
+  border: 1.5px solid var(--border); font-size: 12.5px; padding: 7px 14px;
+}
+.btn-s:hover { border-color: var(--primary); color: var(--primary); }
+
+.start-err { font-size: 13px; color: var(--danger); text-align: center; margin-bottom: 10px; display: none; }
+
+/* ── TOPBAR (shared) ── */
+.topbar {
+  display: flex; flex-direction: column;
+  width: 100%; padding: 10px 18px 14px;
+}
+#page-setup > .topbar { align-self: stretch; }
+.tb-left   { display: none; }
+.tb-spacer { display: none; }
+.tb-center { text-align: center; }
+.hdr-icons { display: flex; gap: 10px; margin-bottom: 8px; align-self: flex-end; }
+.tb-brand {
+  display: block; width: 100%; text-align: center;
+  font-size: 38px; font-weight: 700; letter-spacing: -1.5px;
+  color: var(--primary); line-height: 1;
+  position: static; transform: none; transition: none; animation: none;
+}
+.hdr-sub  { display: block; width: 100%; text-align: center; font-size: 13px; color: var(--muted); margin-top: 4px; }
+.tb-right { display: none; }
+
+/* ── PROGRESS ── */
+.prog-row  { width: 100%; display: flex; justify-content: center; margin-top: 8px; }
+.prog-wrap { width: 100%; max-width: 260px; }
+.prog-lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-align: center; margin-bottom: 4px; }
+.prog-track { background: var(--border); border-radius: 20px; height: 8px; overflow: hidden; }
+.prog-fill {
+  height: 100%; border-radius: 20px;
+  background: var(--primary);
+  transition: width 0.4s ease;
+}
+
+/* ── CHAT ── */
+.chat-scroll { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; }
+.msgs {
+  max-width: 700px; width: 100%; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 13px; flex: 1;
+}
+.msg { display: flex; gap: 10px; max-width: 88%; animation: upIn .24s ease both; }
+@keyframes upIn { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
+.msg.ai  { align-self: flex-start; }
+.msg.usr { align-self: flex-end; flex-direction: row-reverse; }
+.av {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.msg.ai  .av { background: var(--plight); color: var(--primary); }
+.msg.usr .av { background: var(--border); color: var(--muted); }
+.msg-inner { display: flex; flex-direction: column; gap: 3px; }
+.bbl { padding: 9px 13px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
+.msg.ai  .bbl { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 3px; }
+.msg.usr .bbl { background: var(--primary); color: #fff; border-top-right-radius: 3px; }
+.msg-t { font-size: 10px; color: var(--muted); padding: 0 2px; }
+.msg.usr .msg-t { text-align: right; }
+
+/* Typing */
+.typing-w { display: flex; gap: 10px; align-self: flex-start; animation: upIn .24s ease both; }
+.typing-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--plight); color: var(--primary);
+  display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+}
+.typing-bbl {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; border-top-left-radius: 3px;
+  padding: 12px 16px; display: flex; gap: 4px; align-items: center;
+}
+.td { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: tdB 1.2s infinite; }
+.td:nth-child(2) { animation-delay: .18s; }
+.td:nth-child(3) { animation-delay: .36s; }
+@keyframes tdB {
+  0%,60%,100% { transform: translateY(0); opacity: .4; }
+  30%          { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Input bar */
+.input-bar {
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 13px 22px 15px; position: sticky; bottom: 0;
+}
+.inp-inner { max-width: 700px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-end; }
+.chat-ta {
+  flex: 1; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--rsm); background: var(--bg); color: var(--text);
+  font-size: 14px; font-family: inherit; resize: none; outline: none;
+  min-height: 44px; max-height: 140px; line-height: 1.5; transition: border-color var(--tr);
+}
+.chat-ta:focus { border-color: var(--primary); }
+.send-btn {
+  width: 44px; height: 44px; border-radius: var(--rsm); background: var(--primary);
+  color: #fff; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: all var(--tr);
+}
+.send-btn:hover    { background: var(--phover); }
+.send-btn:disabled { opacity: .4; cursor: not-allowed; }
+.end-row { width: 100%; padding: 14px 0 20px; text-align: center; }
+.end-btn {
+  background: var(--primary); color: #fff; border: none;
+  padding: 10px 28px; border-radius: var(--rsm); font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all var(--tr);
+}
+.end-btn:hover  { background: var(--phover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(11,94,87,0.28); }
+.end-btn:active { transform: none; box-shadow: none; }
+
+/* ── RESULTS ── */
+.res-scroll { flex: 1; overflow-y: auto; padding: 32px 22px 60px; }
+.res-inner  { max-width: 860px; margin: 0 auto; }
+.res-ttl { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+.res-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+.grid2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
+.rc      { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; box-shadow: var(--sh); }
+.rc-hd   { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+.rc-ico  { width: 34px; height: 34px; border-radius: var(--rxs); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.rc-ttl  { font-size: 13px; font-weight: 700; }
+.rc-items { display: flex; flex-direction: column; gap: 8px; }
+.ri      { display: flex; gap: 8px; font-size: 13px; line-height: 1.55; }
+.rbul    { width: 5px; height: 5px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+.qblock  {
+  border-left: 3px solid var(--primary); padding: 11px 14px;
+  background: var(--plight); border-radius: 0 var(--rxs) var(--rxs) 0;
+  font-size: 13px; font-style: italic; line-height: 1.6; margin-bottom: 9px;
+}
+[dir="rtl"] .qblock { border-left: none; border-right: 3px solid var(--primary); border-radius: var(--rxs) 0 0 var(--rxs); }
+.full {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 22px; box-shadow: var(--sh);
+  margin-bottom: 16px; grid-column: 1/-1;
+}
+.ins-txt { font-size: 14px; line-height: 1.75; }
+.res-nav-row { display: flex; justify-content: center; gap: 10px; margin-top: 32px; padding-bottom: 8px; }
+#res-content .rc { margin-bottom: 20px; }
+#res-content .grid2 { margin-bottom: 20px; }
+
+/* Result colour chips */
+.ci-r { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .ci-r { background:#450a0a; color:#fca5a5; }
+.ci-b { background:#dbeafe; color:#1d4ed8; } [data-theme="dark"] .ci-b { background:#0d2149; color:#93c5fd; }
+.ci-o { background:#ffedd5; color:#c2410c; } [data-theme="dark"] .ci-o { background:#431407; color:#fdba74; }
+.ci-g { background:#dcfce7; color:#15803d; } [data-theme="dark"] .ci-g { background:#14532d; color:#86efac; }
+.ci-p { background:#ede9fe; color:#6d28d9; } [data-theme="dark"] .ci-p { background:#2e1065; color:#c4b5fd; }
+.ci-y { background:#fef3c7; color:#b45309; } [data-theme="dark"] .ci-y { background:#451a03; color:#fde68a; }
+.cb-r { background:#dc2626; } .cb-b { background:#0B5E57; }
+.cb-o { background:#ea580c; } .cb-g { background:#16a34a; } .cb-p { background:#7c3aed; }
+
+/* Overlay */
+.ov { position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; }
+.ov.show { display: flex; }
+.ov-card { background: var(--surface); border-radius: var(--r); padding: 36px 32px; text-align: center; max-width: 280px; width: 90%; box-shadow: var(--shlg); }
+.spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 18px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.ov-ttl { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.ov-sub { font-size: 12px; color: var(--muted); }
+
+/* RTL chat bubble adjustments */
+[dir="rtl"] .msg.ai  { flex-direction: row; }
+[dir="rtl"] .msg.usr { flex-direction: row-reverse; }
+[dir="rtl"] .msg.ai  .bbl { border-top-left-radius: 16px; border-top-right-radius: 3px; }
+[dir="rtl"] .msg.usr .bbl { border-top-right-radius: 16px; border-top-left-radius: 3px; }
+[dir="rtl"] .typing-bbl   { border-top-left-radius: 16px; border-top-right-radius: 3px; }
+[dir="rtl"] .msg.usr .msg-t { text-align: left; }
+
+/* ── DONE SCREEN ── */
+#page-done {
+  align-items: center; justify-content: center;
+  padding: 80px 24px 40px; text-align: center;
+}
+.done-wrap { max-width: 480px; width: 100%; }
+.done-title {
+  font-size: 34px; font-weight: 700; letter-spacing: -0.5px;
+  color: var(--text); margin-bottom: 20px;
+}
+.done-body {
+  font-size: 16px; line-height: 1.9; color: var(--muted);
+  white-space: pre-line; margin-bottom: 36px;
+}
+.done-close {
+  display: block; margin: 0 auto;
+  background: var(--primary); border: none; color: #fff;
+  padding: 12px 40px; border-radius: var(--rsm);
+  font-size: 14px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: all var(--tr);
+}
+.done-close:hover  { background: var(--phover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(11,94,87,0.28); }
+.done-close:active { transform: none; box-shadow: none; }
+
+/* ── ANALYSIS ENHANCED ── */
+.ra-summary {
+  background: var(--plight); border: 1px solid var(--border);
+  border-inline-start: 3px solid var(--primary);
+  border-radius: var(--r); padding: 22px 24px; margin-bottom: 20px;
+}
+
+/* ── ADVANCED ANALYSIS ── */
+.res-inner { font-family: inherit; }
+
+/* Analysis weight hierarchy */
+.ra-section-ttl,
+.res-inner .rc-ttl,
+.res-inner .res-ttl,
+.persona-name,
+.journey-phase,
+.empathy-lbl,
+.ra-sum-lbl,
+.ie-table th          { font-weight: 700; }
+
+.ra-num-item > div,
+.journey-action,
+.flow-step-ttl,
+.persona-row span,
+.ie-table td strong   { font-weight: 600; }
+
+.ra-sum-txt,
+.ra-quote,
+.empathy-items,
+.journey-emotion,
+.flow-step-desc,
+.persona-row,
+.ie-table td          { font-weight: 400; }
+
+.card-lbl, .rc-hd .rc-ttl,
+.prog-lbl, .hdr-sub,
+.res-sub              { font-weight: 500; }
+
+.ra-section-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.ra-section-ico {
+  width: 36px; height: 36px; border-radius: var(--rxs);
+  display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.ra-section-ttl { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.2px; }
+
+/* rc-ttl override for analysis cards */
+.res-inner .rc-ttl { font-size: 14px; font-weight: 700; }
+
+/* Summary */
+.ra-sum-lbl { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+.ra-sum-txt  { font-size: 16px; font-weight: 400; line-height: 1.85; color: var(--text); }
+
+/* Numbered badges */
+.ra-num-item { display: flex; gap: 11px; align-items: flex-start; font-size: 14px; line-height: 1.65; margin-bottom: 10px; }
+.ra-num-item:last-child { margin-bottom: 0; }
+.ra-badge { min-width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.ra-badge-b { background: var(--primary); }
+.ra-badge-g { background: #16a34a; }
+
+/* Quotes */
+.ra-quotes { display: flex; flex-direction: column; gap: 10px; }
+.ra-quote { font-size: 14px; font-style: italic; line-height: 1.75; color: var(--text); border-inline-start: 3px solid var(--accent); padding: 11px 15px; background: var(--bg); border-radius: 0 var(--rxs) var(--rxs) 0; }
+[dir="rtl"] .ra-quote { border-radius: var(--rxs) 0 0 var(--rxs); }
+
+/* Persona cards */
+.persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px; }
+.persona-card { border: 1px solid var(--border); border-radius: var(--r); padding: 18px; background: var(--bg); }
+.persona-name { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+.persona-row  { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 3px; }
+.persona-row span { color: var(--text); font-weight: 600; }
+
+/* Empathy map */
+.empathy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.empathy-cell { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rsm); padding: 15px 16px; }
+.empathy-lbl  { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+.empathy-items { font-size: 14px; line-height: 1.75; color: var(--text); }
+
+/* Journey map */
+.journey-steps { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+.journey-step {
+  flex: 1; min-width: 145px;
+  padding: 16px 14px 14px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--rsm); text-align: center;
+}
+.journey-phase  { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
+.journey-action { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
+.journey-emotion { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.journey-sentiment { display: inline-block; margin-top: 9px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 8px; }
+.js-pos { background:#dcfce7; color:#15803d; } [data-theme="dark"] .js-pos { background:#14532d; color:#86efac; }
+.js-neu { background:#fef3c7; color:#b45309; } [data-theme="dark"] .js-neu { background:#451a03; color:#fde68a; }
+.js-neg { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .js-neg { background:#450a0a; color:#fca5a5; }
+
+/* Impact vs Effort */
+.ie-table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: inherit; }
+.ie-table th {
+  text-align: start; padding: 10px 14px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted);
+  border-bottom: 1.5px solid var(--border);
+}
+.ie-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); line-height: 1.55; vertical-align: middle; }
+.ie-table tr:last-child td { border-bottom: none; }
+.ie-chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 8px; white-space: nowrap; font-family: inherit; }
+.ie-hi { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .ie-hi { background:#450a0a; color:#fca5a5; }
+.ie-md { background:#fef3c7; color:#b45309; } [data-theme="dark"] .ie-md { background:#451a03; color:#fde68a; }
+.ie-lo { background:#dcfce7; color:#15803d; } [data-theme="dark"] .ie-lo { background:#14532d; color:#86efac; }
+
+/* User Flow */
+.flow-steps { display: flex; flex-direction: column; gap: 0; }
+.flow-row { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 20px; }
+.flow-row:last-child { padding-bottom: 0; }
+.flow-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.flow-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.flow-line { width: 2px; flex: 1; background: var(--border); min-height: 18px; margin-top: 4px; }
+.flow-row:last-child .flow-line { display: none; }
+.flow-content { padding-top: 5px; }
+.flow-step-ttl  { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.flow-step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── INTERVIEW HISTORY ── */
+.ih-wrap    { margin-bottom: 24px; }
+.ih-stats   { display: flex; gap: 12px; margin-bottom: 16px; }
+.ih-stat    { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rsm); padding: 14px 16px; }
+.ih-stat-val{ font-size: 28px; font-weight: 700; color: var(--primary); line-height: 1; margin-bottom: 4px; }
+.ih-stat-lbl{ font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+.ih-list    { display: flex; flex-direction: column; gap: 8px; }
+.ih-row     { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rsm); padding: 12px 16px; cursor: pointer; transition: border-color var(--tr); }
+.ih-row:hover, .ih-row.active { border-color: var(--primary); }
+.ih-row.active { background: var(--plight); }
+.ih-meta    { flex: 1; }
+.ih-date    { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.ih-goal    { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
+.ih-badge   { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; padding: 3px 9px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
+.ih-done    { background: #dcfce7; color: #15803d; } [data-theme="dark"] .ih-done { background:#14532d; color:#86efac; }
+.ih-nodone  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+.ih-empty   { font-size: 13px; color: var(--muted); font-style: italic; padding: 12px 0; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .grid2     { grid-template-columns: 1fr; }
+  .card, .rc { padding: 18px; }
+  .chat-scroll, .res-scroll { padding: 14px; }
+  .res-scroll { padding-bottom: 60px; }
+  .res-ttl    { font-size: 20px; }
+  .input-bar  { padding: 11px 14px 13px; }
+  .topbar     { padding: 11px 14px; }
+  #page-setup { padding: 24px 14px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div class="ov" id="overlay">
+  <div class="ov-card">
+    <div class="spinner"></div>
+    <div class="ov-ttl" id="ol-ttl">Thinking…</div>
+    <div class="ov-sub" id="ol-sub">Powered by OpenAI</div>
+  </div>
+</div>
+
+<!-- RESEARCHER PASSCODE MODAL -->
+<div class="ov" id="researcher-ov" onclick="if(event.target===this)closeResearcherModal()">
+  <div class="ov-card" style="max-width:300px;text-align:left;">
+    <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:var(--text);">Access</div>
+    <input type="password" class="inp" id="researcher-pin" placeholder="Passcode"
+      autocomplete="off" style="margin-bottom:6px;"
+      onkeydown="if(event.key==='Enter')submitResearcherPin()">
+    <div id="researcher-err" style="display:none;font-size:11px;color:var(--danger);margin-bottom:8px;">Incorrect passcode</div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn btn-s" style="flex:1;" onclick="closeResearcherModal()">Cancel</button>
+      <button class="btn btn-p" style="flex:1;font-size:13px;padding:10px 0;" onclick="submitResearcherPin()">Enter</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ PAGE 1 — SETUP ═══════ -->
+<div class="page active" id="page-setup">
+  <div class="topbar">
+    <div class="hdr-icons">
+      <button class="ic-btn" id="setup-lang-btn" onclick="cycleLang()" title="Switch language">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </button>
+      <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-setup"></span></button>
+    </div>
+    <div class="tb-center">
+      <div class="tb-brand" onclick="onBrandClick()" style="cursor:default;user-select:none;">Skoon</div>
+      <div class="hdr-sub tagline-lbl">AI-Powered User Interview</div>
+    </div>
+  </div>
+  <div class="setup-wrap">
+
+    <!-- Context card -->
+    <div class="card">
+      <div class="card-lbl"><span class="card-dot"></span><span id="s-ctx-lbl">INTERVIEW CONTEXT</span></div>
+
+      <div class="fg">
+        <div class="fl"><span id="s-biz-lbl">Business Name</span></div>
+        <input class="inp" id="inp-biz" value="Skoon" readonly>
+      </div>
+
+      <div class="fg">
+        <div class="fl"><span id="s-goal-lbl">Interview Goal</span></div>
+        <textarea class="inp" id="inp-goal" rows="3"></textarea>
+      </div>
+
+      <div class="fg">
+        <div class="fl"><span id="s-aud-lbl">Target Audience</span></div>
+        <textarea class="inp" id="inp-aud" rows="3"></textarea>
+      </div>
+
+      <div class="fg">
+        <div class="hint" id="s-nq-note" style="font-size:12.5px;color:var(--muted);padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);">This interview contains 10 questions.</div>
+      </div>
+    </div>
+
+    <!-- API key card -->
+    <div class="card">
+      <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API SETTINGS</span></div>
+
+      <div class="fg">
+        <div class="fl"><span id="s-key-lbl">OpenAI API Key</span></div>
+        <div class="key-wrap">
+          <input type="password" class="inp" id="inp-key" placeholder="sk-…" autocomplete="off">
+          <button class="key-eye" onclick="toggleKeyVis()" title="Show / hide">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div class="key-ok" id="key-ok">✓ <span id="s-key-saved">API key saved</span></div>
+        <div class="hint" id="s-key-hint">Stored locally. Never sent anywhere except OpenAI.</div>
+        <div class="errtxt" id="key-err"></div>
+        <div class="key-acts">
+          <button class="btn btn-s" onclick="clearKey()" id="s-clear-btn">Clear Key</button>
+          <button class="btn btn-s" onclick="saveKey()"  id="s-save-btn">Save Key</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="start-err" id="start-err"></div>
+    <button class="btn btn-p" onclick="startInterview()">
+      <span id="s-start-txt">Start Interview</span>
+    </button>
+
+  </div>
+</div>
+
+<!-- ═══════ PAGE 2 — CHAT ═══════ -->
+<div class="page" id="page-chat">
+  <div class="topbar">
+    <div class="hdr-icons">
+      <button class="ic-btn" id="chat-lang-btn" onclick="cycleLang()" title="Switch language">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </button>
+      <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-chat"></span></button>
+    </div>
+    <div class="tb-center">
+      <div class="tb-brand">Skoon</div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-wrap">
+        <div class="prog-lbl" id="prog-lbl"></div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-scroll">
+    <div class="msgs" id="msgs"></div>
+  </div>
+
+  <div class="input-bar">
+    <div class="inp-inner">
+      <textarea class="chat-ta" id="chat-ta" rows="2"
+        placeholder="Type your answer…"
+        onkeydown="onKey(event)"
+        oninput="growTa(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="submitAnswer()" disabled>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="end-row" id="end-row" style="display:none;">
+    <button class="end-btn" onclick="onEndClick()"><span id="s-end-txt">End Interview</span></button>
+  </div>
+</div>
+
+<!-- ═══════ PAGE 3 — RESULTS ═══════ -->
+<div class="page" id="page-results">
+  <div class="topbar">
+    <div class="hdr-icons">
+      <button class="ic-btn" id="res-lang-btn" onclick="cycleLang()" title="Switch language">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </button>
+      <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-res"></span></button>
+    </div>
+    <div class="tb-center">
+      <div class="tb-brand">Skoon</div>
+      <div class="hdr-sub">Research Insights</div>
+    </div>
+  </div>
+
+  <div class="res-scroll">
+    <div class="res-inner">
+      <div id="research-mode-label" style="display:none;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--primary);margin-bottom:6px;">Research Mode</div>
+      <div id="completed-count-label" style="display:none;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">Completed Interviews: <span id="completed-count">0</span></div>
+      <div class="res-ttl" id="res-ttl">Research Insights</div>
+      <div class="res-sub" id="res-sub">Based on your interview session</div>
+      <div id="res-history"></div>
+      <div id="res-content"></div>
+      <div class="res-nav-row">
+        <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
+        <button class="btn btn-s" onclick="goHome()"><span class="home-btn-lbl">Home</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ PAGE 4 — DONE ═══════ -->
+<div class="page" id="page-done">
+  <div class="done-wrap">
+    <div class="done-title" id="done-title"></div>
+    <div class="done-body" id="done-body"></div>
+    <button class="done-close" id="done-close-btn" onclick="window.close()"></button>
+  </div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────
+const S = {
+  lang: 'en', theme: 'light',
+  apiKey: '', numQ: 10, goal: '', audience: '', biz: 'Skoon',
+  msgs: [], mainAsked: 0, followUps: 0, maxFollowUps: 0,
+  waitingForAnswer: false, done: false,
+  isResearcher: localStorage.getItem('researcher_access') === 'true',
+};
+
+// ─── TRANSLATIONS ─────────────────────────────────────────
+const TR = {
+  en: {
+    tagline:   'AI-Powered User Interview',
+    ctxLbl:    'INTERVIEW CONTEXT',
+    bizLbl:    'Business Name',
+    goalLbl:   'Interview Goal',
+    audLbl:    'Target Audience',
+    goalPre:   'Understand user behavior while searching for rental property and how it influences their decision-making.',
+    audPre:    'People searching for rental property in Saudi Arabia who face difficulty comparing options and choosing the most suitable one.',
+    nqNote:    'This interview contains 10 questions.',
+    apiLbl:    'API SETTINGS',
+    keyLbl:    'OpenAI API Key',
+    keySaved:  'API key saved',
+    keyHint:   'Stored locally. Never sent anywhere except OpenAI.',
+    clearBtn:  'Clear Key',
+    saveBtn:   'Save Key',
+    startBtn:  'Start Interview',
+    endBtn:    'End Interview',
+    newBtn:    'New Interview',
+    progLbl:   (n, t) => `${n} of ${t}`,
+    taPh:      'Type your answer…',
+    olTtl:     'Thinking…',
+    olSub:     'Powered by OpenAI',
+    olAnalyze: 'Analyzing responses…',
+    resTitle:  'Research Insights',
+    resSub:    'Based on your interview session',
+    summary:   'Summary',
+    themes:    'Key Themes',
+    quotes:    'User Quotes',
+    patterns:  'Patterns',
+    insights:  'Key Insights',
+    recs:      'Recommendations',
+    personas:  'User Personas',
+    empathy:   'Empathy Map',
+    journey:   'User Journey Map',
+    impactEff: 'Impact vs Effort',
+    userFlow:  'User Flow',
+    emThinks:  '🧠 Thinks', emFeels: '❤️ Feels', emSays: '💬 Says', emDoes: '⚡ Does',
+    sentPos:   '😊 Positive', sentNeu: '😐 Neutral', sentNeg: '😟 Negative',
+    pAge:      'Age', pGoal: 'Goal', pPain: 'Pain', pMotivation: 'Motivation',
+    ieAction:  'Action', ieImpact: 'Impact', ieEffort: 'Effort', iePriority: 'Priority',
+    noData:    'Run an interview to generate data',
+    ihTotal:   'Interviews', ihCompleted: 'Completed', ihAnalyzed: 'Analyzed', ihDone: 'Done',
+    ihEmpty:   'No saved interviews yet.',
+    homeBtn:   'Home',
+    errNoKey:  'Please enter your OpenAI API key to continue.',
+    errNoConv: 'Please answer at least a couple of questions first.',
+    errAi:     'Something went wrong. Please try again.',
+    errAnalysis: 'Analysis failed. Please try again.',
+  },
+  ar: {
+    tagline:   'مقابلة مستخدم مدعومة بالذكاء الاصطناعي',
+    ctxLbl:    'سياق المقابلة',
+    bizLbl:    'اسم المنتج',
+    goalLbl:   'هدف المقابلة',
+    audLbl:    'الجمهور المستهدف',
+    goalPre:   'فهم سلوك المستخدم أثناء البحث عن عقار للإيجار وتأثير ذلك على قراراته',
+    audPre:    'أشخاص يبحثون عن عقارات للإيجار في السعودية ويواجهون صعوبة في مقارنة الخيارات واختيار الأنسب',
+    nqNote:    'تحتوي هذه المقابلة على 10 أسئلة.',
+    apiLbl:    'إعدادات API',
+    keyLbl:    'مفتاح OpenAI API',
+    keySaved:  'تم حفظ المفتاح',
+    keyHint:   'يُحفظ محليًا في متصفحك ولا يُرسل إلا إلى OpenAI.',
+    clearBtn:  'حذف المفتاح',
+    saveBtn:   'حفظ المفتاح',
+    startBtn:  'بدء المقابلة',
+    endBtn:    'إنهاء المقابلة',
+    newBtn:    'مقابلة جديدة',
+    progLbl:   (n, t) => `${n} من ${t}`,
+    taPh:      'اكتب إجابتك هنا…',
+    olTtl:     'جارٍ التفكير…',
+    olSub:     'مدعوم بـ OpenAI',
+    olAnalyze: 'جاري تحليل الإجابات…',
+    resTitle:  'نتائج البحث',
+    resSub:    'بناءً على جلسة المقابلة',
+    summary:   'الملخص',
+    themes:    'المواضيع الرئيسية',
+    quotes:    'اقتباسات المستخدم',
+    patterns:  'الأنماط',
+    insights:  'أبرز الاستنتاجات',
+    recs:      'التوصيات',
+    personas:  'شخصيات المستخدمين',
+    empathy:   'خريطة التعاطف',
+    journey:   'رحلة المستخدم',
+    impactEff: 'التأثير مقابل الجهد',
+    userFlow:  'تدفق المستخدم',
+    emThinks:  '🧠 يفكر', emFeels: '❤️ يشعر', emSays: '💬 يقول', emDoes: '⚡ يفعل',
+    sentPos:   '😊 إيجابي', sentNeu: '😐 محايد', sentNeg: '😟 سلبي',
+    pAge:      'العمر', pGoal: 'الهدف', pPain: 'نقطة الألم', pMotivation: 'الدافع',
+    ieAction:  'الإجراء', ieImpact: 'التأثير', ieEffort: 'الجهد', iePriority: 'الأولوية',
+    noData:    'أجرِ مقابلة لتوليد البيانات',
+    ihTotal:   'المقابلات', ihCompleted: 'مكتملة', ihAnalyzed: 'محلّلة', ihDone: 'مكتملة',
+    ihEmpty:   'لا توجد مقابلات محفوظة بعد.',
+    homeBtn:   'الرئيسية',
+    errNoKey:  'من فضلك أدخل مفتاح OpenAI API لتقدر تكمل.',
+    errNoConv: 'جاوب على سؤال أو أكثر أولاً.',
+    errAi:     'صار خطأ، جرّب مرة ثانية.',
+    errAnalysis: 'ما قدرنا نحلل، جرّب مرة ثانية.',
+  },
+};
+const t = (k, ...a) => { const v = TR[S.lang][k]; return typeof v === 'function' ? v(...a) : (v ?? k); };
+
+// ─── INIT ─────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Restore API key
+  const savedKey = localStorage.getItem('openai_api_key');
+  if (savedKey) {
+    document.getElementById('inp-key').value = savedKey;
+    S.apiKey = savedKey;
+    showKeyOk(true);
+  }
+  // Restore theme
+  applyTheme(localStorage.getItem('app_theme') || 'light');
+  // Restore language (triggers renderTR which sets prefills)
+  applyLang(localStorage.getItem('app_language') || 'en');
+
+  // Mark goal/aud as user-edited if they type
+  ['inp-goal', 'inp-aud'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => { el.dataset.edited = '1'; });
+  });
+
+  // Restore in-progress session if one exists
+  restoreSession();
+});
+
+// ─── THEME ────────────────────────────────────────────────
+// Heroicons: sun (light mode) and moon (dark mode)
+const ICON_SUN  = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+const ICON_MOON = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+
+function toggleTheme() { applyTheme(S.theme === 'light' ? 'dark' : 'light'); }
+function applyTheme(th) {
+  S.theme = th;
+  document.documentElement.setAttribute('data-theme', th);
+  localStorage.setItem('app_theme', th);
+  const ico = th === 'dark' ? ICON_SUN : ICON_MOON;
+  ['theme-icon-setup', 'theme-icon-chat', 'theme-icon-res'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = ico;
+  });
+}
+
+// ─── LANGUAGE ─────────────────────────────────────────────
+function cycleLang() { applyLang(S.lang === 'en' ? 'ar' : 'en'); }
+function applyLang(lang) {
+  S.lang = lang;
+  localStorage.setItem('app_language', lang);
+  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  // If interview is active, update the system prompt so AI switches language immediately
+  if (S.msgs.length > 0 && S.msgs[0].role === 'system') {
+    S.msgs[0].content = buildSys();
+  }
+  // Re-translate the intro bubble if it's visible
+  const introBbl = document.getElementById('intro-bbl');
+  if (introBbl) {
+    const newIntro = lang === 'ar'
+      ? 'مرحباً 👋 أنا مساعدك الذكي لمقابلات تجربة المستخدم. هدفي أفهم تجربتك في البحث عن عقار للإيجار. راح نبدأ بأسئلة بسيطة إذا تكرمت 👇'
+      : 'Hi 👋 I\'m an AI UX research interviewer. I\'m here to understand your experience searching for rental property. I\'ll start with a few simple questions if you have a moment 👇';
+    introBbl.textContent = newIntro;
+    if (S.msgs[1] && S.msgs[1].role === 'assistant') S.msgs[1].content = newIntro;
+  }
+  renderTR();
+}
+
+function renderTR() {
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  const ph  = (id, v) => { const e = document.getElementById(id); if (e) e.placeholder = v; };
+
+  document.querySelectorAll('.tagline-lbl').forEach(el => el.textContent = t('tagline'));
+  set('s-ctx-lbl',  t('ctxLbl'));
+  set('s-biz-lbl',  t('bizLbl'));
+  set('s-goal-lbl', t('goalLbl'));
+  set('s-aud-lbl',  t('audLbl'));
+  set('s-nq-note',  t('nqNote'));
+  set('s-api-lbl',  t('apiLbl'));
+  set('s-key-lbl',  t('keyLbl'));
+  set('s-key-saved',t('keySaved'));
+  set('s-key-hint', t('keyHint'));
+  set('s-clear-btn',t('clearBtn'));
+  set('s-save-btn', t('saveBtn'));
+  set('s-start-txt',t('startBtn'));
+  set('s-end-txt',  t('endBtn'));
+  set('s-new-btn',  t('newBtn'));
+  document.querySelectorAll('.home-btn-lbl').forEach(el => el.textContent = t('homeBtn'));
+  set('res-ttl',    t('resTitle'));
+  set('res-sub',    t('resSub'));
+  ph('chat-ta',     t('taPh'));
+
+  // Prefill goal / audience — only if user hasn't typed custom content
+  const gEl = document.getElementById('inp-goal');
+  const aEl = document.getElementById('inp-aud');
+  if (gEl) {
+    const isDefault = !gEl.dataset.edited || gEl.value === TR.en.goalPre || gEl.value === TR.ar.goalPre || gEl.value === '';
+    if (isDefault) gEl.value = t('goalPre');
+  }
+  if (aEl) {
+    const isDefault = !aEl.dataset.edited || aEl.value === TR.en.audPre || aEl.value === TR.ar.audPre || aEl.value === '';
+    if (isDefault) aEl.value = t('audPre');
+  }
+
+  if (S.mainAsked > 0) renderProg();
+}
+
+// ─── API KEY ──────────────────────────────────────────────
+function toggleKeyVis() {
+  const el = document.getElementById('inp-key');
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+function saveKey() {
+  const k = document.getElementById('inp-key').value.trim();
+  if (!k) { showE('key-err', t('errNoKey')); return; }
+  localStorage.setItem('openai_api_key', k);
+  S.apiKey = k; showKeyOk(true); hideE('key-err');
+}
+function clearKey() {
+  localStorage.removeItem('openai_api_key');
+  S.apiKey = '';
+  document.getElementById('inp-key').value = '';
+  showKeyOk(false);
+}
+function showKeyOk(y) { document.getElementById('key-ok').style.display = y ? 'flex' : 'none'; }
+
+// ─── ERRORS ───────────────────────────────────────────────
+function showE(id, msg) { const e = document.getElementById(id); if (e) { e.textContent = msg; e.style.display = 'block'; } }
+function hideE(id)      { const e = document.getElementById(id); if (e) e.style.display = 'none'; }
+
+// ─── NAV ──────────────────────────────────────────────────
+function goTo(pid) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pid).classList.add('active');
+}
+
+// ─── START INTERVIEW ──────────────────────────────────────
+async function startInterview() {
+  hideE('start-err');
+  // Load any already-saved key into state (no blocking check here)
+  S.apiKey = document.getElementById('inp-key').value.trim()
+           || localStorage.getItem('openai_api_key')
+           || '';
+  S.numQ     = 10;
+  S.goal     = document.getElementById('inp-goal').value.trim() || t('goalPre');
+  S.audience = document.getElementById('inp-aud').value.trim()  || t('audPre');
+  S.biz      = 'Skoon';
+
+  S.msgs = []; S.mainAsked = 0; S.followUps = 0;
+  S.waitingForAnswer = false; S.done = false;
+  S._iid = Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+
+  S.msgs.push({ role: 'system', content: buildSys() });
+
+  goTo('page-chat');
+  document.getElementById('msgs').innerHTML = '';
+  document.getElementById('end-row').style.display = 'block';
+  document.getElementById('prog-lbl').textContent = '';
+  document.getElementById('prog-fill').style.width = '0%';
+
+  await sendIntro();
+}
+
+// ─── SYSTEM PROMPT ────────────────────────────────────────
+function buildSys() {
+  const ar = S.lang === 'ar';
+  if (ar) return `أنت صديق محادث ودود تتحدث مع شخص عن تجربته الشخصية في البحث عن عقار للإيجار في السعودية.
+هدفك: تفهم تجربته هو — مشاعره، خطواته، ومشاكله — بشكل طبيعي وبدون رسمية.
+
+سياق المحادثة:
+- موضوع النقاش: ${S.goal}
+- الشخص الذي تتحدث معه: ${S.audience}
+- عدد الأسئلة: ${S.numQ}
+
+المواضيع التي تريد تفهمها — اطرحها بسلاسة وبحسب سياق المحادثة:
+1. كيف يبحث حالياً عن عقار (وين يدور؟ وش يستخدم؟)
+2. أكثر شيء يضايقه في تجربة البحث
+3. كيف يقارن بين الخيارات ويختار
+4. وش الذي يخليه يقرر يتواصل أو يأجر
+5. رأيه في الصور والأوصاف — قد يثق فيها؟
+6. تجربته مع التواصل مع الملاك أو الوسطاء
+7. لو كان بيده يغير شيء في التجربة — وش كان يغير؟
+8. كيف يحس أثناء رحلة البحث — هادي؟ متوتر؟ محتار؟
+
+قواعد صارمة:
+- اكتب بعربية خليجية بسيطة ودافئة مناسبة للسعودية ودول الخليج. لا تستخدم اللهجة المصرية أو أي تعابير غير خليجية.
+- اسم المنتج "Skoon" بالإنجليزية دائماً ولا يُترجم.
+- سؤال واحد فقط في كل رسالة — لا تجمع أسئلة.
+- كل سؤال مفتوح يحكي فيه الشخص — لا نعم/لا.
+- جملة واحدة قصيرة، لا تتجاوز 12 كلمة.
+- ابدأ بـ: "وش"، "كيف"، "ليش"، "متى"، "وين" — لا تبدأ بـ "هل يمكنك" أو "حدثني عن".
+- ابنِ كل سؤال على اللي قاله للتو — لا تتجاهل كلامه.
+- غطِّ مواضيع جديدة لم تُطرح بعد — لا تكرر.
+- لا مديح، لا تعليق على إجاباته — فقط سؤالك التالي.`;
+
+  return `You are a friendly, curious conversation partner talking with a real person about their personal experience searching for a rental property in Saudi Arabia.
+Your goal is to deeply understand their experience — their feelings, their steps, their struggles — in a warm and natural way, not a formal interview.
+
+Context:
+- Topic: ${S.goal}
+- Who you're talking with: ${S.audience}
+- Number of questions: ${S.numQ}
+
+Topics to explore naturally through the conversation:
+1. How they currently search for a rental (where do they go? what do they use?)
+2. What frustrates them most during the search
+3. How they compare options and make choices
+4. What makes them decide to reach out or commit
+5. How much they trust photos and descriptions online
+6. Their experience communicating with landlords or agents
+7. What they wish was different about the whole experience
+8. How they feel emotionally during the search — calm, anxious, overwhelmed?
+
+Strict rules:
+- Write every word in English ONLY. Product name is always "Skoon" — never translate.
+- ONE question per message — never combine two questions.
+- Open-ended only — never yes/no or closed questions.
+- ONE short sentence, under 15 words.
+- Start with: "What", "How", "Why", "When", "Where" — NEVER start with "walk me through", "could you describe", "tell me about", "elaborate".
+- Each question MUST connect directly to what the person just said.
+- Cover new topics not yet explored — never repeat a question.
+- No praise, no commentary on their answers — just your next question.`;
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────
+function renderProg() {
+  const cur = Math.min(S.mainAsked, S.numQ);
+  document.getElementById('prog-lbl').textContent  = t('progLbl', cur, S.numQ);
+  document.getElementById('prog-fill').style.width = (cur / S.numQ * 100) + '%';
+}
+
+// ─── KEY PROMPT ───────────────────────────────────────────
+function promptForKey() {
+  return new Promise(resolve => {
+    // Focus the key field on setup page if visible, otherwise use browser prompt
+    const keyEl = document.getElementById('inp-key');
+    if (keyEl) {
+      // Scroll setup card into view if we're still on setup
+      keyEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      keyEl.focus();
+      showE('key-err', t('errNoKey'));
+    }
+
+    // Show a native prompt as fallback so the interview doesn't silently fail
+    const entered = (window.prompt(t('errNoKey')) || '').trim();
+    if (!entered) { resolve(false); return; }
+
+    S.apiKey = entered;
+    localStorage.setItem('openai_api_key', entered);
+    if (keyEl) { keyEl.value = entered; showKeyOk(true); hideE('key-err'); }
+    resolve(true);
+  });
+}
+
+// ─── OPENAI API ───────────────────────────────────────────
+async function callAI(messages, temp = 0.85, maxTok = 700) {
+  // Resolve key at call time: localStorage first, then prompt
+  if (!S.apiKey) S.apiKey = localStorage.getItem('openai_api_key') || '';
+  if (!S.apiKey) {
+    const entered = await promptForKey();
+    if (!entered) throw new Error(t('errNoKey'));
+  }
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${S.apiKey}` },
+    body: JSON.stringify({ model: 'gpt-4o', messages, temperature: temp, max_tokens: maxTok }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return data.choices[0].message.content.trim();
+}
+
+// ─── CHAT HELPERS ─────────────────────────────────────────
+function addMsg(role, content) {
+  const wrap  = document.getElementById('msgs');
+  const isAI  = role === 'assistant';
+  const time  = new Date().toLocaleTimeString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+  const div   = document.createElement('div');
+  div.className = `msg ${isAI ? 'ai' : 'usr'}`;
+  const aiAvatar = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`;
+  const usrAvatar = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+  div.innerHTML = `
+    <div class="av">${isAI ? aiAvatar : usrAvatar}</div>
+    <div class="msg-inner">
+      <div class="bbl">${esc(content)}</div>
+      <div class="msg-t">${time}</div>
+    </div>`;
+  wrap.appendChild(div);
+  scrollBtm();
+}
+
+function showTyping() {
+  const wrap = document.getElementById('msgs');
+  const div  = document.createElement('div');
+  div.className = 'typing-w'; div.id = 'typing-ind';
+  div.innerHTML = `
+    <div class="typing-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+    <div class="typing-bbl"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  wrap.appendChild(div);
+  scrollBtm();
+}
+function rmTyping()  { const e = document.getElementById('typing-ind'); if (e) e.remove(); }
+function scrollBtm() { const s = document.querySelector('.chat-scroll'); if (s) s.scrollTop = s.scrollHeight; }
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
+}
+function growTa(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 140) + 'px'; }
+function setSend(d) { document.getElementById('send-btn').disabled = d; }
+function onKey(e)   { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitAnswer(); } }
+
+// ─── INTRO MESSAGE ────────────────────────────────────────
+async function sendIntro() {
+  S.waitingForAnswer = false; setSend(true); showTyping();
+  try {
+    const ar = S.lang === 'ar';
+    const introText = ar
+      ? 'مرحباً 👋 أنا مساعدك الذكي لمقابلات تجربة المستخدم. هدفي أفهم تجربتك في البحث عن عقار للإيجار. راح نبدأ بأسئلة بسيطة إذا تكرمت 👇'
+      : 'Hi 👋 I\'m an AI UX research interviewer. I\'m here to understand your experience searching for rental property. I\'ll start with a few simple questions if you have a moment 👇';
+    rmTyping();
+    addMsg('assistant', introText);
+    // Tag the intro bubble so we can re-translate it on language switch
+    const introBbl = document.querySelector('#msgs .msg:first-child .bbl');
+    if (introBbl) introBbl.id = 'intro-bbl';
+    S.msgs.push({ role: 'assistant', content: introText });
+    S.waitingForAnswer = true; setSend(false);
+    document.getElementById('chat-ta').focus();
+  } catch (err) {
+    rmTyping();
+    addMsg('assistant', `⚠️ ${t('errAi')}`);
+    setSend(false);
+  }
+}
+
+// ─── ASK QUESTION ─────────────────────────────────────────
+async function askQuestion() {
+  if (S.done) return;
+  S.waitingForAnswer = false; setSend(true); showTyping();
+
+  try {
+    const isFirst    = S.mainAsked === 0;   // intro done, Q1 not yet asked
+    const isFollowUp = S.followUps > 0;
+    const ar         = S.lang === 'ar';
+    let inst;
+
+    if (isFirst) {
+      S.mainAsked++;
+      renderProg();
+      inst = ar
+        ? `اطرح السؤال ${S.mainAsked} من ${S.numQ}. ابدأ من محور لم يُطرح بعد. جملة واحدة قصيرة فقط. بلا تحية. الرد بالعربية فقط.`
+        : `Ask question ${S.mainAsked} of ${S.numQ}. Start with an unexplored agenda area. One short sentence only. No greeting. English only.`;
+    } else if (isFollowUp) {
+      inst = ar
+        ? `بناءً على الإجابة الأخيرة، اطرح سؤالاً متابعاً واحداً قصيراً للتعمق. الرد بالعربية فقط.`
+        : `Based on the last answer, ask one short targeted follow-up question to go deeper. English only.`;
+    } else {
+      S.mainAsked++;
+      renderProg();
+      inst = ar
+        ? `اطرح السؤال ${S.mainAsked} من ${S.numQ}. بنِه على آخر إجابة وانتقل لمحور جديد لم يُغطَّ. جملة واحدة قصيرة. الرد بالعربية فقط.`
+        : `Ask question ${S.mainAsked} of ${S.numQ}. Build on the last answer and move to a new uncovered agenda area. One short sentence. English only.`;
+    }
+
+    const q = await callAI([...S.msgs, { role: 'user', content: inst }]);
+    rmTyping();
+    addMsg('assistant', q);
+    S.msgs.push({ role: 'assistant', content: q });
+    S.waitingForAnswer = true; setSend(false);
+    saveSession();
+    document.getElementById('chat-ta').focus();
+
+  } catch (err) {
+    rmTyping();
+    addMsg('assistant', `⚠️ ${t('errAi')}`);
+    setSend(false);
+  }
+}
+
+// ─── SUBMIT ANSWER ────────────────────────────────────────
+async function submitAnswer() {
+  const ta  = document.getElementById('chat-ta');
+  const ans = ta.value.trim();
+  if (!ans || !S.waitingForAnswer) return;
+
+  addMsg('user', ans);
+  S.msgs.push({ role: 'user', content: ans });
+  ta.value = ''; ta.style.height = 'auto';
+  S.waitingForAnswer = false;
+  saveSession();
+
+  // Intro phase — mainAsked is still 0, go straight to Q1
+  if (S.mainAsked === 0) { S.followUps = 0; await askQuestion(); return; }
+
+  const canFU   = S.followUps < S.maxFollowUps;
+  const allDone = S.mainAsked >= S.numQ;
+
+  if (!allDone && canFU)       { S.followUps++;               await askQuestion(); }
+  else if (!allDone)           { S.followUps = 0;             await askQuestion(); }
+  else if (canFU)              { S.followUps++;               await askQuestion(); }
+  else                         { concludeInterview(); }
+}
+
+function finishMsg() {
+  const ar = S.lang === 'ar';
+  const title     = ar ? 'خلصنا ✨' : "We're finished ✨";
+  const body      = ar
+    ? 'مرّة نقدر لك وقتك ومشاركتك معنا 💙\nإجاباتك فعلًا فرقت معنا وساعدتنا نفهم تجربتك بشكل أوضح'
+    : 'We truly appreciate you taking the time to share your experience with us 💙\nYour answers really helped us understand things better';
+  const finishLbl = ar ? 'إنهاء' : 'Finish';
+
+  document.getElementById('done-title').textContent     = title;
+  document.getElementById('done-body').textContent      = body;
+  document.getElementById('done-close-btn').textContent = finishLbl;
+
+  saveInterview(null);
+  goTo('page-done');
+}
+
+// ─── INTERVIEW STORAGE ────────────────────────────────────
+function getAllInterviews() {
+  try { return JSON.parse(localStorage.getItem('skoon_interviews') || '[]'); }
+  catch(_) { return []; }
+}
+
+function extractQA() {
+  const msgs = S.msgs.filter(m => m.role !== 'system');
+  const qa = [];
+  for (let i = 0; i < msgs.length - 1; i++) {
+    if (msgs[i].role === 'assistant' && msgs[i+1] && msgs[i+1].role === 'user') {
+      qa.push({ q: msgs[i].content, a: msgs[i+1].content });
+      i++;
+    }
+  }
+  return qa;
+}
+
+function saveInterview(analysis) {
+  const all = getAllInterviews();
+  if (S._iid && all.find(iv => iv.id === S._iid)) return; // already saved
+  const record = {
+    id:        S._iid || Date.now().toString(36),
+    date:      new Date().toISOString(),
+    lang:      S.lang,
+    completed: true,
+    goal:      S.goal || '',
+    audience:  S.audience || '',
+    answers:   extractQA(),
+    analysis:  analysis || null,
+  };
+  all.push(record);
+  localStorage.setItem('skoon_interviews', JSON.stringify(all));
+}
+
+function renderHistory(activeId) {
+  const el = document.getElementById('res-history');
+  if (!el || !S.isResearcher) return;
+  const all = getAllInterviews().slice().reverse(); // newest first
+  const total     = all.length;
+  const completed = all.filter(iv => iv.completed).length;
+  const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
+  el.innerHTML = `
+    <div class="ih-wrap">
+      <div class="ih-stats">
+        <div class="ih-stat"><div class="ih-stat-val">${total}</div><div class="ih-stat-lbl">${t('ihTotal')}</div></div>
+        <div class="ih-stat"><div class="ih-stat-val">${completed}</div><div class="ih-stat-lbl">${t('ihCompleted')}</div></div>
+      </div>
+      <div class="ih-list">${all.length ? all.map(iv => `
+        <div class="ih-row${activeId===iv.id?' active':''}" onclick="loadInterviewById('${iv.id}')">
+          <div class="ih-meta">
+            <div class="ih-date">${fmt(iv.date)}</div>
+            <div class="ih-goal">${esc(iv.goal||'—')}</div>
+          </div>
+          <span class="ih-badge ${iv.analysis?'ih-done':'ih-nodone'}">${iv.analysis?t('ihAnalyzed'):t('ihDone')}</span>
+        </div>`).join('') : `<div class="ih-empty">${t('ihEmpty')}</div>`}
+      </div>
+    </div>`;
+}
+
+function loadInterviewById(id) {
+  const all = getAllInterviews();
+  const iv  = all.find(x => x.id === id);
+  if (!iv) return;
+  renderAnalysis(iv.analysis || {});
+  renderHistory(id);
+}
+
+// ─── END / ANALYZE ────────────────────────────────────────
+function concludeInterview() {
+  S.done = true;
+  clearSession();
+  if (S.isResearcher) {
+    analyze();
+  } else {
+    finishMsg();
+  }
+}
+
+function onEndClick() {
+  if (S.msgs.filter(m => m.role === 'user').length < 1) return;
+  concludeInterview();
+}
+
+async function analyze() {
+  showOv(t('olAnalyze'), t('olSub'));
+  try {
+    const convo = S.msgs
+      .filter(m => m.role !== 'system')
+      .map(m => `${m.role === 'assistant' ? 'Researcher' : 'Participant'}: ${m.content}`)
+      .join('\n\n');
+
+    const sysMsg = S.lang === 'ar'
+      ? 'أنت محلل UX خبير. حلّل محادثة المقابلة وأنتج JSON صحيح فقط. قواعد صارمة: جميع القيم باللغة العربية حصراً. اسم المنتج "Skoon" بالإنجليزية فقط ولا يُترجم أبداً.'
+      : 'You are a senior UX research analyst. Analyze the interview and output valid JSON only. Strict rules: all values in English only. Product name always "Skoon" — never translated.';
+
+    const schema = JSON.stringify({
+      summary: "2-3 sentence overview",
+      insights: ["insight 1","insight 2","insight 3"],
+      quotes: ["verbatim quote 1","verbatim quote 2"],
+      patterns: ["pattern 1","pattern 2","pattern 3"],
+      recommendations: ["recommendation 1","recommendation 2","recommendation 3"],
+      personas: [{ name:"Persona Name", age:"age range", goal:"main goal", pain:"main pain point", motivation:"key motivation" }],
+      empathy: { thinks:["thought 1"], feels:["feeling 1"], says:["says 1"], does:["does 1"] },
+      journey: [{ phase:"Phase", action:"what user does", emotion:"emotional state", sentiment:"positive|neutral|negative" }],
+      impactEffort: [{ action:"action item", impact:"High|Medium|Low", effort:"High|Medium|Low", priority:"Do First|Schedule|Delegate|Drop" }],
+      userFlow: [{ step:"Step name", description:"brief description" }]
+    });
+    const prompt = S.lang === 'ar'
+      ? `حلّل المحادثة التالية وأنتج JSON بهذا الهيكل بالضبط. لا تضف أي نص خارج JSON:\n${schema}\n\nالمحادثة:\n${convo}\n\nتعليمات لكل حقل:\n- summary: ملخص موجز للنتائج الرئيسية\n- insights: أبرز الاستنتاجات\n- quotes: اقتباسات حرفية من كلام المشارك فقط\n- patterns: الأنماط والسلوكيات المتكررة\n- recommendations: توصيات قابلة للتنفيذ\n- personas: شخصية مستخدم واحدة أو أكثر مستخلصة من المقابلة\n- empathy: خريطة تعاطف (thinks/feels/says/does)\n- journey: مراحل رحلة المستخدم مع sentiment إما positive أو neutral أو negative\n- impactEffort: توصيات مصنّفة حسب التأثير والجهد\n- userFlow: خطوات تدفق المستخدم المعتاد\nجميع القيم نصوص بالعربية الخليجية. "Skoon" بالإنجليزية فقط. sentiment و impact و effort و priority بالإنجليزية دائماً.`
+      : `Analyze the following interview and output ONLY valid JSON with this exact structure — no text outside the JSON:\n${schema}\n\nConversation:\n${convo}\n\nField instructions:\n- summary: 2-3 sentence overview of key findings\n- insights: most important takeaways\n- quotes: verbatim participant quotes only\n- patterns: recurring behaviours or attitudes\n- recommendations: concrete product team actions\n- personas: 1-2 user personas derived from the interview\n- empathy: empathy map with thinks/feels/says/does arrays\n- journey: user journey phases with phase/action/emotion/sentiment (sentiment must be positive, neutral, or negative)\n- impactEffort: recommendations ranked by impact/effort with priority (Do First/Schedule/Delegate/Drop)\n- userFlow: sequential steps the user takes in their current flow\nAll values in English only. Product name always "Skoon".`;
+
+    const raw = await callAI(
+      [{ role: 'system', content: sysMsg }, { role: 'user', content: prompt }],
+      0.2, 3000
+    );
+
+    let data;
+    try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
+    catch (_) { data = { summary: raw, insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: {}, journey: [], impactEffort: [], userFlow: [] }; }
+
+    saveInterview(data);
+    hideOv();
+    renderResults(data);
+  } catch (err) {
+    hideOv();
+    alert(t('errAnalysis'));
+  }
+}
+
+// ─── RENDER RESULTS ───────────────────────────────────────
+function renderResults(d) {
+  goTo('page-results');
+  const rml = document.getElementById('research-mode-label');
+  if (rml) rml.style.display = S.isResearcher ? 'block' : 'none';
+  const ccl = document.getElementById('completed-count-label');
+  const cc  = document.getElementById('completed-count');
+  if (ccl && cc) {
+    if (S.isResearcher) {
+      cc.textContent  = String(getAllInterviews().length);
+      ccl.style.display = 'block';
+    } else { ccl.style.display = 'none'; }
+  }
+  document.getElementById('res-ttl').textContent = t('resTitle');
+  document.getElementById('res-sub').textContent = t('resSub');
+  renderHistory(S._iid);
+  renderAnalysis(d);
+}
+
+function renderAnalysis(d) {
+
+  const ICO = {
+    sum:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`,
+    ins:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+    pat:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
+    quo:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+    rec:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
+  };
+
+  const numBadge = (n, cls) => `<span class="ra-badge ${cls}">${n}</span>`;
+
+  let html = '';
+
+  // 1 — Summary (full width)
+  if (d.summary) {
+    html += `<div class="ra-summary">
+      <div class="ra-sum-lbl">${t('summary')}</div>
+      <div class="ra-sum-txt">${esc(d.summary)}</div>
+    </div>`;
+  }
+
+  // 2 + 4 — Key Insights & Patterns (2-col grid)
+  const insights = (Array.isArray(d.insights) ? d.insights : []).filter(Boolean);
+  const patterns = (d.patterns || []).filter(Boolean);
+  if (insights.length || patterns.length) {
+    html += `<div class="grid2">`;
+    if (insights.length) {
+      html += `<div class="rc">
+        <div class="rc-hd"><div class="rc-ico ci-b">${ICO.ins}</div><div class="rc-ttl">${t('insights')}</div></div>
+        <div class="rc-items">${insights.map((x,i) => `<div class="ra-num-item">${numBadge(i+1,'ra-badge-b')}<div>${esc(x)}</div></div>`).join('')}</div>
+      </div>`;
+    }
+    if (patterns.length) {
+      html += `<div class="rc">
+        <div class="rc-hd"><div class="rc-ico ci-p">${ICO.pat}</div><div class="rc-ttl">${t('patterns')}</div></div>
+        <div class="rc-items">${patterns.map(x => `<div class="ri"><div class="rbul" style="background:var(--accent);margin-top:8px;flex-shrink:0;"></div><div>${esc(x)}</div></div>`).join('')}</div>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  // 3 — User Quotes (full width, styled)
+  const quotes = (d.quotes || []).filter(Boolean);
+  if (quotes.length) {
+    html += `<div class="rc" style="margin-bottom:16px;">
+      <div class="rc-hd"><div class="rc-ico ci-y">${ICO.quo}</div><div class="rc-ttl">${t('quotes')}</div></div>
+      <div class="ra-quotes">${quotes.map(q => `<div class="ra-quote">"${esc(q)}"</div>`).join('')}</div>
+    </div>`;
+  }
+
+  // 5 — Recommendations (full width, numbered)
+  const recs = (d.recommendations || []).filter(Boolean);
+  if (recs.length) {
+    html += `<div class="rc" style="margin-bottom:16px;">
+      <div class="rc-hd"><div class="rc-ico ci-g">${ICO.rec}</div><div class="rc-ttl">${t('recs')}</div></div>
+      <div class="rc-items">${recs.map((x,i) => `<div class="ra-num-item">${numBadge(i+1,'ra-badge-g')}<div>${esc(x)}</div></div>`).join('')}</div>
+    </div>`;
+  }
+
+  // ── RESEARCHER-ONLY SECTIONS ─────────────────────────────
+  if (S.isResearcher) {
+    const ph = `<span style="color:var(--muted);font-size:12px;font-style:italic;">${t('noData')}</span>`;
+
+    // 6 — Personas
+    const personas = (d.personas || []).filter(Boolean);
+    html += `<div class="rc" style="margin-bottom:16px;">
+      <div class="ra-section-hd">
+        <div class="ra-section-ico ci-p"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="ra-section-ttl">${t('personas')}</div>
+      </div>
+      ${personas.length ? `<div class="persona-grid">${personas.map(p => `
+        <div class="persona-card">
+          <div class="persona-name">${esc(p.name||'')}</div>
+          ${p.age        ? `<div class="persona-row">${t('pAge')}: <span>${esc(p.age)}</span></div>` : ''}
+          ${p.goal       ? `<div class="persona-row">${t('pGoal')}: <span>${esc(p.goal)}</span></div>` : ''}
+          ${p.pain       ? `<div class="persona-row">${t('pPain')}: <span>${esc(p.pain)}</span></div>` : ''}
+          ${p.motivation ? `<div class="persona-row">${t('pMotivation')}: <span>${esc(p.motivation)}</span></div>` : ''}
+        </div>`).join('')}</div>` : ph}
+    </div>`;
+
+    // 7 — Empathy Map
+    const emp = d.empathy || {};
+    const empLabel = { thinks: t('emThinks'), feels: t('emFeels'), says: t('emSays'), does: t('emDoes') };
+    html += `<div class="rc" style="margin-bottom:16px;">
+      <div class="ra-section-hd">
+        <div class="ra-section-ico ci-o"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <div class="ra-section-ttl">${t('empathy')}</div>
+      </div>
+      <div class="empathy-grid">${['thinks','feels','says','does'].map(k => `
+        <div class="empathy-cell">
+          <div class="empathy-lbl">${empLabel[k]}</div>
+          <div class="empathy-items">${(emp[k]||[]).length ? (emp[k]).map(x=>`• ${esc(x)}`).join('<br>') : `<span style="color:var(--muted);font-size:12px;font-style:italic;">—</span>`}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+
+    // 8 — User Journey Map
+    const journey = (d.journey || []).filter(Boolean);
+    const sentClass = s => s==='positive'?'js-pos':s==='negative'?'js-neg':'js-neu';
+    const sentLabel = s => s==='positive'?t('sentPos'):s==='negative'?t('sentNeg'):t('sentNeu');
+    html += `<div class="rc" style="margin-bottom:16px;">
+      <div class="ra-section-hd">
+        <div class="ra-section-ico ci-b"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="ra-section-ttl">${t('journey')}</div>
+      </div>
+      ${journey.length ? `<div class="journey-steps">${journey.map(j => `
+        <div class="journey-step">
+          <div class="journey-phase">${esc(j.phase||'')}</div>
+          <div class="journey-action">${esc(j.action||'')}</div>
+          <div class="journey-emotion">${esc(j.emotion||'')}</div>
+          ${j.sentiment ? `<span class="journey-sentiment ${sentClass(j.sentiment)}">${sentLabel(j.sentiment)}</span>` : ''}
+        </div>`).join('')}</div>` : ph}
+    </div>`;
+
+    // 9 — Impact vs Effort
+    const ie = (d.impactEffort || []).filter(Boolean);
+    const chipClass = v => v==='High'?'ie-hi':v==='Low'?'ie-lo':'ie-md';
+    html += `<div class="rc" style="margin-bottom:16px;">
+      <div class="ra-section-hd">
+        <div class="ra-section-ico ci-r"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <div class="ra-section-ttl">${t('impactEff')}</div>
+      </div>
+      ${ie.length ? `<table class="ie-table">
+        <thead><tr><th>${t('ieAction')}</th><th>${t('ieImpact')}</th><th>${t('ieEffort')}</th><th>${t('iePriority')}</th></tr></thead>
+        <tbody>${ie.map(r => `<tr>
+          <td>${esc(r.action||'')}</td>
+          <td><span class="ie-chip ${chipClass(r.impact)}">${esc(r.impact||'')}</span></td>
+          <td><span class="ie-chip ${chipClass(r.effort)}">${esc(r.effort||'')}</span></td>
+          <td><strong>${esc(r.priority||'')}</strong></td>
+        </tr>`).join('')}</tbody>
+      </table>` : ph}
+    </div>`;
+
+    // 10 — User Flow
+    const flow = (d.userFlow || []).filter(Boolean);
+    html += `<div class="rc" style="margin-bottom:16px;">
+      <div class="ra-section-hd">
+        <div class="ra-section-ico ci-g"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+        <div class="ra-section-ttl">${t('userFlow')}</div>
+      </div>
+      ${flow.length ? `<div class="flow-steps">${flow.map((s,i) => `
+        <div class="flow-row">
+          <div class="flow-left">
+            <div class="flow-dot">${i+1}</div>
+            <div class="flow-line"></div>
+          </div>
+          <div class="flow-content">
+            <div class="flow-step-ttl">${esc(s.step||'')}</div>
+            <div class="flow-step-desc">${esc(s.description||'')}</div>
+          </div>
+        </div>`).join('')}</div>` : ph}
+    </div>`;
+
+  } // end isResearcher
+
+  document.getElementById('res-content').innerHTML = html;
+}
+
+// ─── OVERLAY ──────────────────────────────────────────────
+function showOv(ttl, sub) {
+  document.getElementById('ol-ttl').textContent = ttl;
+  document.getElementById('ol-sub').textContent = sub;
+  document.getElementById('overlay').classList.add('show');
+}
+function hideOv() { document.getElementById('overlay').classList.remove('show'); }
+
+// ─── SESSION PERSISTENCE ──────────────────────────────────
+function saveSession() {
+  const session = {
+    msgs:        S.msgs,
+    mainAsked:   S.mainAsked,
+    followUps:   S.followUps,
+    goal:        S.goal,
+    audience:    S.audience,
+    done:        S.done,
+    iid:         S._iid,
+  };
+  localStorage.setItem('skoon_session', JSON.stringify(session));
+}
+
+function clearSession() {
+  localStorage.removeItem('skoon_session');
+}
+
+function restoreSession() {
+  const raw = localStorage.getItem('skoon_session');
+  if (!raw) return false;
+  try {
+    const session = JSON.parse(raw);
+    if (!session.msgs || session.msgs.length < 2 || session.done) { clearSession(); return false; }
+    S.msgs      = session.msgs;
+    S.mainAsked = session.mainAsked;
+    S.followUps = session.followUps;
+    S.goal      = session.goal;
+    S.audience  = session.audience;
+    S._iid      = session.iid || (Date.now().toString(36));
+    S.done      = false;
+
+    // Re-render conversation from saved messages
+    goTo('page-chat');
+    document.getElementById('msgs').innerHTML = '';
+    document.getElementById('end-row').style.display = 'block';
+    S.msgs.filter(m => m.role !== 'system').forEach(m => addMsg(m.role, m.content));
+    renderProg();
+    S.waitingForAnswer = true; setSend(false);
+    document.getElementById('chat-ta').focus();
+    return true;
+  } catch (e) { clearSession(); return false; }
+}
+
+// ─── RESEARCHER ACCESS ────────────────────────────────────
+const RESEARCHER_PIN = '1589';
+let _brandTaps = 0, _brandTimer = null;
+
+function onBrandClick() {
+  _brandTaps++;
+  clearTimeout(_brandTimer);
+  _brandTimer = setTimeout(() => { _brandTaps = 0; }, 600);
+  if (_brandTaps >= 3) {
+    _brandTaps = 0;
+    clearTimeout(_brandTimer);
+    openResearcherModal();
+  }
+}
+
+function openResearcherModal() {
+  document.getElementById('researcher-pin').value = '';
+  document.getElementById('researcher-err').style.display = 'none';
+  document.getElementById('researcher-ov').classList.add('show');
+  setTimeout(() => document.getElementById('researcher-pin').focus(), 80);
+}
+
+function closeResearcherModal() {
+  document.getElementById('researcher-ov').classList.remove('show');
+}
+
+function submitResearcherPin() {
+  const pin = document.getElementById('researcher-pin').value;
+  if (pin === RESEARCHER_PIN) {
+    localStorage.setItem('researcher_access', 'true');
+    S.isResearcher = true;
+    closeResearcherModal();
+    renderResults({});
+  } else {
+    document.getElementById('researcher-err').style.display = 'block';
+    document.getElementById('researcher-pin').value = '';
+    document.getElementById('researcher-pin').focus();
+  }
+}
+
+// ─── RESTART ──────────────────────────────────────────────
+function goHome() { goTo('page-setup'); }
+
+function restart() {
+  clearSession();
+  S.msgs = []; S.mainAsked = 0; S.followUps = 0;
+  S.waitingForAnswer = false; S.done = false;
+  goTo('page-setup');
+}
+</script>
+</body>
+</html>
