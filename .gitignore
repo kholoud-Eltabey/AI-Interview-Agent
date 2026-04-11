@@ -1,0 +1,13 @@
+# Claude Code local files
+.claude/
+
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# Environment / secrets
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
