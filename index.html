@@ -374,14 +374,14 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .done-wrap { max-width: 420px; width: 100%; text-align: center; }
 .done-title {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 22px; font-weight: 600; letter-spacing: -0.2px;
+  font-size: 18px; font-weight: 600; letter-spacing: -0.2px;
   color: var(--text); margin-bottom: 12px;
 }
 [dir="rtl"] .done-title { font-family: 'IBM Plex Sans Arabic', sans-serif; }
 .done-body {
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: 14px; font-weight: 400; line-height: 1.75; color: var(--muted);
-  margin-bottom: 32px;
+  white-space: pre-line; margin-bottom: 32px;
 }
 [dir="rtl"] .done-body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
 .done-close {
@@ -1340,7 +1340,7 @@ function finishMsg() {
   const ar = S.lang === 'ar';
   const title     = ar ? 'يعطيك العافية، ما قصّرت 🙌' : 'That was great, thank you 🙌';
   const body      = ar
-    ? 'وقتك وكلامك يعني لنا الكثير — راح يساعدنا نبني شيء أفضل لك ولكل الناس اللي مثلك 💙'
+    ? 'وقتك وكلامك يعني لنا الكثير\nراح يساعدنا نبني شيء أفضل لك ولكل الناس اللي مثلك 💙'
     : 'Your time and honesty mean a lot to us. What you shared will genuinely help us build something better for everyone 💙';
   const finishLbl = ar ? 'تم' : 'Close';
 
