@@ -272,47 +272,111 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .end-btn:focus  { outline: none; border-color: var(--primary); color: var(--primary); background: var(--plight); box-shadow: 0 0 0 3px var(--plight); }
 .end-btn:active { transform: none; box-shadow: 0 0 0 3px var(--plight); }
 
-/* ── RESULTS ── */
-.res-body   { display: flex; flex: 1; overflow: hidden; }
-.res-panel  {
-  width: 200px; flex-shrink: 0;
-  background: var(--surface); border-inline-end: 1px solid var(--border);
-  display: flex; flex-direction: column; padding: 24px 0; gap: 4px;
+/* ── RESULTS SHELL ── */
+.res-body        { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.res-panel {
+  width: 220px; flex-shrink: 0;
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border);
+  display: flex; flex-direction: column;
   overflow-y: auto;
 }
-.rp-section { padding: 0 12px; margin-bottom: 8px; }
-.rp-sec-lbl {
-  font-size: 10px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--muted);
-  padding: 0 8px; margin-bottom: 6px; display: block;
-}
-.rp-mode {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; border-radius: var(--rsm);
+.sb-brand    { display: flex; align-items: center; gap: 10px; padding: 20px 16px 12px; }
+.sb-brand-name { font-size: 15px; font-weight: 700; color: var(--primary); }
+.sb-brand-tag  { font-size: 10px; color: var(--muted); font-weight: 500; }
+.sb-divider  { height: 1px; background: var(--border); margin: 4px 16px; }
+.sb-section  { padding: 10px 8px 4px; }
+.sb-sec-lbl  { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); padding: 0 8px; margin-bottom: 4px; display: block; }
+.sb-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--rsm);
   font-size: 13px; font-weight: 500; color: var(--muted);
-  cursor: default; transition: background var(--tr), color var(--tr);
+  cursor: pointer; border: none; background: none;
+  width: 100%; text-align: start;
+  transition: background var(--tr), color var(--tr);
 }
-.rp-mode.active {
-  background: var(--plight); color: var(--primary); font-weight: 600;
+.sb-nav-item:hover  { background: var(--bg); color: var(--text); }
+.sb-nav-item.active { background: var(--plight); color: var(--primary); font-weight: 600; }
+.sb-nav-ico  { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+.sb-recent   { padding: 8px; flex: 1; overflow-y: auto; }
+.sb-recent-ttl { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); padding: 0 8px; margin-bottom: 6px; display: block; }
+.sb-recent-item {
+  padding: 8px 10px; border-radius: var(--rsm); cursor: pointer;
+  transition: background var(--tr);
 }
-.rp-mode-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--border); flex-shrink: 0; transition: background var(--tr);
-}
-.rp-mode.active .rp-mode-dot { background: var(--primary); }
-.rp-divider { height: 1px; background: var(--border); margin: 8px 12px; }
-.rp-nav-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; margin: 0 12px; border-radius: var(--rsm);
-  font-size: 13px; font-weight: 500; color: var(--muted);
-  cursor: pointer; transition: background var(--tr), color var(--tr);
-  border: none; background: none; width: calc(100% - 24px); text-align: start;
-}
-.rp-nav-item:hover { background: var(--bg); color: var(--text); }
-.rp-nav-item.active { background: var(--plight); color: var(--primary); font-weight: 600; }
-.rp-nav-ico { font-size: 15px; flex-shrink: 0; }
-.res-scroll { flex: 1; overflow-y: auto; padding: 32px 22px 60px; }
-.res-inner  { max-width: 860px; margin: 0 auto; }
+.sb-recent-item:hover { background: var(--bg); }
+.sb-ri-date  { font-size: 11px; color: var(--muted); margin-bottom: 1px; }
+.sb-ri-goal  { font-size: 12px; color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-bottom   { padding: 12px 8px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.sb-profile  { display: flex; align-items: center; gap: 8px; }
+.sb-avatar   { width: 28px; height: 28px; border-radius: 50%; background: var(--plight); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--primary); font-weight: 700; flex-shrink: 0; }
+.sb-uname    { font-size: 12px; font-weight: 600; color: var(--text); }
+.sb-urole    { font-size: 10px; color: var(--muted); }
+
+/* ── MAIN CONTENT ── */
+.res-scroll  { flex: 1; overflow-y: auto; padding: 28px 28px 60px; }
+.res-inner   { max-width: 900px; margin: 0 auto; }
+
+/* ── TABS ── */
+.db-tabs     { display: flex; gap: 2px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+.db-tab      { padding: 10px 18px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all var(--tr); }
+.db-tab:hover  { color: var(--text); }
+.db-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.db-pane     { display: none; }
+.db-pane.active { display: block; }
+
+/* ── OVERVIEW ── */
+.db-page-ttl  { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; color: var(--text); margin-bottom: 4px; }
+.db-page-sub  { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.stat-grid    { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.stat-card    { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; }
+.stat-val     { font-size: 28px; font-weight: 700; color: var(--primary); line-height: 1; margin-bottom: 4px; }
+.stat-lbl     { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+.stat-card.rate .stat-val { color: var(--accent); }
+
+/* ── INTERVIEW CARDS ── */
+.iv-list      { display: flex; flex-direction: column; gap: 14px; }
+.iv-card      { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+.iv-card-hdr  { display: flex; align-items: center; gap: 10px; padding: 14px 18px; cursor: pointer; }
+.iv-card-hdr:hover { background: var(--bg); }
+.iv-chk       { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+.iv-meta      { flex: 1; min-width: 0; }
+.iv-meta-top  { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.iv-date      { font-size: 12px; color: var(--muted); }
+.iv-goal      { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.iv-prog-row  { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.iv-prog-bar  { flex: 1; height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.iv-prog-fill { height: 100%; background: var(--primary); border-radius: 99px; }
+.iv-prog-pct  { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.iv-card-body { border-top: 1px solid var(--border); }
+.iv-tabs      { display: flex; border-bottom: 1px solid var(--border); background: var(--bg); }
+.iv-tab       { padding: 8px 16px; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all var(--tr); }
+.iv-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.iv-tab-pane  { display: none; padding: 16px 18px; }
+.iv-tab-pane.active { display: block; }
+.iv-sec-lbl   { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.iv-bullet    { font-size: 13px; color: var(--text); line-height: 1.6; padding-inline-start: 14px; position: relative; margin-bottom: 6px; }
+.iv-bullet::before { content: '•'; position: absolute; inset-inline-start: 0; color: var(--primary); font-weight: 700; }
+.iv-quote     { font-size: 13px; color: var(--text); font-style: italic; line-height: 1.6; padding: 8px 12px; background: var(--plight); border-radius: 8px; border-inline-start: 3px solid var(--primary); margin-bottom: 8px; }
+.iv-empty-msg { font-size: 13px; color: var(--muted); font-style: italic; }
+.iv-badge-done   { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: #dcfce7; color: #15803d; flex-shrink: 0; }
+.iv-badge-part   { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--bg); color: var(--muted); border: 1px solid var(--border); flex-shrink: 0; }
+[data-theme="dark"] .iv-badge-done { background: #14532d; color: #86efac; }
+
+/* ── CROSS ANALYSIS ── */
+.ca-bar       { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 20px; }
+.ca-count     { font-size: 13px; color: var(--muted); flex: 1; }
+.ca-count strong { color: var(--text); font-weight: 600; }
+.ca-out-card  { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 14px; overflow: hidden; }
+.ca-out-hdr   { padding: 14px 18px; font-size: 13px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; gap: 8px; }
+.ca-out-body  { padding: 16px 18px; }
+
+.res-ttl { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+.res-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+.grid2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
+.rc      { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; box-shadow: var(--sh); }
 .res-ttl { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
 .res-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
 .grid2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
@@ -725,69 +789,102 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 
 <!-- ═══════ PAGE 3 — RESULTS ═══════ -->
 <div class="page" id="page-results">
-  <div class="topbar">
-    <div class="hdr-icons">
-      <button class="ic-btn" id="res-lang-btn" onclick="cycleLang()" title="Switch language">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-        </svg>
-      </button>
-      <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-res"></span></button>
-    </div>
-    <div class="tb-center">
-      <div class="tb-brand">Skoon</div>
-      <div class="hdr-sub">Research Insights</div>
-    </div>
-  </div>
-
   <div class="res-body">
+
+    <!-- SIDEBAR -->
     <nav class="res-panel" id="res-panel" style="display:none;">
-      <div class="rp-section">
-        <span class="rp-sec-lbl" id="rp-lbl-mode">Mode</span>
-        <div class="rp-mode" id="rp-user-view">
-          <span class="rp-mode-dot"></span>
-          <span id="rp-lbl-user">User View</span>
-        </div>
-        <div class="rp-mode active" id="rp-res-view">
-          <span class="rp-mode-dot"></span>
-          <span id="rp-lbl-researcher">Researcher View</span>
+      <div class="sb-brand">
+        <div>
+          <div class="sb-brand-name">Skoon</div>
+          <div class="sb-brand-tag" id="sb-tag">Research Dashboard</div>
         </div>
       </div>
-      <div class="rp-divider"></div>
-      <div class="rp-section">
-        <span class="rp-sec-lbl" id="rp-lbl-nav">Navigation</span>
-        <button class="rp-nav-item active" id="rp-nav-overview" onclick="rpNav('overview')">
-          <span class="rp-nav-ico">◈</span>
-          <span id="rp-lbl-overview">Overview</span>
+      <div class="sb-divider"></div>
+      <div class="sb-section">
+        <button class="sb-nav-item active" id="sb-nav-overview" onclick="dbTab('overview')">
+          <span class="sb-nav-ico">▦</span><span id="sb-lbl-overview">Dashboard</span>
         </button>
-        <button class="rp-nav-item" id="rp-nav-interviews" onclick="rpNav('interviews')">
-          <span class="rp-nav-ico">◫</span>
-          <span id="rp-lbl-interviews">Interviews</span>
+        <button class="sb-nav-item" id="sb-nav-interviews" onclick="dbTab('interviews')">
+          <span class="sb-nav-ico">◫</span><span id="sb-lbl-interviews">Interviews</span>
         </button>
-        <button class="rp-nav-item" id="rp-nav-insights" onclick="rpNav('insights')">
-          <span class="rp-nav-ico">◎</span>
-          <span id="rp-lbl-insights">Insights</span>
+        <button class="sb-nav-item" id="sb-nav-analysis" onclick="dbTab('analysis')">
+          <span class="sb-nav-ico">◎</span><span id="sb-lbl-analysis">Analysis</span>
         </button>
+        <button class="sb-nav-item" id="sb-nav-insights" onclick="dbTab('insights')">
+          <span class="sb-nav-ico">◈</span><span id="sb-lbl-insights">Insights</span>
+        </button>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-recent" id="sb-recent"></div>
+      <div class="sb-bottom">
+        <div class="sb-profile">
+          <div class="sb-avatar">R</div>
+          <div>
+            <div class="sb-uname" id="sb-uname">Researcher</div>
+            <div class="sb-urole" id="sb-urole">Research Mode</div>
+          </div>
+        </div>
+        <button class="ic-btn" onclick="toggleTheme()" style="width:32px;height:32px;font-size:14px;"><span id="theme-icon-res"></span></button>
       </div>
     </nav>
 
+    <!-- MAIN CONTENT -->
     <div class="res-scroll">
       <div class="res-inner">
-        <div id="research-mode-label" style="display:none;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--primary);margin-bottom:6px;">Research Mode</div>
-        <div id="completed-count-label" style="display:none;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">Completed Interviews: <span id="completed-count">0</span></div>
-        <div class="res-ttl" id="res-ttl">Research Insights</div>
-        <div class="res-sub" id="res-sub">Based on your interview session</div>
-        <div id="res-overview-anchor"></div>
-        <div id="res-history"></div>
-        <div id="res-content"></div>
-        <div id="res-notes"></div>
-        <div class="res-nav-row">
+
+        <!-- Non-researcher: topbar lang + theme -->
+        <div id="res-topbar-simple" style="display:none;margin-bottom:20px;display:flex;gap:8px;justify-content:flex-end;">
+          <button class="ic-btn" onclick="cycleLang()">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </button>
+          <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-res2"></span></button>
+        </div>
+
+        <!-- ── TAB: OVERVIEW ── -->
+        <div class="db-pane active" id="db-pane-overview">
+          <div class="db-page-ttl" id="db-ttl-overview">Dashboard</div>
+          <div class="db-page-sub" id="db-sub-overview">Your research at a glance</div>
+          <div class="stat-grid" id="db-stats"></div>
+          <div id="db-latest"></div>
+        </div>
+
+        <!-- ── TAB: INTERVIEWS ── -->
+        <div class="db-pane" id="db-pane-interviews">
+          <div class="db-page-ttl" id="db-ttl-interviews">Interviews</div>
+          <div class="db-page-sub" id="db-sub-interviews">All recorded sessions</div>
+          <div id="db-iv-list"></div>
+        </div>
+
+        <!-- ── TAB: ANALYSIS ── -->
+        <div class="db-pane" id="db-pane-analysis">
+          <div class="db-page-ttl" id="db-ttl-analysis">Analysis</div>
+          <div class="db-page-sub" id="db-sub-analysis">AI-generated insights per session</div>
+          <div id="res-content"></div>
+        </div>
+
+        <!-- ── TAB: INSIGHTS (Cross Analysis) ── -->
+        <div class="db-pane" id="db-pane-insights">
+          <div class="db-page-ttl" id="db-ttl-insights">Cross Analysis</div>
+          <div class="db-page-sub" id="db-sub-insights">Select interviews to analyze together</div>
+          <div class="ca-bar">
+            <div class="ca-count" id="ca-count">Select interviews below to run cross analysis</div>
+            <button class="btn btn-p" id="ca-run-btn" onclick="runCrossAnalysis()" style="font-size:13px;padding:9px 18px;" disabled>Analyze Selected</button>
+          </div>
+          <div id="db-ca-list"></div>
+          <div id="db-ca-out"></div>
+        </div>
+
+        <!-- Legacy anchors kept for renderAnalysis / renderNotes compatibility -->
+        <div id="res-history" style="display:none;"></div>
+        <div id="res-notes"   style="display:none;"></div>
+
+        <div class="res-nav-row" style="margin-top:32px;">
           <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
           <button class="btn btn-s" onclick="goHome()"><span class="home-btn-lbl">Home</span></button>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -864,6 +961,17 @@ const TR = {
     rpMode: 'Mode', rpNav: 'Navigation',
     rpUserView: 'User View', rpResView: 'Researcher View',
     rpOverview: 'Overview', rpInterviews: 'Interviews', rpInsights: 'Insights',
+    dbTag: 'Research Dashboard', dbResearcher: 'Researcher', dbResRole: 'Research Mode',
+    dbDashboard: 'Dashboard', dbInterviews: 'Interviews', dbAnalysis: 'Analysis', dbInsights: 'Cross Analysis',
+    dbGlance: 'Your research at a glance', dbAllSessions: 'All recorded sessions',
+    dbAiInsights: 'AI-generated insights per session', dbCrossDesc: 'Select interviews to analyze together',
+    dbTotal: 'Total', dbCompleted: 'Completed', dbIncomplete: 'Incomplete', dbRate: 'Completion Rate',
+    dbLatest: 'Latest Interviews', dbRecent: 'Recent',
+    dbNotes: 'Notes', dbSummary: 'Summary', dbInsightsTab: 'Insights', dbQuotes: 'Quotes', dbUxIssues: 'UX Issues',
+    dbNoData: 'No interviews yet', dbNoAnalysis: 'No analysis — interview not yet analyzed',
+    dbSelectHint: 'Select interviews below to run cross analysis',
+    dbAnalyzeBtn: 'Analyze Selected', dbSelCount: (n) => `${n} interview${n===1?'':'s'} selected`,
+    dbCrossRunning: 'Analyzing…', dbCrossEmpty: 'No output yet',
     homeBtn:   'Home',
     errNoKey:  'Please enter your OpenAI API key to continue.',
     errNoConv: 'Please answer at least a couple of questions first.',
@@ -922,6 +1030,17 @@ const TR = {
     rpMode: 'الوضع', rpNav: 'التنقل',
     rpUserView: 'وضع المستخدم', rpResView: 'وضع الباحث',
     rpOverview: 'نظرة عامة', rpInterviews: 'المقابلات', rpInsights: 'الاستنتاجات',
+    dbTag: 'لوحة البحث', dbResearcher: 'الباحث', dbResRole: 'وضع الباحث',
+    dbDashboard: 'الرئيسية', dbInterviews: 'المقابلات', dbAnalysis: 'التحليل', dbInsights: 'التحليل المقارن',
+    dbGlance: 'نظرة عامة على بحثك', dbAllSessions: 'كل الجلسات المسجلة',
+    dbAiInsights: 'استنتاجات مولّدة بالذكاء الاصطناعي', dbCrossDesc: 'اختر مقابلات لتحليلها معاً',
+    dbTotal: 'المجموع', dbCompleted: 'مكتملة', dbIncomplete: 'غير مكتملة', dbRate: 'نسبة الإكمال',
+    dbLatest: 'آخر المقابلات', dbRecent: 'الأخيرة',
+    dbNotes: 'ملاحظات', dbSummary: 'ملخص', dbInsightsTab: 'استنتاجات', dbQuotes: 'اقتباسات', dbUxIssues: 'مشاكل UX',
+    dbNoData: 'لا توجد مقابلات بعد', dbNoAnalysis: 'لا يوجد تحليل — المقابلة لم تُحلَّل بعد',
+    dbSelectHint: 'اختر مقابلات أدناه لتشغيل التحليل المقارن',
+    dbAnalyzeBtn: 'تحليل المختارة', dbSelCount: (n) => `${n} مقابلة مختارة`,
+    dbCrossRunning: 'جاري التحليل…', dbCrossEmpty: 'لا توجد نتائج بعد',
     homeBtn:   'الرئيسية',
     errNoKey:  'من فضلك أدخل مفتاح OpenAI API لتقدر تكمل.',
     errNoConv: 'جاوب على سؤال أو أكثر أولاً.',
@@ -1391,150 +1510,298 @@ function saveInterview(analysis) {
   localStorage.setItem('skoon_interviews', JSON.stringify(all));
 }
 
-function renderHistory(activeId) {
-  const el = document.getElementById('res-history');
-  if (!el || !S.isResearcher) return;
-  const all = getAllInterviews().slice().reverse(); // newest first
-  const total     = all.length;
-  const completed = all.filter(iv => iv.completed).length;
-  const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
-  el.innerHTML = `
-    <div class="ih-wrap">
-      <div class="ih-stats">
-        <div class="ih-stat"><div class="ih-stat-val">${total}</div><div class="ih-stat-lbl">${t('ihTotal')}</div></div>
-        <div class="ih-stat"><div class="ih-stat-val">${completed}</div><div class="ih-stat-lbl">${t('ihCompleted')}</div></div>
-      </div>
-      <div class="ih-list">${all.length ? all.map(iv => `
-        <div class="ih-row${activeId===iv.id?' active':''}" onclick="loadInterviewById('${iv.id}')">
-          <div class="ih-meta">
-            <div class="ih-date">${fmt(iv.date)}</div>
-            <div class="ih-goal">${esc(iv.goal||'—')}</div>
-          </div>
-          <span class="ih-badge ${iv.analysis?'ih-done':'ih-nodone'}">${iv.analysis?t('ihAnalyzed'):t('ihDone')}</span>
-        </div>`).join('') : `<div class="ih-empty">${t('ihEmpty')}</div>`}
-      </div>
-    </div>`;
-}
+// kept as no-op for backward compat (renderResults calls it)
+function renderHistory() {}
+function renderNotes()   {}
 
 function loadInterviewById(id) {
   const all = getAllInterviews();
   const iv  = all.find(x => x.id === id);
   if (!iv) return;
+  dbTab('analysis');
   renderAnalysis(iv.analysis || {}, iv);
-  renderHistory(id);
 }
 
-// ─── SIDE PANEL ───────────────────────────────────────────
+// ─── DASHBOARD ────────────────────────────────────────────
+let _dbTab = 'overview';
+
+function dbTab(tab) {
+  _dbTab = tab;
+  ['overview','interviews','analysis','insights'].forEach(s => {
+    const pane = document.getElementById('db-pane-' + s);
+    const btn  = document.getElementById('sb-nav-' + s);
+    if (pane) pane.classList.toggle('active', s === tab);
+    if (btn)  btn.classList.toggle('active',  s === tab);
+  });
+}
+
 function renderPanel() {
   const panel = document.getElementById('res-panel');
   if (!panel) return;
   if (!S.isResearcher) { panel.style.display = 'none'; return; }
   panel.style.display = 'flex';
-  // Labels (bilingual)
   const set = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = t(key); };
-  set('rp-lbl-mode',       'rpMode');
-  set('rp-lbl-nav',        'rpNav');
-  set('rp-lbl-user',       'rpUserView');
-  set('rp-lbl-researcher', 'rpResView');
-  set('rp-lbl-overview',   'rpOverview');
-  set('rp-lbl-interviews', 'rpInterviews');
-  set('rp-lbl-insights',   'rpInsights');
+  set('sb-tag',            'dbTag');
+  set('sb-uname',          'dbResearcher');
+  set('sb-urole',          'dbResRole');
+  set('sb-lbl-overview',   'dbDashboard');
+  set('sb-lbl-interviews', 'dbInterviews');
+  set('sb-lbl-analysis',   'dbAnalysis');
+  set('sb-lbl-insights',   'dbInsights');
+  // page titles
+  set('db-ttl-overview',   'dbDashboard');
+  set('db-sub-overview',   'dbGlance');
+  set('db-ttl-interviews', 'dbInterviews');
+  set('db-sub-interviews', 'dbAllSessions');
+  set('db-ttl-analysis',   'dbAnalysis');
+  set('db-sub-analysis',   'dbAiInsights');
+  set('db-ttl-insights',   'dbInsights');
+  set('db-sub-insights',   'dbCrossDesc');
+  set('ca-run-btn',        'dbAnalyzeBtn');
+  // recent sidebar
+  renderSbRecent();
 }
 
-let _rpActive = 'overview';
-function rpNav(section) {
-  _rpActive = section;
-  ['overview','interviews','insights'].forEach(s => {
-    const btn = document.getElementById('rp-nav-' + s);
-    if (btn) btn.classList.toggle('active', s === section);
+function renderSbRecent() {
+  const el = document.getElementById('sb-recent');
+  if (!el) return;
+  const all = getAllInterviews().slice().reverse().slice(0, 5);
+  const fmt = iso => new Date(iso).toLocaleDateString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { month:'short', day:'numeric' });
+  const lbl = `<span class="sb-recent-ttl">${t('dbRecent')}</span>`;
+  if (!all.length) { el.innerHTML = lbl; return; }
+  el.innerHTML = lbl + all.map(iv => `
+    <div class="sb-recent-item" onclick="loadInterviewById('${iv.id}')">
+      <div class="sb-ri-date">${fmt(iv.date)}</div>
+      <div class="sb-ri-goal">${esc(iv.goal || '—')}</div>
+    </div>`).join('');
+}
+
+function renderOverview() {
+  const all  = getAllInterviews();
+  const done = all.filter(iv => iv.completed).length;
+  const inc  = all.length - done;
+  const rate = all.length ? Math.round((done / all.length) * 100) : 0;
+  const statsEl = document.getElementById('db-stats');
+  if (statsEl) statsEl.innerHTML = `
+    <div class="stat-card"><div class="stat-val">${all.length}</div><div class="stat-lbl">${t('dbTotal')}</div></div>
+    <div class="stat-card"><div class="stat-val">${done}</div><div class="stat-lbl">${t('dbCompleted')}</div></div>
+    <div class="stat-card"><div class="stat-val">${inc}</div><div class="stat-lbl">${t('dbIncomplete')}</div></div>
+    <div class="stat-card rate"><div class="stat-val">${rate}%</div><div class="stat-lbl">${t('dbRate')}</div></div>`;
+
+  const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
+  const latest = all.slice().reverse().slice(0, 5);
+  const latestEl = document.getElementById('db-latest');
+  if (latestEl) latestEl.innerHTML = all.length ? `
+    <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;">${t('dbLatest')}</div>
+    <div class="iv-list">${latest.map(iv => ivRowHtml(iv, fmt, false)).join('')}</div>` : '';
+}
+
+function renderInterviewsTab() {
+  const all = getAllInterviews().slice().reverse();
+  const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
+  const el  = document.getElementById('db-iv-list');
+  if (!el) return;
+  el.innerHTML = all.length
+    ? `<div class="iv-list">${all.map(iv => ivRowHtml(iv, fmt, true)).join('')}</div>`
+    : `<div style="font-size:13px;color:var(--muted);font-style:italic;">${t('dbNoData')}</div>`;
+}
+
+function ivRowHtml(iv, fmt, expandable) {
+  const reached = iv.lastQuestionSeen || 0;
+  const total   = iv.totalQuestions   || 0;
+  const pct     = total > 0 ? Math.round((reached / total) * 100) : 0;
+  const isDone  = iv.completed && reached >= total && total > 0;
+  const badge   = isDone
+    ? `<span class="iv-badge-done">${t('rnCompleted')}</span>`
+    : `<span class="iv-badge-part">${t('rnStopped')} ${reached}</span>`;
+
+  const answers  = Array.isArray(iv.answers) ? iv.answers : [];
+  const insights = iv.analysis && Array.isArray(iv.analysis.insights) ? iv.analysis.insights.filter(Boolean) : [];
+  const quotes   = iv.analysis && Array.isArray(iv.analysis.quotes)   ? iv.analysis.quotes.filter(Boolean)   : [];
+  const uxIssues = iv.analysis && Array.isArray(iv.analysis.patterns) ? iv.analysis.patterns.filter(Boolean) : [];
+
+  const notesHtml    = answers.length   ? answers.map(qa => `<div class="iv-bullet">${esc(qa.a)}</div>`).join('') : `<div class="iv-empty-msg">${t('rnNoNotes')}</div>`;
+  const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div style="font-size:13px;color:var(--text);line-height:1.65;">${esc(iv.analysis.summary)}</div>` : `<div class="iv-empty-msg">${t('dbNoAnalysis')}</div>`;
+  const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet">${esc(i)}</div>`).join('') : `<div class="iv-empty-msg">${t('dbNoAnalysis')}</div>`;
+  const quotesHtml   = quotes.length    ? quotes.map(q => `<div class="iv-quote">"${esc(q)}"</div>`).join('')   : `<div class="iv-empty-msg">${t('rnNoQuotes')}</div>`;
+  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet">${esc(u)}</div>`).join('')  : `<div class="iv-empty-msg">${t('dbNoAnalysis')}</div>`;
+
+  const bodyHtml = expandable ? `
+    <div class="iv-card-body">
+      <div class="iv-tabs">
+        <button class="iv-tab active" onclick="ivTab(this,'${iv.id}','notes')">${t('dbNotes')}</button>
+        <button class="iv-tab" onclick="ivTab(this,'${iv.id}','summary')">${t('dbSummary')}</button>
+        <button class="iv-tab" onclick="ivTab(this,'${iv.id}','insights')">${t('dbInsightsTab')}</button>
+        <button class="iv-tab" onclick="ivTab(this,'${iv.id}','quotes')">${t('dbQuotes')}</button>
+        <button class="iv-tab" onclick="ivTab(this,'${iv.id}','ux')">${t('dbUxIssues')}</button>
+      </div>
+      <div class="iv-tab-pane active" id="ivp-${iv.id}-notes"><div class="iv-sec-lbl">${t('dbNotes')}</div>${notesHtml}</div>
+      <div class="iv-tab-pane" id="ivp-${iv.id}-summary"><div class="iv-sec-lbl">${t('dbSummary')}</div>${summaryHtml}</div>
+      <div class="iv-tab-pane" id="ivp-${iv.id}-insights"><div class="iv-sec-lbl">${t('dbInsightsTab')}</div>${insightsHtml}</div>
+      <div class="iv-tab-pane" id="ivp-${iv.id}-quotes"><div class="iv-sec-lbl">${t('dbQuotes')}</div>${quotesHtml}</div>
+      <div class="iv-tab-pane" id="ivp-${iv.id}-ux"><div class="iv-sec-lbl">${t('dbUxIssues')}</div>${uxHtml}</div>
+    </div>` : '';
+
+  return `<div class="iv-card" id="ivc-${iv.id}">
+    <div class="iv-card-hdr" onclick="${expandable ? `toggleIvCard('${iv.id}')` : `loadInterviewById('${iv.id}')`}">
+      ${expandable ? `<input type="checkbox" class="iv-chk" id="ca-chk-${iv.id}" onclick="event.stopPropagation();updateCaCount()" />` : ''}
+      <div class="iv-meta">
+        <div class="iv-meta-top">${badge}<span class="iv-date">${fmt(iv.date)}</span></div>
+        <div class="iv-goal">${esc(iv.goal || '—')}</div>
+        <div class="iv-prog-row">
+          <div class="iv-prog-bar"><div class="iv-prog-fill" style="width:${pct}%"></div></div>
+          <span class="iv-prog-pct">Q${reached}/${total} · ${pct}%</span>
+        </div>
+      </div>
+    </div>
+    ${bodyHtml}
+  </div>`;
+}
+
+function ivTab(btn, ivId, tab) {
+  const card = document.getElementById('ivc-' + ivId);
+  if (!card) return;
+  card.querySelectorAll('.iv-tab').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.iv-tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const pane = document.getElementById(`ivp-${ivId}-${tab}`);
+  if (pane) pane.classList.add('active');
+}
+
+function toggleIvCard(ivId) {
+  const body = document.querySelector(`#ivc-${ivId} .iv-card-body`);
+  if (!body) return;
+  body.style.display = body.style.display === 'none' ? '' : 'none';
+}
+
+function renderCrossTab() {
+  const all = getAllInterviews().slice().reverse();
+  const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
+  const el  = document.getElementById('db-ca-list');
+  if (!el) return;
+  el.innerHTML = all.length
+    ? `<div class="iv-list">${all.map(iv => ivRowHtml(iv, fmt, true)).join('')}</div>`
+    : `<div style="font-size:13px;color:var(--muted);font-style:italic;">${t('dbNoData')}</div>`;
+  updateCaCount();
+}
+
+function updateCaCount() {
+  const checked = document.querySelectorAll('#db-ca-list .iv-chk:checked').length;
+  const countEl = document.getElementById('ca-count');
+  const runBtn  = document.getElementById('ca-run-btn');
+  if (countEl) countEl.innerHTML = checked > 0
+    ? `<strong>${t('dbSelCount', checked)}</strong>`
+    : t('dbSelectHint');
+  if (runBtn) runBtn.disabled = checked < 2;
+}
+
+async function runCrossAnalysis() {
+  const checked = [...document.querySelectorAll('#db-ca-list .iv-chk:checked')];
+  if (checked.length < 2) return;
+  const ids = checked.map(c => c.id.replace('ca-chk-', ''));
+  const all = getAllInterviews();
+  const selected = ids.map(id => all.find(iv => iv.id === id)).filter(Boolean);
+
+  const outEl = document.getElementById('db-ca-out');
+  if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:13px;">${t('dbCrossRunning')}</div>`;
+
+  const convo = selected.map((iv, i) => {
+    const qa = (iv.answers || []).map(a => `Q: ${a.q}\nA: ${a.a}`).join('\n');
+    return `--- Interview ${i+1} (${iv.date}) ---\n${qa}`;
+  }).join('\n\n');
+
+  const schema = JSON.stringify({
+    personas: [{ name:'', age:'', goal:'', pain:'', motivation:'' }],
+    empathy: { thinks:[], feels:[], says:[], does:[] },
+    journey: [{ phase:'', action:'', emotion:'', sentiment:'' }],
+    impactEffort: [{ action:'', impact:'', effort:'', priority:'' }],
+    uxIssues: ['issue 1', 'issue 2'],
+    userFlow: [{ step:'', description:'' }]
   });
-  const targets = {
-    overview:   'res-overview-anchor',
-    interviews: 'res-notes',
-    insights:   'res-content',
-  };
-  const el = document.getElementById(targets[section]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const sysMsg = S.lang === 'ar'
+    ? 'أنت محلل UX خبير. حلل مجموعة مقابلات وأنتج JSON صحيح فقط. جميع القيم بالعربية الخليجية. sentiment/impact/effort/priority بالإنجليزية.'
+    : 'You are a senior UX analyst. Analyze multiple interviews together and output valid JSON only. All values in English.';
+  const prompt = S.lang === 'ar'
+    ? `حلّل المقابلات التالية معاً وأنتج JSON بهذا الهيكل:\n${schema}\n\nالمقابلات:\n${convo}`
+    : `Analyze these interviews together and output ONLY valid JSON with this structure:\n${schema}\n\nInterviews:\n${convo}`;
+
+  try {
+    showOv(t('olAnalyze'), t('olSub'));
+    const raw = await callAI([{ role:'system', content:sysMsg },{ role:'user', content:prompt }], 0.3, 4000);
+    hideOv();
+    let data;
+    try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch(_) { data = {}; }
+    renderCrossOutput(data);
+  } catch(e) {
+    hideOv();
+    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:13px;">${t('errAnalysis')}</div>`;
+  }
 }
 
-// ─── RESEARCH NOTES ───────────────────────────────────────
-function renderNotes() {
-  const el = document.getElementById('res-notes');
-  if (!el || !S.isResearcher) return;
+function renderCrossOutput(d) {
+  const el = document.getElementById('db-ca-out');
+  if (!el) return;
+  const sec = (title, ico, html) => `
+    <div class="ca-out-card">
+      <div class="ca-out-hdr">${ico} ${title}</div>
+      <div class="ca-out-body">${html}</div>
+    </div>`;
+  const bullets = arr => Array.isArray(arr) && arr.length
+    ? arr.map(i => `<div class="iv-bullet">${esc(String(i))}</div>`).join('')
+    : `<div class="iv-empty-msg">${t('dbCrossEmpty')}</div>`;
 
-  const all = getAllInterviews().slice().reverse(); // newest first
-  const fmt = iso => new Date(iso).toLocaleString(
-    S.lang === 'ar' ? 'ar-SA' : 'en-US',
-    { dateStyle: 'medium', timeStyle: 'short' }
-  );
+  let html = '';
 
-  if (!all.length) {
-    el.innerHTML = `<div class="rn-wrap"><div class="rn-hdr">
-      <div class="rn-hdr-ttl">${t('rnTitle')}</div>
-      <div class="rn-hdr-sub">${t('rnSub')}</div>
-    </div><div class="rn-empty-msg">${t('rnEmpty')}</div></div>`;
-    return;
+  // Personas
+  const personas = Array.isArray(d.personas) ? d.personas : [];
+  if (personas.length) {
+    const rows = personas.map(p => `
+      <div style="margin-bottom:12px;padding:12px 14px;background:var(--bg);border-radius:var(--rsm);">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;">${esc(p.name||'')}</div>
+        ${[['Age',p.age],['Goal',p.goal],['Pain',p.pain],['Motivation',p.motivation]].map(([k,v])=>v?`<div style="font-size:12px;color:var(--muted);margin-bottom:2px;"><strong>${k}:</strong> ${esc(v)}</div>`:'').join('')}
+      </div>`).join('');
+    html += sec(t('personas'), '👤', rows);
   }
 
-  const cards = all.map(iv => {
-    const reached = iv.lastQuestionSeen || 0;
-    const total   = iv.totalQuestions   || 0;
-    const isDone  = reached >= total && total > 0;
-    const statusCls  = isDone ? 'rn-status-done' : 'rn-status-part';
-    const statusLbl  = isDone ? t('rnCompleted') : `${t('rnStopped')} ${reached}`;
-    const progLbl    = total > 0 ? `Q${reached} / ${total}` : `Q${reached}`;
+  // Empathy
+  if (d.empathy && typeof d.empathy === 'object') {
+    const q = (label, arr) => `<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px;">${label}</div>${bullets(arr)}</div>`;
+    html += sec(t('empathy'), '❤️', `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">${q(t('emThinks'),d.empathy.thinks)}${q(t('emFeels'),d.empathy.feels)}${q(t('emSays'),d.empathy.says)}${q(t('emDoes'),d.empathy.does)}</div>`);
+  }
 
-    // Notes — bullet from each answer
-    const answers = Array.isArray(iv.answers) ? iv.answers : [];
-    const notesBullets = answers.length
-      ? answers.map(qa => `<div class="rn-bullet">${esc(qa.a)}</div>`).join('')
-      : `<div class="rn-empty-msg">${t('rnNoNotes')}</div>`;
+  // Journey
+  if (Array.isArray(d.journey) && d.journey.length) {
+    const rows = d.journey.map(j => `
+      <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:12px;font-weight:700;color:var(--primary);width:90px;flex-shrink:0;">${esc(j.phase||'')}</div>
+        <div style="flex:1;font-size:12px;color:var(--text);">${esc(j.action||'')}${j.emotion?` — <em>${esc(j.emotion)}</em>`:''}</div>
+        <div style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;flex-shrink:0;${j.sentiment==='positive'?'background:#dcfce7;color:#15803d;':j.sentiment==='negative'?'background:#fee2e2;color:#b91c1c;':'background:var(--bg);color:var(--muted);'}">${j.sentiment||''}</div>
+      </div>`).join('');
+    html += sec(t('journey'), '🗺️', rows);
+  }
 
-    // Observations — from analysis.insights
-    const insights = iv.analysis && Array.isArray(iv.analysis.insights) ? iv.analysis.insights.filter(Boolean) : [];
-    const obsBullets = insights.length
-      ? insights.map(ins => `<div class="rn-bullet">${esc(ins)}</div>`).join('')
-      : `<div class="rn-empty-msg">${t('rnNoObs')}</div>`;
+  // Impact vs Effort
+  if (Array.isArray(d.impactEffort) && d.impactEffort.length) {
+    const rows = d.impactEffort.map(i => `
+      <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;">
+        <div style="flex:1;color:var(--text);">${esc(i.action||'')}</div>
+        <div style="color:var(--muted);width:55px;">${i.impact||''}</div>
+        <div style="color:var(--muted);width:55px;">${i.effort||''}</div>
+        <div style="font-weight:700;color:var(--primary);width:75px;">${i.priority||''}</div>
+      </div>`).join('');
+    html += sec(t('impactEff'), '⚡', `<div style="display:flex;gap:10px;padding-bottom:6px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.6px;"><div style="flex:1">${t('ieAction')}</div><div style="width:55px">${t('ieImpact')}</div><div style="width:55px">${t('ieEffort')}</div><div style="width:75px">${t('iePriority')}</div></div>${rows}`);
+  }
 
-    // User Quotes — from analysis.quotes
-    const quotes = iv.analysis && Array.isArray(iv.analysis.quotes) ? iv.analysis.quotes.filter(Boolean) : [];
-    const quotesHtml = quotes.length
-      ? quotes.map(q => `<div class="rn-quote">"${esc(q)}"</div>`).join('')
-      : `<div class="rn-empty-msg">${t('rnNoQuotes')}</div>`;
+  // UX Issues
+  if (Array.isArray(d.uxIssues) && d.uxIssues.length) html += sec(t('dbUxIssues'), '⚠️', bullets(d.uxIssues));
 
-    return `<div class="rn-card">
-      <div class="rn-card-hdr">
-        <span class="rn-card-id">#${iv.id}</span>
-        <span class="rn-card-dot"></span>
-        <span class="rn-card-date">${fmt(iv.date)}</span>
-        <span class="rn-card-dot"></span>
-        <span class="${statusCls}">${statusLbl}</span>
-        <span class="rn-card-prog">${progLbl}</span>
-      </div>
-      <div class="rn-card-body">
-        <div class="rn-section">
-          <div class="rn-sec-lbl">${t('rnNotes')}</div>
-          <div class="rn-bullets">${notesBullets}</div>
-        </div>
-        <div class="rn-section">
-          <div class="rn-sec-lbl">${t('rnObs')}</div>
-          <div class="rn-bullets">${obsBullets}</div>
-        </div>
-        <div class="rn-section">
-          <div class="rn-sec-lbl">${t('rnQuotes')}</div>
-          ${quotesHtml}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+  // User Flow
+  if (Array.isArray(d.userFlow) && d.userFlow.length) {
+    const steps = d.userFlow.map((s,i) => `<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;"><div style="width:24px;height:24px;border-radius:50%;background:var(--plight);color:var(--primary);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div><div><div style="font-size:13px;font-weight:600;color:var(--text);">${esc(s.step||'')}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">${esc(s.description||'')}</div></div></div>`).join('');
+    html += sec(t('userFlow'), '🔄', steps);
+  }
 
-  el.innerHTML = `<div class="rn-wrap">
-    <div class="rn-hdr">
-      <div class="rn-hdr-ttl">${t('rnTitle')}</div>
-      <div class="rn-hdr-sub">${t('rnSub')}</div>
-    </div>
-    <div class="rn-list">${cards}</div>
-  </div>`;
+  el.innerHTML = html || `<div style="padding:20px;color:var(--muted);font-size:13px;">${t('dbCrossEmpty')}</div>`;
 }
 
 // ─── END / ANALYZE ────────────────────────────────────────
@@ -1602,22 +1869,19 @@ async function analyze() {
 // ─── RENDER RESULTS ───────────────────────────────────────
 function renderResults(d) {
   goTo('page-results');
-  const rml = document.getElementById('research-mode-label');
-  if (rml) rml.style.display = S.isResearcher ? 'block' : 'none';
-  const ccl = document.getElementById('completed-count-label');
-  const cc  = document.getElementById('completed-count');
-  if (ccl && cc) {
-    if (S.isResearcher) {
-      cc.textContent  = String(getAllInterviews().length);
-      ccl.style.display = 'block';
-    } else { ccl.style.display = 'none'; }
+  if (!S.isResearcher) {
+    // Non-researcher: just show analysis
+    document.getElementById('res-panel').style.display = 'none';
+    renderAnalysis(d, { lastQuestionSeen: S.mainAsked, totalQuestions: S.numQ });
+    dbTab('analysis');
+    return;
   }
-  document.getElementById('res-ttl').textContent = t('resTitle');
-  document.getElementById('res-sub').textContent = t('resSub');
   renderPanel();
-  renderHistory(S._iid);
+  renderOverview();
+  renderInterviewsTab();
+  renderCrossTab();
   renderAnalysis(d, { lastQuestionSeen: S.mainAsked, totalQuestions: S.numQ });
-  renderNotes();
+  dbTab('overview');
 }
 
 function renderAnalysis(d, iv) {
