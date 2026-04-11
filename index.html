@@ -1338,11 +1338,11 @@ async function submitAnswer() {
 
 function finishMsg() {
   const ar = S.lang === 'ar';
-  const title     = ar ? 'شكراً لك 🙌' : 'That was great, thank you 🙌';
+  const title     = ar ? 'يسلموووو 🙌' : 'That was great, thank you 🙌';
   const body      = ar
-    ? 'وقتك ومشاركتك تعني لنا الكثير. كلامك يساعدنا نبني تجربة أفضل لك ولكل الناس اللي مثلك 💙'
+    ? 'وقتك وكلامك يعني لنا الكثير — راح يساعدنا نبني شيء أفضل لك ولكل الناس اللي مثلك 💙'
     : 'Your time and honesty mean a lot to us. What you shared will genuinely help us build something better for everyone 💙';
-  const finishLbl = ar ? 'إنهاء' : 'Close';
+  const finishLbl = ar ? 'تم' : 'Close';
 
   document.getElementById('done-title').textContent     = title;
   document.getElementById('done-body').textContent      = body;
