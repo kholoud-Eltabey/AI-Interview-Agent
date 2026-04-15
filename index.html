@@ -321,10 +321,31 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .iv-tab-pane        { display: none; }
 .iv-tab-pane.active { display: block; }
 
-/* Sidebar active nav item */
-.sb-nav-item.active { background: var(--plight) !important; color: var(--primary) !important; font-weight: 600; }
-.sb-nav-item:focus-visible { outline: none !important; background: var(--plight) !important; color: var(--primary) !important; }
-.sb-nav-item:hover { background: var(--plight) !important; color: var(--primary) !important; }
+/* Sidebar nav items */
+.sb-nav-item { border: 1.5px solid transparent !important; transition: background var(--tr), color var(--tr), border-color var(--tr); }
+.sb-nav-item:hover {
+  background: #fff !important; color: #0B5E57 !important;
+  border-color: #0B5E57 !important;
+}
+.sb-nav-item:focus,
+.sb-nav-item:focus-visible {
+  outline: none !important; background: #fff !important; color: #0B5E57 !important;
+  border-color: #0B5E57 !important;
+}
+.sb-nav-item.active {
+  background: rgba(11, 94, 87, 0.1) !important; color: #0B5E57 !important; font-weight: 600;
+  border-color: transparent !important;
+}
+[data-theme="dark"] .sb-nav-item:hover,
+[data-theme="dark"] .sb-nav-item:focus,
+[data-theme="dark"] .sb-nav-item:focus-visible {
+  background: var(--surface) !important; color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+[data-theme="dark"] .sb-nav-item.active {
+  background: rgba(15, 118, 110, 0.12) !important; color: var(--primary) !important;
+  border-color: transparent !important;
+}
 
 /* IV tab active */
 .iv-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
@@ -361,11 +382,14 @@ a:focus-visible,
   border-color: var(--primary) !important;
 }
 
-/* Sidebar recent items — hover, focus, active */
-.sb-rc-item { border-radius: var(--rxs); cursor: pointer; transition: background var(--tr), color var(--tr); }
+/* Sidebar recent items */
+.sb-rc-item { border-radius: var(--rxs); cursor: pointer; transition: background var(--tr), color var(--tr), border-color var(--tr); border: 1.5px solid transparent; }
 .sb-rc-item:hover,
-.sb-rc-item:focus-visible { outline: none; background: var(--plight); color: var(--primary); }
-.sb-rc-item.active { background: var(--plight); color: var(--primary); font-weight: 600; }
+.sb-rc-item:focus-visible { outline: none; background: #fff; color: #0B5E57; border-color: #0B5E57; }
+.sb-rc-item.active { background: rgba(11, 94, 87, 0.1); color: #0B5E57; font-weight: 600; border-color: transparent; }
+[data-theme="dark"] .sb-rc-item:hover,
+[data-theme="dark"] .sb-rc-item:focus-visible { background: var(--surface); color: var(--primary); border-color: var(--primary); }
+[data-theme="dark"] .sb-rc-item.active { background: rgba(15, 118, 110, 0.12); color: var(--primary); border-color: transparent; }
 
 /* IV bullet prefix */
 .iv-bullet { padding-inline-start: 14px; position: relative; }
@@ -636,26 +660,40 @@ a:focus-visible,
   display: flex; gap: 8px;
 }
 .prestart-wrap {
-  max-width: 400px; width: 100%; text-align: center;
+  max-width: 560px; width: 100%; text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+  margin-inline: auto;
 }
 .prestart-title {
-  font-size: 19px; font-weight: 600; color: var(--text);
-  margin-bottom: 28px; line-height: 1.45; text-align: center;
+  font-size: 20px; font-weight: 600; color: var(--text);
+  margin-bottom: 6px; line-height: 1.45; text-align: center;
+  width: 100%;
 }
 [dir="rtl"] .prestart-title { line-height: 1.7; }
+.prestart-sub {
+  font-size: 14px; color: var(--muted); margin-bottom: 28px;
+  text-align: center; width: 100%; line-height: 1.6;
+}
+[dir="rtl"] .prestart-sub { line-height: 1.8; }
 .prestart-items {
-  display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px;
-  align-items: center;
+  display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px;
+  width: 100%; max-width: 440px;
 }
-.prestart-item {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 14px; color: var(--text); line-height: 1.65;
+.prestart-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  text-align: start;
 }
-[dir="rtl"] .prestart-item { line-height: 1.85; }
-.prestart-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--primary);
-  flex-shrink: 0; margin-top: 7px;
+.prestart-ic {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--plight); color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
+.prestart-row-txt {
+  font-size: 14px; color: var(--text); line-height: 1.6;
+  padding-top: 8px;
+}
+[dir="rtl"] .prestart-row-txt { line-height: 1.8; }
 .prestart-back {
   display: block; text-align: center; margin-top: 14px;
   font-size: 12px; color: var(--muted); cursor: pointer;
@@ -717,13 +755,26 @@ a:focus-visible,
   </div>
   <div class="prestart-wrap">
     <div class="prestart-title" id="prestart-title-lbl">Just a quick heads up before you start 😊</div>
+    <div class="prestart-sub" id="prestart-sub-lbl">Here's what to expect</div>
     <div class="prestart-items">
-      <div class="prestart-item"><div class="prestart-dot"></div><span id="prestart-p1-lbl">This is a short, friendly conversation — about 5–10 minutes</span></div>
-      <div class="prestart-item"><div class="prestart-dot"></div><span id="prestart-p2-lbl">There are no right or wrong answers, just share what feels natural</span></div>
-      <div class="prestart-item"><div class="prestart-dot"></div><span id="prestart-p3-lbl">Your answers help us make Skoon better for everyone</span></div>
-      <div class="prestart-item"><div class="prestart-dot"></div><span id="prestart-p4-lbl">You can stop at any time</span></div>
+      <div class="prestart-row">
+        <div class="prestart-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <span class="prestart-row-txt" id="prestart-p1-lbl">This is a friendly conversation — about 15 minutes</span>
+      </div>
+      <div class="prestart-row">
+        <div class="prestart-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <span class="prestart-row-txt" id="prestart-p2-lbl">No right or wrong answers — just be yourself</span>
+      </div>
+      <div class="prestart-row">
+        <div class="prestart-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <span class="prestart-row-txt" id="prestart-p3-lbl">Your answers help us make Skoon better for everyone</span>
+      </div>
+      <div class="prestart-row">
+        <div class="prestart-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <span class="prestart-row-txt" id="prestart-p4-lbl">You can stop at any time</span>
+      </div>
     </div>
-    <button class="btn btn-p" onclick="startInterview()">
+    <button class="btn btn-p" onclick="startInterview()" style="max-width:440px;">
       <span id="prestart-start-lbl">Start Interview</span>
     </button>
     <button class="prestart-back" onclick="goTo('page-setup')" id="prestart-back-lbl">← Back</button>
@@ -996,6 +1047,14 @@ a:focus-visible,
 
       <div class="h-px bg-[var(--border)] mx-4 shrink-0"></div>
 
+      <div class="px-2 pt-1 pb-1 shrink-0">
+        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" onclick="goHome()">
+          <span class="w-4 text-center shrink-0 text-[13px]">⌂</span><span class="home-btn-lbl">Home</span>
+        </button>
+      </div>
+
+      <div class="h-px bg-[var(--border)] mx-4 shrink-0"></div>
+
       <!-- Recent -->
       <div class="px-2 flex-1 overflow-y-auto" id="sb-recent"></div>
 
@@ -1015,30 +1074,30 @@ a:focus-visible,
 
         <!-- TAB: OVERVIEW -->
         <div class="db-pane active" id="db-pane-overview">
-          <h1 class="text-[14px] font-semibold text-app-text mb-0.5" id="db-ttl-overview">Dashboard</h1>
-          <p class="text-[11px] text-muted mb-4" id="db-sub-overview">Your research at a glance</p>
+          <h1 class="text-[20px] font-semibold text-app-text mb-0.5 leading-[1.6]" id="db-ttl-overview">Dashboard</h1>
+          <p class="text-[14px] text-muted mb-4 leading-[1.6]" id="db-sub-overview">Your research at a glance</p>
           <div class="grid grid-cols-4 gap-2.5 mb-4" id="db-stats"></div>
           <div id="db-latest"></div>
         </div>
 
         <!-- TAB: INTERVIEWS -->
         <div class="db-pane" id="db-pane-interviews">
-          <h1 class="text-[14px] font-semibold text-app-text mb-0.5" id="db-ttl-interviews">Interviews</h1>
-          <p class="text-[11px] text-muted mb-4" id="db-sub-interviews">All recorded sessions</p>
+          <h1 class="text-[20px] font-semibold text-app-text mb-0.5 leading-[1.6]" id="db-ttl-interviews">Interviews</h1>
+          <p class="text-[14px] text-muted mb-4 leading-[1.6]" id="db-sub-interviews">All recorded sessions</p>
           <div id="db-iv-list"></div>
         </div>
 
         <!-- TAB: ANALYSIS -->
         <div class="db-pane" id="db-pane-analysis">
-          <h1 class="text-[14px] font-semibold text-app-text mb-0.5" id="db-ttl-analysis">Analysis</h1>
-          <p class="text-[11px] text-muted mb-4" id="db-sub-analysis">AI-generated insights per session</p>
+          <h1 class="text-[20px] font-semibold text-app-text mb-0.5 leading-[1.6]" id="db-ttl-analysis">Analysis</h1>
+          <p class="text-[14px] text-muted mb-4 leading-[1.6]" id="db-sub-analysis">AI-generated insights per session</p>
           <div id="res-content"></div>
         </div>
 
         <!-- TAB: INSIGHTS -->
         <div class="db-pane" id="db-pane-insights">
-          <h1 class="text-[14px] font-semibold text-app-text mb-0.5" id="db-ttl-insights">Cross Analysis</h1>
-          <p class="text-[11px] text-muted mb-4" id="db-sub-insights">Select interviews to analyze together</p>
+          <h1 class="text-[20px] font-semibold text-app-text mb-0.5 leading-[1.6]" id="db-ttl-insights">Cross Analysis</h1>
+          <p class="text-[14px] text-muted mb-4 leading-[1.6]" id="db-sub-insights">Select interviews to analyze together</p>
           <div class="flex flex-col gap-2 px-4 py-3.5 bg-surface border border-[var(--border)] rounded mb-4">
             <button class="btn btn-p w-full" id="ca-all-btn" onclick="runAllAnalysis()" style="display:none;font-size:12px;font-weight:500;"></button>
           </div>
@@ -1056,7 +1115,6 @@ a:focus-visible,
 
         <div class="flex justify-center gap-2.5 mt-8 pb-2">
           <button class="btn btn-s" onclick="restart()" id="s-new-btn" style="font-size:11px;font-weight:500;">New Interview</button>
-          <button class="btn btn-s" onclick="goHome()" style="font-size:11px;font-weight:500;"><span class="home-btn-lbl">Home</span></button>
         </div>
       </div>
     </div>
@@ -1171,6 +1229,7 @@ const TR = {
     introDesc: "We'd love to hear about your experience renting in Saudi Arabia. It's a short, friendly chat — no right or wrong answers.",
     introStart: 'Get Started',
     prestartTitle: 'Just a quick heads up before you start 😊',
+    prestartSub: "Here's what to expect",
     prestartP1: 'This is a friendly conversation — about 15 minutes',
     prestartP2: 'No right or wrong answers — just be yourself',
     prestartP3: 'Your answers help us make Skoon better for everyone',
@@ -1251,6 +1310,7 @@ const TR = {
     introDesc: 'يسعدنا نسمع تجربتك في البحث عن عقار للإيجار في السعودية. هي محادثة قصيرة وودية — ما في إجابة صح أو غلط.',
     introStart: 'ابدأ',
     prestartTitle: 'تنبيه سريع قبل ما تبدأ 😊',
+    prestartSub: 'هذا اللي راح يصير',
     prestartP1: 'هي محادثة ودية — تقريباً 15 دقيقة',
     prestartP2: 'ما في إجابة صح أو غلط، شارك اللي يجيك طبيعي',
     prestartP3: 'إجاباتك تساعدنا نطوّر Skoon لي أحسن للجميع',
@@ -1277,6 +1337,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Restore in-progress session if one exists
   restoreSession();
+
+  // If researcher, open dashboard directly on load
+  if (S.isResearcher) {
+    renderResults({});
+    dbTab('overview');
+  }
 });
 
 // ─── THEME ────────────────────────────────────────────────
@@ -1303,19 +1369,20 @@ function applyLang(lang) {
   localStorage.setItem('app_language', lang);
   document.documentElement.setAttribute('lang', lang);
   document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-  // If interview is active, update the system prompt so AI switches language immediately
-  if (S.msgs.length > 0 && S.msgs[0].role === 'system') {
-    S.msgs[0].content = buildSys();
+
+  // If interview is active, restart it in the new language (no mixed-language chat)
+  const chatActive = S.msgs.length > 0 && document.getElementById('page-chat').classList.contains('active');
+  if (chatActive) {
+    S.msgs = []; S.mainAsked = 0; S.followUps = 0;
+    S.waitingForAnswer = false; S.done = false;
+    S.msgs.push({ role: 'system', content: buildSys() });
+    document.getElementById('msgs').innerHTML = '';
+    document.getElementById('end-row').style.display = 'none';
+    document.getElementById('prog-lbl').textContent = '';
+    document.getElementById('prog-fill').style.width = '0%';
+    sendIntro();
   }
-  // Re-translate the intro bubble if it's visible
-  const introBbl = document.getElementById('intro-bbl');
-  if (introBbl) {
-    const newIntro = lang === 'ar'
-      ? 'مرحباً 👋 أنا مساعدك الذكي لمقابلات تجربة المستخدم. هدفي أفهم تجربتك في البحث عن عقار للإيجار. راح نبدأ بأسئلة بسيطة إذا تكرمت 👇'
-      : 'Hi 👋 I\'m an AI UX research interviewer. I\'m here to understand your experience searching for rental property. I\'ll start with a few simple questions if you have a moment 👇';
-    introBbl.textContent = newIntro;
-    if (S.msgs[1] && S.msgs[1].role === 'assistant') S.msgs[1].content = newIntro;
-  }
+
   renderTR();
 }
 
@@ -1325,6 +1392,7 @@ function renderTR() {
 
   // Pre-start page strings
   set('prestart-title-lbl', t('prestartTitle'));
+  set('prestart-sub-lbl',   t('prestartSub'));
   set('prestart-p1-lbl',    t('prestartP1'));
   set('prestart-p2-lbl',    t('prestartP2'));
   set('prestart-p3-lbl',    t('prestartP3'));
@@ -1730,8 +1798,8 @@ async function analyzeStoredInterview(id) {
     const convo = iv.answers.map(qa => `Researcher: ${qa.q}\nParticipant: ${qa.a}`).join('\n\n');
     const ar = S.lang === 'ar';
     const sysMsg = ar
-      ? 'أنت محلل UX خبير. حلّل محادثة المقابلة وأنتج JSON صحيح فقط. جميع القيم بالعربية الخليجية. sentiment/impact/effort/priority بالإنجليزية.'
-      : 'You are a senior UX research analyst. Analyze the interview and output valid JSON only. All values in English. sentiment/impact/effort/priority in English.';
+      ? 'أنت محلل UX خبير. حلّل محادثة المقابلة وأنتج JSON صحيح فقط. جميع القيم والنصوص يجب أن تكون بالعربية الخليجية حصراً — لا تستخدم الإنجليزية أبداً إلا في: sentiment/impact/effort/priority. الملخص والتوصيات والأنماط والرؤى كلها بالعربية.'
+      : 'You are a senior UX research analyst. Analyze the interview and output valid JSON only. ALL text values (summary, insights, patterns, recommendations, quotes, personas, journey, userFlow) MUST be in English only — never Arabic. sentiment/impact/effort/priority in English.';
     const schema = JSON.stringify({
       summary:"2-3 sentence overview",insights:["insight 1","insight 2"],quotes:["verbatim quote"],patterns:["pattern 1"],
       recommendations:["recommendation 1"],
@@ -1889,21 +1957,46 @@ function saveProfile() {
   const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
   setT('sb-uname',         display);
   setT('sb-urole',         role);
-  setT('sb-avatar',        display.charAt(0).toUpperCase());
-  setT('spp-avatar',       display.charAt(0).toUpperCase());
   setT('spp-display-name', display);
+  // Restore avatar image or fallback to letter
+  const savedAvatar = localStorage.getItem('researcher_avatar');
+  if (savedAvatar) { updateAvatarUI(savedAvatar); }
+  else { setT('sb-avatar', display.charAt(0).toUpperCase()); setT('spp-avatar', display.charAt(0).toUpperCase()); }
   closeProfilePanel();
 }
 
 function editAvatarLetter() {
-  const ar  = S.lang === 'ar';
-  const cur = localStorage.getItem('researcher_name') || '';
-  const val = prompt(ar ? 'أدخل اسمك:' : 'Enter your name:', cur);
-  if (val && val.trim()) {
-    localStorage.setItem('researcher_name', val.trim());
-    saveProfile();
-    openProfilePanel();
-  }
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = () => {
+    const file = inp.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      localStorage.setItem('researcher_avatar', dataUrl);
+      updateAvatarUI(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+}
+
+function updateAvatarUI(dataUrl) {
+  const ids = ['sb-avatar', 'spp-avatar'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (dataUrl) {
+      el.textContent = '';
+      el.style.backgroundImage = `url(${dataUrl})`;
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center';
+    } else {
+      el.style.backgroundImage = '';
+      el.textContent = getDisplayName().charAt(0).toUpperCase();
+    }
+  });
 }
 
 function renderPanel() {
@@ -1919,8 +2012,9 @@ function renderPanel() {
   if (uname) uname.textContent = displayName;
   const urole = document.getElementById('sb-urole');
   if (urole) urole.textContent = localStorage.getItem('researcher_job') || (S.lang === 'ar' ? 'باحث تجربة المستخدم' : 'UX Researcher');
-  const avatar = document.getElementById('sb-avatar');
-  if (avatar) avatar.textContent = displayName.charAt(0).toUpperCase();
+  const savedAv = localStorage.getItem('researcher_avatar');
+  if (savedAv) { updateAvatarUI(savedAv); }
+  else { const avatar = document.getElementById('sb-avatar'); if (avatar) avatar.textContent = displayName.charAt(0).toUpperCase(); }
   set('sb-lbl-overview',   'dbDashboard');
   set('sb-lbl-interviews', 'dbInterviews');
   set('sb-lbl-analysis',   'dbAnalysis');
@@ -1954,7 +2048,6 @@ function renderSbRecent() {
   el.innerHTML = lbl + all.map(iv => `
     <div class="sb-rc-item px-2.5 py-1.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
       <div class="text-[11.5px] font-semibold text-app-text leading-tight">${S.lang === 'ar' ? 'المقابلة' : 'Interview'} ${iv.num || getInterviewNumber(iv.id)}</div>
-      <div class="text-[10px] text-muted mt-0.5">${fmtDate(iv.date)}</div>
     </div>`).join('');
 }
 
@@ -2151,8 +2244,8 @@ async function _doCrossAnalysis(selected) {
     userFlow: [{ step:'', description:'' }]
   });
   const sysMsg = S.lang === 'ar'
-    ? 'أنت محلل UX خبير. حلّل مجموعة مقابلات مكتملة معاً وأنتج JSON صحيح فقط. استخرج الأنماط والسلوكيات المتكررة ونقاط الألم والمحفزات وعوامل القرار الحقيقية من الإجابات. جميع القيم بالعربية الخليجية. sentiment/impact/effort/priority بالإنجليزية دائماً. لا تضف أي نص خارج JSON.'
-    : 'You are a senior UX research analyst. Analyze multiple completed interviews together and output valid JSON only. Extract real patterns, repeated behaviours, pain points, motivations, and decision factors from the actual answers. All values in English. sentiment/impact/effort/priority must be in English. Output ONLY valid JSON.';
+    ? 'أنت محلل UX خبير. حلّل مجموعة مقابلات مكتملة معاً وأنتج JSON صحيح فقط. استخرج الأنماط والسلوكيات المتكررة ونقاط الألم والمحفزات وعوامل القرار الحقيقية من الإجابات. جميع القيم والنصوص يجب أن تكون بالعربية الخليجية حصراً — لا تستخدم الإنجليزية أبداً إلا في: sentiment/impact/effort/priority. لا تضف أي نص خارج JSON.'
+    : 'You are a senior UX research analyst. Analyze multiple completed interviews together and output valid JSON only. Extract real patterns, repeated behaviours, pain points, motivations, and decision factors from the actual answers. ALL text values MUST be in English only — never Arabic. sentiment/impact/effort/priority must be in English. Output ONLY valid JSON.';
   const prompt = S.lang === 'ar'
     ? `حلّل المقابلات المكتملة التالية معاً (${selected.length} مقابلة) وأنتج JSON بهذا الهيكل بالضبط. ركّز على ما تكرّر في أكثر من مقابلة:\n${schema}\n\nالمقابلات:\n${convo}`
     : `Analyze these ${selected.length} completed interviews together and output ONLY valid JSON with this exact structure. Focus on patterns that appear across multiple interviews — repeated behaviours, shared pain points, common motivations:\n${schema}\n\nInterviews:\n${convo}`;
@@ -2253,18 +2346,32 @@ function renderResults(d) {
   renderOverview();
   renderInterviewsTab();
   renderCrossTab();
-  // If d has real analysis data (just finished interview), show it; otherwise load most recent
+  // If d has real analysis data (just finished interview), show it; otherwise aggregate
   const hasRealData = !!(d && (d.summary || (d.insights && d.insights.length)));
   if (hasRealData) {
     const curIv = { lastQuestionSeen: S.mainAsked, totalQuestions: S.numQ };
     renderAnalysis(d, curIv, 'res-content', null);
     dbTab('analysis');
   } else {
-    // Try to load the most recently analyzed interview
+    // Show aggregated analysis from all interviews that have been analyzed
     const all = getAllInterviews().slice().reverse();
-    const analyzed = all.find(iv => iv.analysis && iv.analysis.summary);
-    if (analyzed) {
-      renderAnalysis(analyzed.analysis, analyzed, 'res-content', analyzed);
+    const allAnalyzed = all.filter(iv => iv.analysis && iv.analysis.summary);
+    if (allAnalyzed.length > 1) {
+      // Merge all analyses into aggregated view
+      const merged = { summary: '', insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: { thinks:[], feels:[], says:[], does:[] }, journey: [], impactEffort: [], userFlow: [] };
+      allAnalyzed.forEach(iv => {
+        const a = iv.analysis;
+        if (a.summary) merged.summary += (merged.summary ? ' ' : '') + a.summary;
+        ['insights','quotes','patterns','recommendations'].forEach(k => { if (a[k]) merged[k].push(...a[k]); });
+        if (a.personas) merged.personas.push(...a.personas);
+        if (a.empathy) { ['thinks','feels','says','does'].forEach(k => { if (a.empathy[k]) merged.empathy[k].push(...a.empathy[k]); }); }
+        if (a.journey) merged.journey.push(...a.journey);
+        if (a.impactEffort) merged.impactEffort.push(...a.impactEffort);
+        if (a.userFlow) merged.userFlow.push(...a.userFlow);
+      });
+      renderAnalysis(merged, null, 'res-content', null);
+    } else if (allAnalyzed.length === 1) {
+      renderAnalysis(allAnalyzed[0].analysis, allAnalyzed[0], 'res-content', allAnalyzed[0]);
     } else if (all.length) {
       renderAnalysis({}, all[0], 'res-content', all[0]);
     } else {
