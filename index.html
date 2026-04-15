@@ -626,36 +626,6 @@ a:focus-visible,
 /* ── INTERVIEW HISTORY / RESEARCH NOTES ── */
 /* Styles migrated to Tailwind utility classes in JS render functions */
 
-/* ── INTRO PAGE ── */
-#page-intro {
-  align-items: center; justify-content: center;
-  padding: 60px 24px 48px; position: relative;
-}
-.intro-icons {
-  position: absolute; top: 18px; inset-inline-end: 18px;
-  display: flex; gap: 8px;
-}
-.intro-wrap {
-  max-width: 400px; width: 100%; text-align: center;
-}
-.intro-logo {
-  width: 56px; height: 56px; border-radius: 16px;
-  background: var(--plight); display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 18px; font-size: 26px; font-weight: 700; color: var(--primary);
-}
-.intro-brand-name {
-  font-size: 32px; font-weight: 700; letter-spacing: -1px;
-  color: var(--primary); margin-bottom: 8px;
-}
-.intro-tagline {
-  font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6;
-}
-.intro-desc {
-  font-size: 15px; color: var(--text); line-height: 1.75;
-  margin-bottom: 36px; font-weight: 400;
-}
-[dir="rtl"] .intro-desc { line-height: 1.9; }
-
 /* ── PRE-START PAGE ── */
 #page-prestart {
   align-items: center; justify-content: center;
@@ -734,26 +704,6 @@ a:focus-visible,
 </div>
 
 <!-- ═══════ PAGE 0 — INTRO ═══════ -->
-<div class="page active" id="page-intro">
-  <div class="intro-icons">
-    <button class="ic-btn" onclick="cycleLang()" title="Switch language">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-      </svg>
-    </button>
-    <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-intro"></span></button>
-  </div>
-  <div class="intro-wrap">
-    <div class="intro-brand-name">Skoon</div>
-    <div class="intro-tagline" id="intro-tagline-lbl">Your experience shapes what we build</div>
-    <div class="intro-desc" id="intro-desc-lbl">We'd love to hear about your experience renting in Saudi Arabia. It's a short, friendly chat — no right or wrong answers.</div>
-    <button class="btn btn-p" onclick="goTo('page-prestart')">
-      <span id="intro-start-lbl">Get Started</span>
-    </button>
-  </div>
-</div>
-
 <!-- ═══════ PAGE 0b — PRE-START ═══════ -->
 <div class="page" id="page-prestart">
   <div class="prestart-icons">
@@ -776,12 +726,12 @@ a:focus-visible,
     <button class="btn btn-p" onclick="startInterview()">
       <span id="prestart-start-lbl">Start Interview</span>
     </button>
-    <button class="prestart-back" onclick="goTo('page-intro')" id="prestart-back-lbl">← Back</button>
+    <button class="prestart-back" onclick="goTo('page-setup')" id="prestart-back-lbl">← Back</button>
   </div>
 </div>
 
-<!-- ═══════ PAGE 1 — SETUP (researcher config) ═══════ -->
-<div class="page" id="page-setup">
+<!-- ═══════ PAGE 1 — SETUP ═══════ -->
+<div class="page active" id="page-setup">
   <div class="topbar">
     <div class="hdr-icons">
       <button class="ic-btn" id="setup-lang-btn" onclick="cycleLang()" title="Switch language">
@@ -835,7 +785,7 @@ a:focus-visible,
     </div>
 
     <div class="start-err" id="start-err"></div>
-    <button class="btn btn-p" onclick="startInterview()">
+    <button class="btn btn-p" onclick="goTo('page-prestart')">
       <span id="s-start-txt">Start Interview</span>
     </button>
 
@@ -1340,7 +1290,7 @@ function applyTheme(th) {
   document.documentElement.setAttribute('data-theme', th);
   localStorage.setItem('app_theme', th);
   const ico = th === 'dark' ? ICON_SUN : ICON_MOON;
-  ['theme-icon-intro', 'theme-icon-prestart', 'theme-icon-setup', 'theme-icon-chat', 'theme-icon-res2', 'theme-icon-sb'].forEach(id => {
+  ['theme-icon-prestart', 'theme-icon-setup', 'theme-icon-chat', 'theme-icon-res2', 'theme-icon-sb'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = ico;
   });
@@ -1373,10 +1323,7 @@ function renderTR() {
   const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
   const ph  = (id, v) => { const e = document.getElementById(id); if (e) e.placeholder = v; };
 
-  // Intro / pre-start page strings
-  set('intro-tagline-lbl',  t('introTagline'));
-  set('intro-desc-lbl',     t('introDesc'));
-  set('intro-start-lbl',    t('introStart'));
+  // Pre-start page strings
   set('prestart-title-lbl', t('prestartTitle'));
   set('prestart-p1-lbl',    t('prestartP1'));
   set('prestart-p2-lbl',    t('prestartP2'));
@@ -2595,16 +2542,13 @@ function submitResearcherPin() {
 }
 
 // ─── RESTART ──────────────────────────────────────────────
-function goHome() {
-  // Researchers go back to setup/config; regular users go to intro
-  goTo(S.isResearcher ? 'page-setup' : 'page-intro');
-}
+function goHome() { goTo('page-setup'); }
 
 function restart() {
   clearSession();
   S.msgs = []; S.mainAsked = 0; S.followUps = 0;
   S.waitingForAnswer = false; S.done = false;
-  goTo(S.isResearcher ? 'page-setup' : 'page-intro');
+  goTo('page-setup');
 }
 </script>
 </body>
