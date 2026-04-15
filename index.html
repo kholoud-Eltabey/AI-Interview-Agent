@@ -1047,14 +1047,6 @@ a:focus-visible,
 
       <div class="h-px bg-[var(--border)] mx-4 shrink-0"></div>
 
-      <div class="px-2 pt-1 pb-1 shrink-0">
-        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" onclick="goHome()">
-          <span class="w-4 text-center shrink-0 text-[13px]">⌂</span><span class="home-btn-lbl">Home</span>
-        </button>
-      </div>
-
-      <div class="h-px bg-[var(--border)] mx-4 shrink-0"></div>
-
       <!-- Recent -->
       <div class="px-2 flex-1 overflow-y-auto" id="sb-recent"></div>
 
@@ -1115,6 +1107,7 @@ a:focus-visible,
 
         <div class="flex justify-center gap-2.5 mt-8 pb-2">
           <button class="btn btn-s" onclick="restart()" id="s-new-btn" style="font-size:11px;font-weight:500;">New Interview</button>
+          <button class="btn btn-s" onclick="goHome()" id="s-home-btn" style="font-size:11px;font-weight:500;">Home</button>
         </div>
       </div>
     </div>
@@ -1221,6 +1214,10 @@ const TR = {
     dbAnalyzeAll: 'Analyze All Completed Interviews',
     dbCrossRunning: 'Analyzing…', dbCrossEmpty: 'No output yet',
     homeBtn:   'Home',
+    dbInterviewLabel: 'Interview',
+    greetHello: 'Hello, ',
+    badgeCompleted: 'Completed', badgePartial: 'Partial', badgeEarly: 'Early', badgeIncomplete: 'Incomplete',
+    noAnalysisYet: 'No analysis yet', noAnalysisDesc: 'This interview has not been analyzed yet', analyzeNow: 'Analyze Now',
     errNoKey:  'Please enter your OpenAI API key to continue.',
     errNoConv: 'Please answer at least a couple of questions first.',
     errAi:     'Something went wrong. Please try again.',
@@ -1302,6 +1299,10 @@ const TR = {
     dbAnalyzeAll: 'تحليل كل الأبحاث المكتملة',
     dbCrossRunning: 'جاري التحليل…', dbCrossEmpty: 'لا توجد نتائج بعد',
     homeBtn:   'الرئيسية',
+    dbInterviewLabel: 'المقابلة',
+    greetHello: 'مرحباً، ',
+    badgeCompleted: 'مكتملة', badgePartial: 'منتصف', badgeEarly: 'بداية', badgeIncomplete: 'لم تكتمل',
+    noAnalysisYet: 'لا يوجد تحليل بعد', noAnalysisDesc: 'هذه المقابلة لم يتم تحليلها بعد', analyzeNow: 'تحليل الآن',
     errNoKey:  'من فضلك أدخل مفتاح OpenAI API لتقدر تكمل.',
     errNoConv: 'جاوب على سؤال أو أكثر أولاً.',
     errAi:     'صار خطأ، جرّب مرة ثانية.',
@@ -1419,7 +1420,7 @@ function renderTR() {
   set('s-start-txt',t('startBtn'));
   set('s-end-txt',  t('endBtn'));
   set('s-new-btn',  t('newBtn'));
-  document.querySelectorAll('.home-btn-lbl').forEach(el => el.textContent = t('homeBtn'));
+  set('s-home-btn', t('homeBtn'));
   set('res-ttl',    t('resTitle'));
   set('res-sub',    t('resSub'));
   ph('chat-ta',     t('taPh'));
@@ -1784,6 +1785,7 @@ function loadInterviewById(id) {
   const all = getAllInterviews();
   const iv  = all.find(x => x.id === id);
   if (!iv) return;
+  _currentAnalysisId = id;
   dbTab('analysis');
   renderAnalysis(iv.analysis || {}, iv, 'res-content', iv);
 }
@@ -1833,6 +1835,7 @@ async function analyzeStoredInterview(id) {
 
 // ─── DASHBOARD ────────────────────────────────────────────
 let _dbTab = 'overview';
+let _currentAnalysisId = null;
 
 function dbTab(tab) {
   // Toggle: clicking the active tab deactivates it
@@ -2023,7 +2026,7 @@ function renderPanel() {
   // Greeting heading
   const greetName = getDisplayName();
   const greetEl   = document.getElementById('db-ttl-overview');
-  if (greetEl) greetEl.textContent = (S.lang === 'ar' ? 'مرحباً، ' : 'Hello, ') + greetName;
+  if (greetEl) greetEl.textContent = t('greetHello') + greetName;
   set('db-sub-overview', 'dbGlance');
   set('db-ttl-interviews', 'dbInterviews');
   set('db-sub-interviews', 'dbAllSessions');
@@ -2036,6 +2039,37 @@ function renderPanel() {
   if (allBtn) allBtn.textContent = t('dbAnalyzeAll');
   // recent sidebar
   renderSbRecent();
+  // Re-render all tab content so language switch updates stats/lists/analysis
+  renderOverview();
+  renderInterviewsTab();
+  renderCrossTab();
+  // Re-render analysis tab if an interview is loaded
+  if (_currentAnalysisId) {
+    const iv = getAllInterviews().find(x => x.id === _currentAnalysisId);
+    if (iv) renderAnalysis(iv.analysis || {}, iv, 'res-content', iv);
+  } else {
+    // Re-render aggregated analysis
+    const allIvs = getAllInterviews().slice().reverse();
+    const allAnalyzed = allIvs.filter(iv => iv.analysis && iv.analysis.summary);
+    if (allAnalyzed.length > 1) {
+      const merged = { summary: '', insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: { thinks:[], feels:[], says:[], does:[] }, journey: [], impactEffort: [], userFlow: [] };
+      allAnalyzed.forEach(iv => {
+        const a = iv.analysis;
+        if (a.summary) merged.summary += (merged.summary ? ' ' : '') + a.summary;
+        ['insights','quotes','patterns','recommendations'].forEach(k => { if (a[k]) merged[k].push(...a[k]); });
+        if (a.personas) merged.personas.push(...a.personas);
+        if (a.empathy) { ['thinks','feels','says','does'].forEach(k => { if (a.empathy[k]) merged.empathy[k].push(...a.empathy[k]); }); }
+        if (a.journey) merged.journey.push(...a.journey);
+        if (a.impactEffort) merged.impactEffort.push(...a.impactEffort);
+        if (a.userFlow) merged.userFlow.push(...a.userFlow);
+      });
+      renderAnalysis(merged, null, 'res-content', null);
+    } else if (allAnalyzed.length === 1) {
+      renderAnalysis(allAnalyzed[0].analysis, allAnalyzed[0], 'res-content', allAnalyzed[0]);
+    } else if (allIvs.length) {
+      renderAnalysis({}, allIvs[0], 'res-content', allIvs[0]);
+    }
+  }
 }
 
 function renderSbRecent() {
@@ -2047,7 +2081,7 @@ function renderSbRecent() {
   if (!all.length) { el.innerHTML = lbl; return; }
   el.innerHTML = lbl + all.map(iv => `
     <div class="sb-rc-item px-2.5 py-1.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
-      <div class="text-[11.5px] font-semibold text-app-text leading-tight">${S.lang === 'ar' ? 'المقابلة' : 'Interview'} ${iv.num || getInterviewNumber(iv.id)}</div>
+      <div class="text-[11.5px] font-semibold text-app-text leading-tight">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
     </div>`).join('');
 }
 
@@ -2076,7 +2110,7 @@ function renderOverview() {
       const badge = ivStatusBadge(r, tot);
       return `<div class="iv-card-row flex items-center gap-2 bg-surface border border-[var(--border)] rounded px-3 py-2.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')" onfocus="this.classList.add('active')" onblur="this.classList.remove('active')">
         <div class="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
-          <span class="text-[12px] font-semibold text-app-text">${S.lang === 'ar' ? 'المقابلة' : 'Interview'} ${num}</span>
+          <span class="text-[12px] font-semibold text-app-text">${t('dbInterviewLabel')} ${num}</span>
           <span class="text-[11px] text-muted">${fmtDT(iv.date)}</span>
         </div>
         ${badge}
@@ -2095,17 +2129,16 @@ function renderInterviewsTab() {
 }
 
 function ivStatusBadge(reached, total) {
-  const ar   = S.lang === 'ar';
   const base = 'text-[9.5px] font-bold py-0.5 rounded-md shrink-0 whitespace-nowrap inline-block text-center';
   const w    = 'style="min-width:52px;padding-left:6px;padding-right:6px;"';
   if (!total || total === 0) return '';
   if (reached >= total)
-    return `<span class="${base} bg-green-100 text-green-700" ${w}>${ar ? 'مكتملة' : 'Completed'}</span>`;
+    return `<span class="${base} bg-green-100 text-green-700" ${w}>${t('badgeCompleted')}</span>`;
   if (reached >= Math.ceil(total / 2))
-    return `<span class="${base} bg-amber-100 text-amber-700" ${w}>${ar ? 'منتصف' : 'Partial'}</span>`;
+    return `<span class="${base} bg-amber-100 text-amber-700" ${w}>${t('badgePartial')}</span>`;
   if (reached > 0)
-    return `<span class="${base} bg-blue-100 text-blue-600" ${w}>${ar ? 'بداية' : 'Early'}</span>`;
-  return `<span class="${base} bg-[var(--bg)] text-muted border border-[var(--border)]" ${w}>${ar ? 'لم تكتمل' : 'Incomplete'}</span>`;
+    return `<span class="${base} bg-blue-100 text-blue-600" ${w}>${t('badgeEarly')}</span>`;
+  return `<span class="${base} bg-[var(--bg)] text-muted border border-[var(--border)]" ${w}>${t('badgeIncomplete')}</span>`;
 }
 
 function ivRowHtml(iv, fmt, expandable) {
@@ -2148,7 +2181,7 @@ function ivRowHtml(iv, fmt, expandable) {
       <div class="flex-1 min-w-0">
         <!-- Title row: name + date/time on one side, badge on the other -->
         <div class="flex items-center gap-2">
-          <span class="text-[12px] font-semibold text-app-text shrink-0">${S.lang === 'ar' ? 'المقابلة' : 'Interview'} ${num}</span>
+          <span class="text-[12px] font-semibold text-app-text shrink-0">${t('dbInterviewLabel')} ${num}</span>
           <span class="text-[11px] text-muted truncate">${fmt(iv.date)}</span>
           <span class="ms-auto shrink-0">${badge}</span>
         </div>
@@ -2419,7 +2452,6 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
   // Empty state — show analyze button if interview has answers but no analysis
   const hasData = !!(d.summary || (d.insights && d.insights.length) || (d.patterns && d.patterns.length));
   if (!hasData) {
-    const ar = S.lang === 'ar';
     const ivId = rawIv && rawIv.id;
     const hasAnswers = rawIv && rawIv.answers && rawIv.answers.length > 0;
     const target = document.getElementById(targetId);
@@ -2429,10 +2461,10 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
         <div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;">${ar ? 'لا يوجد تحليل بعد' : 'No analysis yet'}</div>
-          <div style="font-size:12px;color:var(--muted);">${ar ? 'هذه المقابلة لم يتم تحليلها بعد' : 'This interview has not been analyzed yet'}</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;">${t('noAnalysisYet')}</div>
+          <div style="font-size:12px;color:var(--muted);">${t('noAnalysisDesc')}</div>
         </div>
-        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:12px;font-weight:500;padding:9px 22px;">${ar ? 'تحليل الآن' : 'Analyze Now'}</button>` : ''}
+        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:12px;font-weight:500;padding:9px 22px;">${t('analyzeNow')}</button>` : ''}
       </div>`;
     return;
   }
