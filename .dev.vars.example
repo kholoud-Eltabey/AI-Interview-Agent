@@ -1,0 +1,6 @@
+# Copy this file to .dev.vars for local development with wrangler pages dev
+# .dev.vars is gitignored — never commit the real values
+
+OPENAI_API_KEY=sk-...your-key-here...
+AUTH_PASSWORD=your-password-here
+JWT_SECRET=your-jwt-secret-here

@@ -1488,14 +1488,23 @@ function renderProg() {
 // The API key NEVER reaches the browser.
 // All AI requests go to /api/chat — the Worker holds the key as a server secret.
 async function callAI(messages, temp = 0.85, maxTok = 700) {
-  const res = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, temperature: temp, max_tokens: maxTok }),
-  });
+  let res;
+  try {
+    res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, temperature: temp, max_tokens: maxTok }),
+    });
+  } catch (netErr) {
+    console.error('[callAI] network error:', netErr.message);
+    throw new Error('Network error — could not reach /api/chat');
+  }
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `HTTP ${res.status}`);
+    const errText = await res.text().catch(() => '');
+    console.error('[callAI] /api/chat responded', res.status, errText.slice(0, 400));
+    let msg = `HTTP ${res.status}`;
+    try { const j = JSON.parse(errText); msg = j.error?.message || j.error || msg; } catch(_) {}
+    throw new Error(msg);
   }
   const data = await res.json();
   return data.choices[0].message.content.trim();
@@ -1557,6 +1566,7 @@ async function sendIntro() {
     S.waitingForAnswer = true; setSend(false);
     document.getElementById('chat-ta').focus();
   } catch (err) {
+    console.error('[sendIntro]', err.message);
     rmTyping();
     addMsg('assistant', `⚠️ ${t('errAi')}`);
     setSend(false);
@@ -1601,8 +1611,10 @@ async function askQuestion() {
     document.getElementById('chat-ta').focus();
 
   } catch (err) {
+    console.error('[askQuestion]', err.message);
     rmTyping();
     addMsg('assistant', `⚠️ ${t('errAi')}`);
+    S.waitingForAnswer = true; // allow the user to retry
     setSend(false);
   }
 }
