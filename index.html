@@ -7,6 +7,42 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary:  'var(--primary)',
+        phover:   'var(--phover)',
+        plight:   'var(--plight)',
+        surface:  'var(--surface)',
+        'app-bg': 'var(--bg)',
+        border:   'var(--border)',
+        'app-text': 'var(--text)',
+        muted:    'var(--muted)',
+        accent:   'var(--accent)',
+        danger:   'var(--danger)',
+      },
+      fontFamily: {
+        sans: ["'IBM Plex Sans'", 'sans-serif'],
+      },
+      borderRadius: {
+        DEFAULT: 'var(--r)',
+        sm:      'var(--rsm)',
+        xs:      'var(--rxs)',
+      },
+      boxShadow: {
+        card: 'var(--sh)',
+        lg:   'var(--shlg)',
+      },
+      transitionDuration: {
+        DEFAULT: '180ms',
+      },
+    },
+  },
+}
+</script>
 <style>
 
 :root {
@@ -18,6 +54,7 @@
   --primary: #0B5E57;
   --phover:  #094D47;
   --plight:  rgba(11,94,87,0.08);
+  --phlight: rgba(11,94,87,0.04);
   --accent:  #7C3AED;
   --danger:  #DC2626;
   --sh:  0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04);
@@ -36,6 +73,7 @@
   --primary: #0F766E;
   --phover:  #0D6560;
   --plight:  rgba(15,118,110,0.12);
+  --phlight: rgba(15,118,110,0.06);
   --accent:  #BC8CFF;
   --sh:  0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3);
   --shlg: 0 12px 48px rgba(0,0,0,0.6);
@@ -81,13 +119,14 @@ button, input, textarea, select, table, th, td {
 .hero-sub { color: var(--muted); font-size: 14px; }
 
 .ic-btn {
-  width: 40px; height: 40px; border-radius: 50%;
+  width: 32px; height: 32px; border-radius: 50%;
   border: 1.5px solid var(--border); background: var(--surface);
   color: var(--text); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all var(--tr); font-size: 16px; position: relative; flex-shrink: 0;
 }
-.ic-btn:hover { border-color: var(--primary); color: var(--primary); }
+.ic-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--plight); }
+.ic-btn:focus { outline: none; border-color: var(--primary); color: var(--primary); background: var(--plight); box-shadow: 0 0 0 3px var(--plight); }
 
 /* Card */
 .card {
@@ -149,7 +188,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 12px 20px; border-radius: var(--rsm); font-size: 14.5px; font-weight: 600;
+  padding: 11px 20px; border-radius: var(--rsm); font-size: 14px; font-weight: 600;
   cursor: pointer; border: none; font-family: inherit; white-space: nowrap;
   transition: all var(--tr);
 }
@@ -168,7 +207,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 /* ── TOPBAR (shared) ── */
 .topbar {
   display: flex; flex-direction: column;
-  width: 100%; padding: 10px 18px 14px;
+  width: 100%; padding: 12px 18px 12px;
 }
 #page-setup > .topbar { align-self: stretch; }
 .tb-left   { display: none; }
@@ -177,22 +216,24 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .hdr-icons { display: flex; gap: 10px; margin-bottom: 8px; align-self: flex-end; }
 .tb-brand {
   display: block; width: 100%; text-align: center;
-  font-size: 38px; font-weight: 700; letter-spacing: -1.5px;
+  font-size: 18px; font-weight: 600; letter-spacing: -0.3px;
   color: var(--primary); line-height: 1;
   position: static; transform: none; transition: none; animation: none;
 }
-.hdr-sub  { display: block; width: 100%; text-align: center; font-size: 13px; color: var(--muted); margin-top: 4px; }
+.hdr-sub  { display: block; width: 100%; text-align: center; font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: 0.1px; }
 .tb-right { display: none; }
 
 /* ── PROGRESS ── */
-.prog-row  { width: 100%; display: flex; justify-content: center; margin-top: 8px; }
-.prog-wrap { width: 100%; max-width: 260px; }
-.prog-lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-align: center; margin-bottom: 4px; }
-.prog-track { background: var(--border); border-radius: 20px; height: 8px; overflow: hidden; }
+.prog-row  { width: 100%; padding: 6px 0 0; }
+.prog-wrap { width: 100%; }
+.prog-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.prog-lbl  { font-size: 11px; font-weight: 500; color: var(--muted); }
+.prog-pct  { font-size: 11px; font-weight: 500; color: var(--muted); }
+.prog-track { background: var(--border); border-radius: 20px; height: 3px; overflow: hidden; }
 .prog-fill {
   height: 100%; border-radius: 20px;
-  background: var(--primary);
-  transition: width 0.4s ease;
+  background: var(--primary); opacity: 0.75;
+  transition: width 0.5s ease;
 }
 
 /* ── CHAT ── */
@@ -261,17 +302,107 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .send-btn:disabled { opacity: .4; cursor: not-allowed; }
 .end-row { width: 100%; padding: 14px 0 20px; text-align: center; }
 .end-btn {
-  background: var(--primary); color: #fff; border: none;
-  padding: 10px 28px; border-radius: var(--rsm); font-size: 14px; font-weight: 600;
+  background: var(--surface); color: var(--muted);
+  border: 1.5px solid var(--border);
+  padding: 8px 22px; border-radius: var(--rsm); font-size: 12px; font-weight: 400;
   cursor: pointer; font-family: inherit; transition: all var(--tr);
 }
-.end-btn:hover  { background: var(--phover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(11,94,87,0.28); }
-.end-btn:active { transform: none; box-shadow: none; }
+.end-btn:hover  { border-color: var(--primary); color: var(--primary); background: var(--plight); }
+.end-btn:focus  { outline: none; border-color: var(--primary); color: var(--primary); background: var(--plight); box-shadow: 0 0 0 3px var(--plight); }
+.end-btn:active { transform: none; box-shadow: 0 0 0 3px var(--plight); }
 
-/* ── RESULTS ── */
-.res-scroll { flex: 1; overflow-y: auto; padding: 32px 22px 60px; }
-.res-inner  { max-width: 860px; margin: 0 auto; }
-.res-ttl { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+/* ── RESULTS SHELL ── */
+
+/* Dashboard pane visibility — JS toggles this */
+.db-pane        { display: none; }
+.db-pane.active { display: block; }
+
+/* IV tab visibility */
+.iv-tab-pane        { display: none; }
+.iv-tab-pane.active { display: block; }
+
+/* Sidebar active nav item */
+.sb-nav-item.active { background: var(--plight) !important; color: var(--primary) !important; font-weight: 600; }
+.sb-nav-item:focus-visible { outline: none !important; background: var(--plight) !important; color: var(--primary) !important; }
+.sb-nav-item:hover { background: var(--plight) !important; color: var(--primary) !important; }
+
+/* IV tab active */
+.iv-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.iv-tab:focus-visible { outline: none; color: var(--primary); }
+
+/* DB tab active */
+.db-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.db-tab:focus-visible { outline: none; color: var(--primary); }
+
+/* Focus: any interactive element → very light primary bg + primary outline */
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary) !important;
+  outline-offset: 2px;
+  background: var(--phlight) !important;
+  color: var(--primary) !important;
+}
+/* Inputs/textareas already handled by .inp:focus and .profile-inp:focus */
+
+/* Interview cards — hover, focus, active */
+.iv-card-row {
+  transition: background var(--tr), border-color var(--tr);
+  cursor: pointer;
+}
+.iv-card-row:hover,
+.iv-card-row:focus-visible {
+  background: var(--phlight) !important;
+  border-color: var(--primary) !important;
+  outline: none !important;
+}
+.iv-card-row.active {
+  background: var(--phlight) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Sidebar recent items — hover, focus, active */
+.sb-rc-item { border-radius: var(--rxs); cursor: pointer; transition: background var(--tr), color var(--tr); }
+.sb-rc-item:hover,
+.sb-rc-item:focus-visible { outline: none; background: var(--plight); color: var(--primary); }
+.sb-rc-item.active { background: var(--plight); color: var(--primary); font-weight: 600; }
+
+/* IV bullet prefix */
+.iv-bullet { padding-inline-start: 14px; position: relative; }
+.iv-bullet::before { content: '•'; position: absolute; inset-inline-start: 0; color: var(--primary); font-weight: 700; }
+
+/* IV quote RTL border */
+[dir="rtl"] .iv-quote { border-left: none; border-right: 3px solid var(--primary); }
+
+/* Profile overlay panel */
+.sb-profile-panel        { display: none; position: absolute; inset: 0; background: var(--surface); z-index: 100; flex-direction: column; overflow-y: auto; }
+.sb-profile-panel.open   { display: flex; }
+
+/* RTL-aware directional icons */
+[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+
+/* Profile input fields */
+.profile-inp {
+  width: 100%; padding: 7px 10px; font-size: 12px;
+  border: 1.5px solid var(--border); border-radius: var(--rxs);
+  background: var(--bg); color: var(--text);
+  outline: none; transition: border-color var(--tr), box-shadow var(--tr);
+  font-family: inherit;
+}
+.profile-inp:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--plight);
+}
+
+/* Accent-colored quotes border */
+.ra-quote { border-inline-start: 3px solid var(--accent); }
+[dir="rtl"] .ra-quote { border-inline-start: none; border-inline-end: 3px solid var(--accent); }
+
+.res-ttl { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 4px; }
+.res-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+.grid2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
+.rc      { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; box-shadow: var(--sh); }
+.res-ttl { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 4px; }
 .res-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
 .grid2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
 .rc      { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; box-shadow: var(--sh); }
@@ -329,24 +460,30 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   align-items: center; justify-content: center;
   padding: 80px 24px 40px; text-align: center;
 }
-.done-wrap { max-width: 480px; width: 100%; }
+.done-wrap { max-width: 420px; width: 100%; text-align: center; }
 .done-title {
-  font-size: 34px; font-weight: 700; letter-spacing: -0.5px;
-  color: var(--text); margin-bottom: 20px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 18px; font-weight: 600; letter-spacing: -0.2px;
+  color: var(--text); margin-bottom: 12px;
 }
+[dir="rtl"] .done-title { font-family: 'IBM Plex Sans Arabic', sans-serif; }
 .done-body {
-  font-size: 16px; line-height: 1.9; color: var(--muted);
-  white-space: pre-line; margin-bottom: 36px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px; font-weight: 400; line-height: 1.75; color: var(--muted);
+  white-space: pre-line; margin-bottom: 32px;
 }
+[dir="rtl"] .done-body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
 .done-close {
-  display: block; margin: 0 auto;
-  background: var(--primary); border: none; color: #fff;
-  padding: 12px 40px; border-radius: var(--rsm);
-  font-size: 14px; font-weight: 600; font-family: inherit;
+  display: inline-block; margin: 0 auto;
+  background: var(--surface); color: var(--muted);
+  border: 1.5px solid var(--border);
+  padding: 8px 22px; border-radius: var(--rsm);
+  font-size: 12px; font-weight: 400; font-family: inherit;
   cursor: pointer; transition: all var(--tr);
 }
-.done-close:hover  { background: var(--phover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(11,94,87,0.28); }
-.done-close:active { transform: none; box-shadow: none; }
+.done-close:hover  { border-color: var(--primary); color: var(--primary); background: var(--plight); }
+.done-close:focus  { outline: none; border-color: var(--primary); color: var(--primary); background: var(--plight); box-shadow: 0 0 0 3px var(--plight); }
+.done-close:active { box-shadow: 0 0 0 3px var(--plight); }
 
 /* ── ANALYSIS ENHANCED ── */
 .ra-summary {
@@ -356,17 +493,17 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 }
 
 /* ── ADVANCED ANALYSIS ── */
-.res-inner { font-family: inherit; }
+#res-inner { font-family: inherit; }
 
 /* Analysis weight hierarchy */
-.ra-section-ttl,
-.res-inner .rc-ttl,
-.res-inner .res-ttl,
+.ra-sec-ttl,
+#res-inner .rc-ttl,
+#res-inner .res-ttl,
 .persona-name,
 .journey-phase,
 .empathy-lbl,
 .ra-sum-lbl,
-.ie-table th          { font-weight: 700; }
+.ie-table th          { font-weight: 500; }
 
 .ra-num-item > div,
 .journey-action,
@@ -386,15 +523,35 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .prog-lbl, .hdr-sub,
 .res-sub              { font-weight: 500; }
 
-.ra-section-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-.ra-section-ico {
-  width: 36px; height: 36px; border-radius: var(--rxs);
-  display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+/* Clickable section header row — replaces ra-section-hd */
+.ra-sec-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  cursor: pointer; gap: 8px; transition: color var(--tr);
 }
-.ra-section-ttl { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.2px; }
+.ra-sec-hd:hover .ra-sec-ttl { color: var(--primary); }
+.ra-sec-ttl { font-size: 13px; font-weight: 500; color: var(--text); }
+.ra-sec-chev { color: var(--muted); display: flex; align-items: center; flex-shrink: 0; transition: color var(--tr); }
+.ra-sec-hd:hover .ra-sec-chev { color: var(--primary); }
 
 /* rc-ttl override for analysis cards */
-.res-inner .rc-ttl { font-size: 14px; font-weight: 700; }
+#res-inner .rc-ttl { font-size: 13px; font-weight: 500; }
+
+/* Section detail overlay */
+.sec-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 180; align-items: center; justify-content: center; padding: 16px; }
+.sec-ov.open { display: flex; }
+.sec-panel { background: var(--surface); border-radius: var(--r); width: min(700px,96vw); max-height: 88vh; overflow-y: auto; box-shadow: var(--shlg); display: flex; flex-direction: column; }
+.sec-panel-hd { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; flex-shrink: 0; }
+.sec-panel-body { padding: 24px; }
+
+/* RTL Arabic readability */
+[dir="rtl"] .ra-sum-txt,
+[dir="rtl"] .empathy-items,
+[dir="rtl"] .journey-emotion,
+[dir="rtl"] .flow-step-desc,
+[dir="rtl"] .persona-row { line-height: 1.9; }
+[dir="rtl"] .ra-num-item > div,
+[dir="rtl"] .ri > div { text-align: start; }
 
 /* Summary */
 .ra-sum-lbl { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
@@ -466,30 +623,83 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .flow-step-ttl  { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
 .flow-step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
 
-/* ── INTERVIEW HISTORY ── */
-.ih-wrap    { margin-bottom: 24px; }
-.ih-stats   { display: flex; gap: 12px; margin-bottom: 16px; }
-.ih-stat    { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rsm); padding: 14px 16px; }
-.ih-stat-val{ font-size: 28px; font-weight: 700; color: var(--primary); line-height: 1; margin-bottom: 4px; }
-.ih-stat-lbl{ font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
-.ih-list    { display: flex; flex-direction: column; gap: 8px; }
-.ih-row     { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rsm); padding: 12px 16px; cursor: pointer; transition: border-color var(--tr); }
-.ih-row:hover, .ih-row.active { border-color: var(--primary); }
-.ih-row.active { background: var(--plight); }
-.ih-meta    { flex: 1; }
-.ih-date    { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
-.ih-goal    { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
-.ih-badge   { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; padding: 3px 9px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
-.ih-done    { background: #dcfce7; color: #15803d; } [data-theme="dark"] .ih-done { background:#14532d; color:#86efac; }
-.ih-nodone  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
-.ih-empty   { font-size: 13px; color: var(--muted); font-style: italic; padding: 12px 0; }
+/* ── INTERVIEW HISTORY / RESEARCH NOTES ── */
+/* Styles migrated to Tailwind utility classes in JS render functions */
+
+/* ── INTRO PAGE ── */
+#page-intro {
+  align-items: center; justify-content: center;
+  padding: 60px 24px 48px; position: relative;
+}
+.intro-icons {
+  position: absolute; top: 18px; inset-inline-end: 18px;
+  display: flex; gap: 8px;
+}
+.intro-wrap {
+  max-width: 400px; width: 100%; text-align: center;
+}
+.intro-logo {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: var(--plight); display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px; font-size: 26px; font-weight: 700; color: var(--primary);
+}
+.intro-brand-name {
+  font-size: 32px; font-weight: 700; letter-spacing: -1px;
+  color: var(--primary); margin-bottom: 8px;
+}
+.intro-tagline {
+  font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6;
+}
+.intro-desc {
+  font-size: 15px; color: var(--text); line-height: 1.75;
+  margin-bottom: 36px; font-weight: 400;
+}
+[dir="rtl"] .intro-desc { line-height: 1.9; }
+
+/* ── PRE-START PAGE ── */
+#page-prestart {
+  align-items: center; justify-content: center;
+  padding: 60px 24px 48px; position: relative;
+}
+.prestart-icons {
+  position: absolute; top: 18px; inset-inline-end: 18px;
+  display: flex; gap: 8px;
+}
+.prestart-wrap {
+  max-width: 400px; width: 100%; text-align: center;
+}
+.prestart-title {
+  font-size: 19px; font-weight: 600; color: var(--text);
+  margin-bottom: 28px; line-height: 1.45; text-align: center;
+}
+[dir="rtl"] .prestart-title { line-height: 1.7; }
+.prestart-items {
+  display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px;
+  align-items: center;
+}
+.prestart-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: var(--text); line-height: 1.65;
+}
+[dir="rtl"] .prestart-item { line-height: 1.85; }
+.prestart-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--primary);
+  flex-shrink: 0; margin-top: 7px;
+}
+.prestart-back {
+  display: block; text-align: center; margin-top: 14px;
+  font-size: 12px; color: var(--muted); cursor: pointer;
+  transition: color var(--tr); background: none; border: none;
+  font-family: inherit; width: 100%; padding: 4px 0;
+}
+.prestart-back:hover { color: var(--primary); }
 
 /* Responsive */
 @media (max-width: 640px) {
   .grid2     { grid-template-columns: 1fr; }
   .card, .rc { padding: 18px; }
-  .chat-scroll, .res-scroll { padding: 14px; }
-  .res-scroll { padding-bottom: 60px; }
+  .chat-scroll, #res-scroll { padding: 14px; }
+  #res-scroll { padding-bottom: 60px; }
   .res-ttl    { font-size: 20px; }
   .input-bar  { padding: 11px 14px 13px; }
   .topbar     { padding: 11px 14px; }
@@ -523,12 +733,59 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   </div>
 </div>
 
-<!-- ═══════ PAGE 1 — SETUP ═══════ -->
-<div class="page active" id="page-setup">
+<!-- ═══════ PAGE 0 — INTRO ═══════ -->
+<div class="page active" id="page-intro">
+  <div class="intro-icons">
+    <button class="ic-btn" onclick="cycleLang()" title="Switch language">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    </button>
+    <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-intro"></span></button>
+  </div>
+  <div class="intro-wrap">
+    <div class="intro-brand-name">Skoon</div>
+    <div class="intro-tagline" id="intro-tagline-lbl">Your experience shapes what we build</div>
+    <div class="intro-desc" id="intro-desc-lbl">We'd love to hear about your experience renting in Saudi Arabia. It's a short, friendly chat — no right or wrong answers.</div>
+    <button class="btn btn-p" onclick="goTo('page-prestart')">
+      <span id="intro-start-lbl">Get Started</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════ PAGE 0b — PRE-START ═══════ -->
+<div class="page" id="page-prestart">
+  <div class="prestart-icons">
+    <button class="ic-btn" onclick="cycleLang()" title="Switch language">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    </button>
+    <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-prestart"></span></button>
+  </div>
+  <div class="prestart-wrap">
+    <div class="prestart-title" id="prestart-title-lbl">Just a quick heads up before you start 😊</div>
+    <div class="prestart-items">
+      <div class="prestart-item"><div class="prestart-dot"></div><span id="prestart-p1-lbl">This is a short, friendly conversation — about 5–10 minutes</span></div>
+      <div class="prestart-item"><div class="prestart-dot"></div><span id="prestart-p2-lbl">There are no right or wrong answers, just share what feels natural</span></div>
+      <div class="prestart-item"><div class="prestart-dot"></div><span id="prestart-p3-lbl">Your answers help us make Skoon better for everyone</span></div>
+      <div class="prestart-item"><div class="prestart-dot"></div><span id="prestart-p4-lbl">You can stop at any time</span></div>
+    </div>
+    <button class="btn btn-p" onclick="startInterview()">
+      <span id="prestart-start-lbl">Start Interview</span>
+    </button>
+    <button class="prestart-back" onclick="goTo('page-intro')" id="prestart-back-lbl">← Back</button>
+  </div>
+</div>
+
+<!-- ═══════ PAGE 1 — SETUP (researcher config) ═══════ -->
+<div class="page" id="page-setup">
   <div class="topbar">
     <div class="hdr-icons">
       <button class="ic-btn" id="setup-lang-btn" onclick="cycleLang()" title="Switch language">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/>
           <line x1="2" y1="12" x2="22" y2="12"/>
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
@@ -567,8 +824,8 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
       </div>
     </div>
 
-    <!-- API key card -->
-    <div class="card">
+    <!-- API key card — removed: key lives on the server -->
+    <div class="card" style="display:none;">
       <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API SETTINGS</span></div>
 
       <div class="fg">
@@ -605,7 +862,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   <div class="topbar">
     <div class="hdr-icons">
       <button class="ic-btn" id="chat-lang-btn" onclick="cycleLang()" title="Switch language">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/>
           <line x1="2" y1="12" x2="22" y2="12"/>
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
@@ -618,7 +875,10 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
     </div>
     <div class="prog-row">
       <div class="prog-wrap">
-        <div class="prog-lbl" id="prog-lbl"></div>
+        <div class="prog-meta">
+          <span class="prog-lbl" id="prog-lbl"></span>
+          <span class="prog-pct" id="prog-pct"></span>
+        </div>
         <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
       </div>
     </div>
@@ -649,35 +909,236 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 
 <!-- ═══════ PAGE 3 — RESULTS ═══════ -->
 <div class="page" id="page-results">
-  <div class="topbar">
-    <div class="hdr-icons">
-      <button class="ic-btn" id="res-lang-btn" onclick="cycleLang()" title="Switch language">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-        </svg>
-      </button>
-      <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-res"></span></button>
-    </div>
-    <div class="tb-center">
-      <div class="tb-brand">Skoon</div>
-      <div class="hdr-sub">Research Insights</div>
-    </div>
-  </div>
+  <div class="flex flex-1 overflow-hidden" id="res-body-wrapper">
 
-  <div class="res-scroll">
-    <div class="res-inner">
-      <div id="research-mode-label" style="display:none;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--primary);margin-bottom:6px;">Research Mode</div>
-      <div id="completed-count-label" style="display:none;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">Completed Interviews: <span id="completed-count">0</span></div>
-      <div class="res-ttl" id="res-ttl">Research Insights</div>
-      <div class="res-sub" id="res-sub">Based on your interview session</div>
-      <div id="res-history"></div>
-      <div id="res-content"></div>
-      <div class="res-nav-row">
-        <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
-        <button class="btn btn-s" onclick="goHome()"><span class="home-btn-lbl">Home</span></button>
+    <!-- SIDEBAR -->
+    <nav class="w-[220px] shrink-0 bg-surface border-e border-[var(--border)] flex flex-col overflow-y-auto relative" id="res-panel" style="display:none;">
+
+      <!-- ── Profile overlay panel ── -->
+      <div class="sb-profile-panel" id="sb-profile-panel">
+
+        <!-- Header: back + title -->
+        <div class="flex items-center gap-2 px-3 py-3 border-b border-[var(--border)] shrink-0">
+          <button onclick="closeProfilePanel()" class="ic-btn shrink-0" style="width:28px;height:28px;border-radius:var(--rxs);" title="Back">
+            <svg class="rtl-flip" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="text-[13px] font-semibold text-app-text" id="spp-title">Profile</span>
+        </div>
+
+        <!-- Avatar -->
+        <div class="flex flex-col items-center gap-2 px-4 pt-5 pb-3 shrink-0">
+          <div class="relative">
+            <div class="w-[56px] h-[56px] rounded-full bg-plight flex items-center justify-center text-[20px] font-bold text-primary" id="spp-avatar">U</div>
+            <button onclick="editAvatarLetter()" class="absolute bottom-0 end-0 w-[20px] h-[20px] rounded-full bg-primary flex items-center justify-center border-2 border-surface" title="Edit">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+          </div>
+          <div class="text-[12px] font-semibold text-app-text" id="spp-display-name">User</div>
+        </div>
+
+        <!-- Stats rows -->
+        <div class="px-4 shrink-0">
+          <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
+            <span class="text-[10px] text-muted font-medium" id="spp-lbl-lang">Language</span>
+            <span class="text-[11px] font-medium text-app-text" id="spp-stat-lang">—</span>
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
+            <span class="text-[10px] text-muted font-medium">API</span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-[7px] h-[7px] rounded-full shrink-0" id="spp-api-dot" style="background:var(--muted)"></span>
+              <span class="text-[11px] font-medium" id="spp-api-txt">—</span>
+            </span>
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
+            <span class="text-[10px] text-muted font-medium" id="spp-lbl-mode">Mode</span>
+            <span class="text-[11px] font-medium text-app-text" id="spp-stat-mode">—</span>
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
+            <span class="text-[10px] text-muted font-medium" id="spp-lbl-total">Total</span>
+            <span class="text-[11px] font-semibold text-primary" id="spp-stat-total">0</span>
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
+            <span class="text-[10px] text-muted font-medium" id="spp-lbl-done">Completed</span>
+            <span class="text-[11px] font-semibold text-primary" id="spp-stat-done">0</span>
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
+            <span class="text-[10px] text-muted font-medium" id="spp-lbl-rate">Rate</span>
+            <span class="text-[11px] font-semibold text-primary" id="spp-stat-rate">—</span>
+          </div>
+          <div class="flex items-center justify-between py-2" id="spp-last-row">
+            <span class="text-[10px] text-muted font-medium" id="spp-lbl-last">Last</span>
+            <span class="text-[11px] font-medium text-app-text" id="spp-stat-last">—</span>
+          </div>
+        </div>
+
+        <!-- Editable fields -->
+        <div class="px-4 pt-3 flex flex-col gap-3 pb-4">
+          <!-- Name -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-name">Name</label>
+            <input class="profile-inp" id="spp-inp-name" type="text" autocomplete="off" />
+          </div>
+          <!-- Job title -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-job">Job Title</label>
+            <input class="profile-inp" id="spp-inp-job" type="text" autocomplete="off" />
+          </div>
+          <!-- Email -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-email">Email</label>
+            <input class="profile-inp" id="spp-inp-email" type="email" autocomplete="off" />
+          </div>
+
+          <!-- Divider -->
+          <div class="h-px bg-[var(--border)] my-0.5"></div>
+
+          <!-- Current password -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-curpw">Current Password</label>
+            <input class="profile-inp" id="spp-inp-curpw" type="password" autocomplete="current-password" />
+          </div>
+          <!-- New password -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-newpw">New Password</label>
+            <input class="profile-inp" id="spp-inp-newpw" type="password" autocomplete="new-password" />
+          </div>
+
+          <button onclick="saveProfile()" class="w-full bg-primary hover:bg-phover text-white text-[12px] font-semibold py-2 rounded-[var(--rxs)] transition-colors mt-1" id="spp-save">Save</button>
+        </div>
+
+        <!-- Actions -->
+        <div class="border-t border-[var(--border)] mt-auto shrink-0">
+          <button class="w-full text-start px-4 py-2.5 text-[12px] text-danger hover:bg-app-bg transition-colors" onclick="if(confirm('Sign out?')){localStorage.removeItem('researcher_access');location.reload();}" id="spp-signout">Sign Out</button>
+        </div>
+
+      </div>
+      <!-- ── end profile panel ── -->
+
+      <!-- Brand row -->
+      <div class="px-4 pt-4 pb-2 shrink-0">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-[15px] font-bold text-primary" id="sb-brand-name-el">Skoon</div>
+            <div class="text-[10px] text-muted font-medium" id="sb-tag">Research Dashboard</div>
+          </div>
+          <!-- Small lang + theme icons -->
+          <div class="flex items-center gap-0.5">
+            <button class="ic-btn shrink-0" onclick="cycleLang()" title="Switch language" style="border-radius:var(--rxs);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </button>
+            <button class="ic-btn shrink-0" onclick="toggleTheme()" style="border-radius:var(--rxs);"><span id="theme-icon-sb"></span></button>
+          </div>
+        </div>
+
+        <!-- Profile row — below brand, clickable → opens profile panel -->
+        <div class="flex items-center gap-2 mt-3 px-1.5 py-1.5 -mx-1.5 rounded-[var(--rxs)] cursor-pointer hover:bg-app-bg transition-colors group" onclick="openProfilePanel()">
+          <div class="w-[32px] h-[32px] rounded-full bg-plight flex items-center justify-center text-[13px] font-bold text-primary shrink-0" id="sb-avatar">U</div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[12px] font-semibold text-app-text truncate leading-tight" id="sb-uname">Researcher</div>
+            <div class="text-[10px] text-muted truncate" id="sb-urole">UX Researcher</div>
+          </div>
+          <svg class="rtl-flip text-muted shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+      <div class="h-px bg-[var(--border)] mx-4 shrink-0"></div>
+
+      <!-- Nav -->
+      <div class="px-2 pt-2 pb-1 shrink-0">
+        <button class="sb-nav-item active flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" id="sb-nav-overview" onclick="dbTab('overview')">
+          <span class="w-4 text-center shrink-0 text-[13px]">▦</span><span id="sb-lbl-overview">Dashboard</span>
+        </button>
+        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" id="sb-nav-interviews" onclick="dbTab('interviews')">
+          <span class="w-4 text-center shrink-0 text-[13px]">◫</span><span id="sb-lbl-interviews">Interviews</span>
+        </button>
+        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" id="sb-nav-analysis" onclick="dbTab('analysis')">
+          <span class="w-4 text-center shrink-0 text-[13px]">◎</span><span id="sb-lbl-analysis">Analysis</span>
+        </button>
+        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" id="sb-nav-insights" onclick="dbTab('insights')">
+          <span class="w-4 text-center shrink-0 text-[13px]">◈</span><span id="sb-lbl-insights">Insights</span>
+        </button>
+      </div>
+
+      <div class="h-px bg-[var(--border)] mx-4 shrink-0"></div>
+
+      <!-- Recent -->
+      <div class="px-2 flex-1 overflow-y-auto" id="sb-recent"></div>
+
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 overflow-y-auto px-7 pt-7 pb-16" id="res-scroll">
+      <div class="max-w-[900px] mx-auto" id="res-inner">
+
+        <!-- Non-researcher topbar -->
+        <div id="res-topbar-simple" style="display:none;margin-bottom:20px;gap:8px;justify-content:flex-end;">
+          <button class="ic-btn" onclick="cycleLang()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </button>
+          <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-res2"></span></button>
+        </div>
+
+        <!-- TAB: OVERVIEW -->
+        <div class="db-pane active" id="db-pane-overview">
+          <h1 class="text-[14px] font-semibold text-app-text mb-0.5" id="db-ttl-overview">Dashboard</h1>
+          <p class="text-[11px] text-muted mb-4" id="db-sub-overview">Your research at a glance</p>
+          <div class="grid grid-cols-4 gap-2.5 mb-4" id="db-stats"></div>
+          <div id="db-latest"></div>
+        </div>
+
+        <!-- TAB: INTERVIEWS -->
+        <div class="db-pane" id="db-pane-interviews">
+          <h1 class="text-[14px] font-semibold text-app-text mb-0.5" id="db-ttl-interviews">Interviews</h1>
+          <p class="text-[11px] text-muted mb-4" id="db-sub-interviews">All recorded sessions</p>
+          <div id="db-iv-list"></div>
+        </div>
+
+        <!-- TAB: ANALYSIS -->
+        <div class="db-pane" id="db-pane-analysis">
+          <h1 class="text-[14px] font-semibold text-app-text mb-0.5" id="db-ttl-analysis">Analysis</h1>
+          <p class="text-[11px] text-muted mb-4" id="db-sub-analysis">AI-generated insights per session</p>
+          <div id="res-content"></div>
+        </div>
+
+        <!-- TAB: INSIGHTS -->
+        <div class="db-pane" id="db-pane-insights">
+          <h1 class="text-[14px] font-semibold text-app-text mb-0.5" id="db-ttl-insights">Cross Analysis</h1>
+          <p class="text-[11px] text-muted mb-4" id="db-sub-insights">Select interviews to analyze together</p>
+          <div class="flex flex-col gap-2 px-4 py-3.5 bg-surface border border-[var(--border)] rounded mb-4">
+            <button class="btn btn-p w-full" id="ca-all-btn" onclick="runAllAnalysis()" style="display:none;font-size:12px;font-weight:500;"></button>
+          </div>
+          <div class="flex flex-col gap-2 px-4 py-3 bg-surface border border-[var(--border)] rounded mb-5" style="opacity:0.85;">
+            <div class="text-[11.5px] text-muted" id="ca-count">Select interviews below to run cross analysis</div>
+            <button class="btn btn-s w-full" id="ca-run-btn" onclick="runCrossAnalysis()" disabled style="font-size:11.5px;font-weight:500;">Analyze Selected</button>
+          </div>
+          <div id="db-ca-list"></div>
+          <div id="db-ca-out"></div>
+        </div>
+
+        <!-- Legacy anchors -->
+        <div id="res-history" style="display:none;"></div>
+        <div id="res-notes"   style="display:none;"></div>
+
+        <div class="flex justify-center gap-2.5 mt-8 pb-2">
+          <button class="btn btn-s" onclick="restart()" id="s-new-btn" style="font-size:11px;font-weight:500;">New Interview</button>
+          <button class="btn btn-s" onclick="goHome()" style="font-size:11px;font-weight:500;"><span class="home-btn-lbl">Home</span></button>
+        </div>
       </div>
     </div>
+
+  </div>
+</div>
+
+<!-- ═══════ SECTION DETAIL OVERLAY ═══════ -->
+<div class="sec-ov" id="sec-ov" onclick="if(event.target===this)closeSecDetail()">
+  <div class="sec-panel">
+    <div class="sec-panel-hd">
+      <button onclick="closeSecDetail()" class="ic-btn shrink-0" style="width:28px;height:28px;border-radius:var(--rxs);" title="Back">
+        <svg class="rtl-flip" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span style="font-size:14px;font-weight:500;color:var(--text);flex:1;" id="sec-det-ttl"></span>
+    </div>
+    <div class="sec-panel-body" id="sec-det-body"></div>
   </div>
 </div>
 
@@ -686,7 +1147,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   <div class="done-wrap">
     <div class="done-title" id="done-title"></div>
     <div class="done-body" id="done-body"></div>
-    <button class="done-close" id="done-close-btn" onclick="window.close()"></button>
+    <button class="done-close" id="done-close-btn" onclick="try{window.close();}catch(e){}goTo('page-intro')"></button>
   </div>
 </div>
 
@@ -703,7 +1164,7 @@ const S = {
 // ─── TRANSLATIONS ─────────────────────────────────────────
 const TR = {
   en: {
-    tagline:   'AI-Powered User Interview',
+    tagline:   'User Interview Powered by AI',
     ctxLbl:    'INTERVIEW CONTEXT',
     bizLbl:    'Business Name',
     goalLbl:   'Interview Goal',
@@ -738,18 +1199,49 @@ const TR = {
     journey:   'User Journey Map',
     impactEff: 'Impact vs Effort',
     userFlow:  'User Flow',
-    emThinks:  '🧠 Thinks', emFeels: '❤️ Feels', emSays: '💬 Says', emDoes: '⚡ Does',
+    emThinks:  'Thinks', emFeels: 'Feels', emSays: 'Says', emDoes: 'Does',
     sentPos:   '😊 Positive', sentNeu: '😐 Neutral', sentNeg: '😟 Negative',
     pAge:      'Age', pGoal: 'Goal', pPain: 'Pain', pMotivation: 'Motivation',
     ieAction:  'Action', ieImpact: 'Impact', ieEffort: 'Effort', iePriority: 'Priority',
     noData:    'Run an interview to generate data',
     ihTotal:   'Interviews', ihCompleted: 'Completed', ihAnalyzed: 'Analyzed', ihDone: 'Done',
     ihEmpty:   'No saved interviews yet.',
+    stoppedAt: 'User reached', stoppedOf: 'of',
+    rnTitle:   'Research Notes', rnSub: 'All interviews — grouped and structured',
+    rnNotes:   'Notes', rnObs: 'Observations', rnQuotes: 'User Quotes',
+    rnCompleted: 'Completed', rnStopped: 'Stopped at Q',
+    rnEmpty:   'No interviews recorded yet.',
+    rnNoNotes: 'No answers recorded.', rnNoObs: 'No analysis available.', rnNoQuotes: 'No quotes captured.',
+    rpMode: 'Mode', rpNav: 'Navigation',
+    rpUserView: 'User View', rpResView: 'Researcher View',
+    rpOverview: 'Overview', rpInterviews: 'Interviews', rpInsights: 'Insights',
+    dbTag: 'Research Dashboard', dbResearcher: 'Researcher', dbResRole: 'Research Mode',
+    dbDashboard: 'Dashboard', dbInterviews: 'Interviews', dbAnalysis: 'Analysis', dbInsights: 'Cross Analysis',
+    dbGlance: 'Here\'s a summary of your research', dbAllSessions: 'All recorded sessions',
+    dbAiInsights: 'AI-generated insights per session', dbCrossDesc: 'Select interviews to analyze together',
+    dbTotal: 'Total', dbCompleted: 'Completed', dbIncomplete: 'Incomplete', dbRate: 'Completion Rate',
+    dbLatest: 'Latest Interviews', dbRecent: 'Recent',
+    dbNotes: 'Notes', dbSummary: 'Summary', dbInsightsTab: 'Insights', dbQuotes: 'Quotes', dbUxIssues: 'UX Issues',
+    dbNoData: 'No interviews yet', dbNoAnalysis: 'No analysis — interview not yet analyzed',
+    dbSelectHint: 'Select interviews below to run cross analysis',
+    dbAnalyzeBtn: 'Analyze Selected', dbSelCount: (n) => `${n} interview${n===1?'':'s'} selected`,
+    dbAnalyzeAll: 'Analyze All Completed Interviews',
+    dbCrossRunning: 'Analyzing…', dbCrossEmpty: 'No output yet',
     homeBtn:   'Home',
     errNoKey:  'Please enter your OpenAI API key to continue.',
     errNoConv: 'Please answer at least a couple of questions first.',
     errAi:     'Something went wrong. Please try again.',
     errAnalysis: 'Analysis failed. Please try again.',
+    introTagline: 'Your experience shapes what we build',
+    introDesc: "We'd love to hear about your experience renting in Saudi Arabia. It's a short, friendly chat — no right or wrong answers.",
+    introStart: 'Get Started',
+    prestartTitle: 'Just a quick heads up before you start 😊',
+    prestartP1: 'This is a friendly conversation — about 15 minutes',
+    prestartP2: 'No right or wrong answers — just be yourself',
+    prestartP3: 'Your answers help us make Skoon better for everyone',
+    prestartP4: 'You can stop at any time',
+    prestartBtn: 'Start Interview',
+    prestartBack: '← Back',
   },
   ar: {
     tagline:   'مقابلة مستخدم مدعومة بالذكاء الاصطناعي',
@@ -787,31 +1279,56 @@ const TR = {
     journey:   'رحلة المستخدم',
     impactEff: 'التأثير مقابل الجهد',
     userFlow:  'تدفق المستخدم',
-    emThinks:  '🧠 يفكر', emFeels: '❤️ يشعر', emSays: '💬 يقول', emDoes: '⚡ يفعل',
+    emThinks:  'يفكر', emFeels: 'يشعر', emSays: 'يقول', emDoes: 'يفعل',
     sentPos:   '😊 إيجابي', sentNeu: '😐 محايد', sentNeg: '😟 سلبي',
     pAge:      'العمر', pGoal: 'الهدف', pPain: 'نقطة الألم', pMotivation: 'الدافع',
     ieAction:  'الإجراء', ieImpact: 'التأثير', ieEffort: 'الجهد', iePriority: 'الأولوية',
     noData:    'أجرِ مقابلة لتوليد البيانات',
     ihTotal:   'المقابلات', ihCompleted: 'مكتملة', ihAnalyzed: 'محلّلة', ihDone: 'مكتملة',
     ihEmpty:   'لا توجد مقابلات محفوظة بعد.',
+    stoppedAt: 'وصل المستخدم إلى', stoppedOf: 'من',
+    rnTitle:   'ملاحظات البحث', rnSub: 'كل المقابلات — منظمة ومصنفة',
+    rnNotes:   'ملاحظات', rnObs: 'استنتاجات', rnQuotes: 'اقتباسات المستخدم',
+    rnCompleted: 'مكتملة', rnStopped: 'وقف عند السؤال',
+    rnEmpty:   'لا توجد مقابلات مسجلة بعد.',
+    rnNoNotes: 'لا توجد إجابات مسجلة.', rnNoObs: 'لا يوجد تحليل متاح.', rnNoQuotes: 'لا توجد اقتباسات.',
+    rpMode: 'الوضع', rpNav: 'التنقل',
+    rpUserView: 'وضع المستخدم', rpResView: 'وضع الباحث',
+    rpOverview: 'نظرة عامة', rpInterviews: 'المقابلات', rpInsights: 'الاستنتاجات',
+    dbTag: 'لوحة البحث', dbResearcher: 'الباحث', dbResRole: 'وضع الباحث',
+    dbDashboard: 'الرئيسية', dbInterviews: 'المقابلات', dbAnalysis: 'التحليل', dbInsights: 'التحليل المقارن',
+    dbGlance: 'إليك ملخص أبحاثك', dbAllSessions: 'كل الجلسات المسجلة',
+    dbAiInsights: 'استنتاجات مولّدة بالذكاء الاصطناعي', dbCrossDesc: 'اختر مقابلات لتحليلها معاً',
+    dbTotal: 'المجموع', dbCompleted: 'مكتملة', dbIncomplete: 'غير مكتملة', dbRate: 'نسبة الإكمال',
+    dbLatest: 'آخر المقابلات', dbRecent: 'الأخيرة',
+    dbNotes: 'ملاحظات', dbSummary: 'ملخص', dbInsightsTab: 'استنتاجات', dbQuotes: 'اقتباسات', dbUxIssues: 'مشاكل UX',
+    dbNoData: 'لا توجد مقابلات بعد', dbNoAnalysis: 'لا يوجد تحليل — المقابلة لم تُحلَّل بعد',
+    dbSelectHint: 'اختر مقابلات أدناه لتشغيل التحليل المقارن',
+    dbAnalyzeBtn: 'تحليل المختارة', dbSelCount: (n) => `${n} مقابلة مختارة`,
+    dbAnalyzeAll: 'تحليل كل الأبحاث المكتملة',
+    dbCrossRunning: 'جاري التحليل…', dbCrossEmpty: 'لا توجد نتائج بعد',
     homeBtn:   'الرئيسية',
     errNoKey:  'من فضلك أدخل مفتاح OpenAI API لتقدر تكمل.',
     errNoConv: 'جاوب على سؤال أو أكثر أولاً.',
     errAi:     'صار خطأ، جرّب مرة ثانية.',
     errAnalysis: 'ما قدرنا نحلل، جرّب مرة ثانية.',
+    introTagline: 'تجربتك تُشكّل ما نبنيه',
+    introDesc: 'يسعدنا نسمع تجربتك في البحث عن عقار للإيجار في السعودية. هي محادثة قصيرة وودية — ما في إجابة صح أو غلط.',
+    introStart: 'ابدأ',
+    prestartTitle: 'تنبيه سريع قبل ما تبدأ 😊',
+    prestartP1: 'هي محادثة ودية — تقريباً 15 دقيقة',
+    prestartP2: 'ما في إجابة صح أو غلط، شارك اللي يجيك طبيعي',
+    prestartP3: 'إجاباتك تساعدنا نطوّر Skoon لي أحسن للجميع',
+    prestartP4: 'تقدر توقف في أي وقت تبي',
+    prestartBtn: 'ابدأ المقابلة',
+    prestartBack: 'رجوع →',
   },
 };
 const t = (k, ...a) => { const v = TR[S.lang][k]; return typeof v === 'function' ? v(...a) : (v ?? k); };
 
 // ─── INIT ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Restore API key
-  const savedKey = localStorage.getItem('openai_api_key');
-  if (savedKey) {
-    document.getElementById('inp-key').value = savedKey;
-    S.apiKey = savedKey;
-    showKeyOk(true);
-  }
+  // API key lives on the server — nothing to restore
   // Restore theme
   applyTheme(localStorage.getItem('app_theme') || 'light');
   // Restore language (triggers renderTR which sets prefills)
@@ -829,8 +1346,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ─── THEME ────────────────────────────────────────────────
 // Heroicons: sun (light mode) and moon (dark mode)
-const ICON_SUN  = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
-const ICON_MOON = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+const ICON_SUN  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+const ICON_MOON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
 
 function toggleTheme() { applyTheme(S.theme === 'light' ? 'dark' : 'light'); }
 function applyTheme(th) {
@@ -838,7 +1355,7 @@ function applyTheme(th) {
   document.documentElement.setAttribute('data-theme', th);
   localStorage.setItem('app_theme', th);
   const ico = th === 'dark' ? ICON_SUN : ICON_MOON;
-  ['theme-icon-setup', 'theme-icon-chat', 'theme-icon-res'].forEach(id => {
+  ['theme-icon-intro', 'theme-icon-prestart', 'theme-icon-setup', 'theme-icon-chat', 'theme-icon-res2', 'theme-icon-sb'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = ico;
   });
@@ -870,6 +1387,18 @@ function applyLang(lang) {
 function renderTR() {
   const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
   const ph  = (id, v) => { const e = document.getElementById(id); if (e) e.placeholder = v; };
+
+  // Intro / pre-start page strings
+  set('intro-tagline-lbl',  t('introTagline'));
+  set('intro-desc-lbl',     t('introDesc'));
+  set('intro-start-lbl',    t('introStart'));
+  set('prestart-title-lbl', t('prestartTitle'));
+  set('prestart-p1-lbl',    t('prestartP1'));
+  set('prestart-p2-lbl',    t('prestartP2'));
+  set('prestart-p3-lbl',    t('prestartP3'));
+  set('prestart-p4-lbl',    t('prestartP4'));
+  set('prestart-start-lbl', t('prestartBtn'));
+  set('prestart-back-lbl',  t('prestartBack'));
 
   document.querySelectorAll('.tagline-lbl').forEach(el => el.textContent = t('tagline'));
   set('s-ctx-lbl',  t('ctxLbl'));
@@ -904,26 +1433,14 @@ function renderTR() {
   }
 
   if (S.mainAsked > 0) renderProg();
+  renderPanel(); // re-translate panel labels on lang switch
 }
 
-// ─── API KEY ──────────────────────────────────────────────
-function toggleKeyVis() {
-  const el = document.getElementById('inp-key');
-  el.type = el.type === 'password' ? 'text' : 'password';
-}
-function saveKey() {
-  const k = document.getElementById('inp-key').value.trim();
-  if (!k) { showE('key-err', t('errNoKey')); return; }
-  localStorage.setItem('openai_api_key', k);
-  S.apiKey = k; showKeyOk(true); hideE('key-err');
-}
-function clearKey() {
-  localStorage.removeItem('openai_api_key');
-  S.apiKey = '';
-  document.getElementById('inp-key').value = '';
-  showKeyOk(false);
-}
-function showKeyOk(y) { document.getElementById('key-ok').style.display = y ? 'flex' : 'none'; }
+// ─── API KEY — removed (key lives on the server) ──────────
+function toggleKeyVis() {}
+function saveKey()      {}
+function clearKey()     {}
+function showKeyOk()    {}
 
 // ─── ERRORS ───────────────────────────────────────────────
 function showE(id, msg) { const e = document.getElementById(id); if (e) { e.textContent = msg; e.style.display = 'block'; } }
@@ -938,10 +1455,6 @@ function goTo(pid) {
 // ─── START INTERVIEW ──────────────────────────────────────
 async function startInterview() {
   hideE('start-err');
-  // Load any already-saved key into state (no blocking check here)
-  S.apiKey = document.getElementById('inp-key').value.trim()
-           || localStorage.getItem('openai_api_key')
-           || '';
   S.numQ     = 10;
   S.goal     = document.getElementById('inp-goal').value.trim() || t('goalPre');
   S.audience = document.getElementById('inp-aud').value.trim()  || t('audPre');
@@ -955,7 +1468,7 @@ async function startInterview() {
 
   goTo('page-chat');
   document.getElementById('msgs').innerHTML = '';
-  document.getElementById('end-row').style.display = 'block';
+  document.getElementById('end-row').style.display = 'none';
   document.getElementById('prog-lbl').textContent = '';
   document.getElementById('prog-fill').style.width = '0%';
 
@@ -992,7 +1505,8 @@ function buildSys() {
 - ابدأ بـ: "وش"، "كيف"، "ليش"، "متى"، "وين" — لا تبدأ بـ "هل يمكنك" أو "حدثني عن".
 - ابنِ كل سؤال على اللي قاله للتو — لا تتجاهل كلامه.
 - غطِّ مواضيع جديدة لم تُطرح بعد — لا تكرر.
-- لا مديح، لا تعليق على إجاباته — فقط سؤالك التالي.`;
+- ابدأ كل سؤال (من الثاني) بعبارة طبيعية قصيرة (1-3 كلمات) مثل: "آه واضح،"، "طيب،"، "ما شاء الله،"، "فاهم،". غيّر العبارة في كل مرة.
+- لا مديح مطوّل ولا تعليق على الإجابات — فقط العبارة القصيرة وسؤالك.`;
 
   return `You are a friendly, curious conversation partner talking with a real person about their personal experience searching for a rental property in Saudi Arabia.
 Your goal is to deeply understand their experience — their feelings, their steps, their struggles — in a warm and natural way, not a formal interview.
@@ -1020,51 +1534,28 @@ Strict rules:
 - Start with: "What", "How", "Why", "When", "Where" — NEVER start with "walk me through", "could you describe", "tell me about", "elaborate".
 - Each question MUST connect directly to what the person just said.
 - Cover new topics not yet explored — never repeat a question.
-- No praise, no commentary on their answers — just your next question.`;
+- Start every question (from Q2 onward) with a brief natural phrase (1-3 words) that acknowledges the previous answer: "Okay,", "Got it,", "Interesting,", "Makes sense,", "Oh nice,". Rotate — never use the same phrase twice in a row.
+- Keep the phrase short (max 3 words) — no extended commentary or praise.`;
 }
 
 // ─── PROGRESS ─────────────────────────────────────────────
 function renderProg() {
   const cur = Math.min(S.mainAsked, S.numQ);
+  const pct = S.numQ > 0 ? Math.round((cur / S.numQ) * 100) : 0;
   document.getElementById('prog-lbl').textContent  = t('progLbl', cur, S.numQ);
-  document.getElementById('prog-fill').style.width = (cur / S.numQ * 100) + '%';
+  document.getElementById('prog-pct').textContent  = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+  if (S.mainAsked >= 4) document.getElementById('end-row').style.display = 'block';
 }
 
-// ─── KEY PROMPT ───────────────────────────────────────────
-function promptForKey() {
-  return new Promise(resolve => {
-    // Focus the key field on setup page if visible, otherwise use browser prompt
-    const keyEl = document.getElementById('inp-key');
-    if (keyEl) {
-      // Scroll setup card into view if we're still on setup
-      keyEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      keyEl.focus();
-      showE('key-err', t('errNoKey'));
-    }
-
-    // Show a native prompt as fallback so the interview doesn't silently fail
-    const entered = (window.prompt(t('errNoKey')) || '').trim();
-    if (!entered) { resolve(false); return; }
-
-    S.apiKey = entered;
-    localStorage.setItem('openai_api_key', entered);
-    if (keyEl) { keyEl.value = entered; showKeyOk(true); hideE('key-err'); }
-    resolve(true);
-  });
-}
-
-// ─── OPENAI API ───────────────────────────────────────────
+// ─── OPENAI API — proxied through Cloudflare Worker ───────
+// The API key NEVER reaches the browser.
+// All AI requests go to /api/chat — the Worker holds the key as a server secret.
 async function callAI(messages, temp = 0.85, maxTok = 700) {
-  // Resolve key at call time: localStorage first, then prompt
-  if (!S.apiKey) S.apiKey = localStorage.getItem('openai_api_key') || '';
-  if (!S.apiKey) {
-    const entered = await promptForKey();
-    if (!entered) throw new Error(t('errNoKey'));
-  }
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+  const res = await fetch('/api/chat', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${S.apiKey}` },
-    body: JSON.stringify({ model: 'gpt-4o', messages, temperature: temp, max_tokens: maxTok }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, temperature: temp, max_tokens: maxTok }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -1151,18 +1642,18 @@ async function askQuestion() {
       S.mainAsked++;
       renderProg();
       inst = ar
-        ? `اطرح السؤال ${S.mainAsked} من ${S.numQ}. ابدأ من محور لم يُطرح بعد. جملة واحدة قصيرة فقط. بلا تحية. الرد بالعربية فقط.`
-        : `Ask question ${S.mainAsked} of ${S.numQ}. Start with an unexplored agenda area. One short sentence only. No greeting. English only.`;
+        ? `اطرح السؤال 1 من ${S.numQ}. ابدأ من محور لم يُطرح بعد. جملة واحدة قصيرة فقط. بلا تحية ولا عبارة تمهيدية للسؤال الأول. الرد بالعربية الخليجية فقط.`
+        : `Ask question 1 of ${S.numQ}. Start with an unexplored agenda area. One short sentence only. No greeting or intro phrase for Q1. English only.`;
     } else if (isFollowUp) {
       inst = ar
-        ? `بناءً على الإجابة الأخيرة، اطرح سؤالاً متابعاً واحداً قصيراً للتعمق. الرد بالعربية فقط.`
-        : `Based on the last answer, ask one short targeted follow-up question to go deeper. English only.`;
+        ? `بناءً على الإجابة الأخيرة، ابدأ بعبارة طبيعية قصيرة (1-3 كلمات) تُظهر الإصغاء مثل: "آه واضح،"، "طيب،"، "ما شاء الله،"، "فاهم،"، "صح،" — ثم اطرح سؤالاً متابعاً واحداً قصيراً للتعمق. غيّر العبارة في كل مرة ولا تكررها. الرد بالعربية الخليجية فقط.`
+        : `Based on the last answer, start with a short natural phrase (1-3 words) like: "Oh interesting,", "Got it,", "That makes sense,", "Okay,", "Ah," — then ask one short follow-up to go deeper. Rotate phrases — never repeat the same one twice in a row. English only.`;
     } else {
       S.mainAsked++;
       renderProg();
       inst = ar
-        ? `اطرح السؤال ${S.mainAsked} من ${S.numQ}. بنِه على آخر إجابة وانتقل لمحور جديد لم يُغطَّ. جملة واحدة قصيرة. الرد بالعربية فقط.`
-        : `Ask question ${S.mainAsked} of ${S.numQ}. Build on the last answer and move to a new uncovered agenda area. One short sentence. English only.`;
+        ? `اطرح السؤال ${S.mainAsked} من ${S.numQ}. ابدأ بعبارة طبيعية قصيرة (1-3 كلمات) تُظهر الإصغاء للإجابة السابقة مثل: "آه واضح،"، "طيب،"، "ما شاء الله،"، "فاهم،"، "عجبني،" — ثم انتقل لسؤال جديد من محور لم يُغطَّ. غيّر العبارة في كل مرة ولا تكررها. جملة واحدة قصيرة. الرد بالعربية الخليجية فقط.`
+        : `Ask question ${S.mainAsked} of ${S.numQ}. Start with a brief natural phrase (1-3 words) acknowledging the last answer, like: "Interesting,", "Makes sense,", "Okay,", "Got it,", "Oh nice," — then move to a new uncovered topic. Rotate phrases — never repeat the same one twice in a row. One short sentence total. English only.`;
     }
 
     const q = await callAI([...S.msgs, { role: 'user', content: inst }]);
@@ -1206,11 +1697,11 @@ async function submitAnswer() {
 
 function finishMsg() {
   const ar = S.lang === 'ar';
-  const title     = ar ? 'خلصنا ✨' : "We're finished ✨";
+  const title     = ar ? 'يعطيك العافية، ما قصّرت 🙌' : 'That was great, thank you 🙌';
   const body      = ar
-    ? 'مرّة نقدر لك وقتك ومشاركتك معنا 💙\nإجاباتك فعلًا فرقت معنا وساعدتنا نفهم تجربتك بشكل أوضح'
-    : 'We truly appreciate you taking the time to share your experience with us 💙\nYour answers really helped us understand things better';
-  const finishLbl = ar ? 'إنهاء' : 'Finish';
+    ? 'وقتك وكلامك يعني لنا الكثير\nراح يساعدنا نبني شيء أفضل لك 💙'
+    : 'Your time and honesty mean a lot to us.\nWe can\'t build something better without you 💙';
+  const finishLbl = ar ? 'تم' : 'Close';
 
   document.getElementById('done-title').textContent     = title;
   document.getElementById('done-body').textContent      = body;
@@ -1238,65 +1729,521 @@ function extractQA() {
   return qa;
 }
 
+// Returns sequential 1-based number for an interview (oldest = #1)
+// Falls back to stored iv.num if present, otherwise derives from sorted position
+function getInterviewNumber(id) {
+  const all = getAllInterviews();
+  const sorted = all.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+  const idx = sorted.findIndex(iv => iv.id === id);
+  return idx >= 0 ? idx + 1 : all.length;
+}
+
 function saveInterview(analysis) {
   const all = getAllInterviews();
   if (S._iid && all.find(iv => iv.id === S._iid)) return; // already saved
   const record = {
-    id:        S._iid || Date.now().toString(36),
-    date:      new Date().toISOString(),
-    lang:      S.lang,
-    completed: true,
-    goal:      S.goal || '',
-    audience:  S.audience || '',
-    answers:   extractQA(),
-    analysis:  analysis || null,
+    id:               S._iid || Date.now().toString(36),
+    num:              all.length + 1,   // sequential number, 1-based
+    date:             new Date().toISOString(),
+    lang:             S.lang,
+    completed:        true,
+    goal:             S.goal || '',
+    audience:         S.audience || '',
+    lastQuestionSeen: S.mainAsked,
+    totalQuestions:   S.numQ,
+    progressPercent:  S.numQ > 0 ? Math.round((S.mainAsked / S.numQ) * 100) : 0,
+    keyNotes:         analysis ? (analysis.summary || '') : '',
+    answers:          extractQA(),
+    analysis:         analysis || null,
   };
   all.push(record);
   localStorage.setItem('skoon_interviews', JSON.stringify(all));
 }
 
-function renderHistory(activeId) {
-  const el = document.getElementById('res-history');
-  if (!el || !S.isResearcher) return;
-  const all = getAllInterviews().slice().reverse(); // newest first
-  const total     = all.length;
-  const completed = all.filter(iv => iv.completed).length;
-  const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
-  el.innerHTML = `
-    <div class="ih-wrap">
-      <div class="ih-stats">
-        <div class="ih-stat"><div class="ih-stat-val">${total}</div><div class="ih-stat-lbl">${t('ihTotal')}</div></div>
-        <div class="ih-stat"><div class="ih-stat-val">${completed}</div><div class="ih-stat-lbl">${t('ihCompleted')}</div></div>
-      </div>
-      <div class="ih-list">${all.length ? all.map(iv => `
-        <div class="ih-row${activeId===iv.id?' active':''}" onclick="loadInterviewById('${iv.id}')">
-          <div class="ih-meta">
-            <div class="ih-date">${fmt(iv.date)}</div>
-            <div class="ih-goal">${esc(iv.goal||'—')}</div>
-          </div>
-          <span class="ih-badge ${iv.analysis?'ih-done':'ih-nodone'}">${iv.analysis?t('ihAnalyzed'):t('ihDone')}</span>
-        </div>`).join('') : `<div class="ih-empty">${t('ihEmpty')}</div>`}
-      </div>
-    </div>`;
-}
+// kept as no-op for backward compat (renderResults calls it)
+function renderHistory() {}
+function renderNotes()   {}
 
 function loadInterviewById(id) {
   const all = getAllInterviews();
   const iv  = all.find(x => x.id === id);
   if (!iv) return;
-  renderAnalysis(iv.analysis || {});
-  renderHistory(id);
+  dbTab('analysis');
+  renderAnalysis(iv.analysis || {}, iv, 'res-content', iv);
+}
+
+async function analyzeStoredInterview(id) {
+  const all = getAllInterviews();
+  const iv  = all.find(x => x.id === id);
+  if (!iv || !iv.answers || !iv.answers.length) return;
+
+  showOv(t('olAnalyze'), t('olSub'));
+  try {
+    const convo = iv.answers.map(qa => `Researcher: ${qa.q}\nParticipant: ${qa.a}`).join('\n\n');
+    const ar = S.lang === 'ar';
+    const sysMsg = ar
+      ? 'أنت محلل UX خبير. حلّل محادثة المقابلة وأنتج JSON صحيح فقط. جميع القيم بالعربية الخليجية. sentiment/impact/effort/priority بالإنجليزية.'
+      : 'You are a senior UX research analyst. Analyze the interview and output valid JSON only. All values in English. sentiment/impact/effort/priority in English.';
+    const schema = JSON.stringify({
+      summary:"2-3 sentence overview",insights:["insight 1","insight 2"],quotes:["verbatim quote"],patterns:["pattern 1"],
+      recommendations:["recommendation 1"],
+      personas:[{name:"",age:"",goal:"",pain:"",motivation:""}],
+      empathy:{thinks:[],feels:[],says:[],does:[]},
+      journey:[{phase:"",action:"",emotion:"",sentiment:"positive|neutral|negative"}],
+      impactEffort:[{action:"",impact:"High|Medium|Low",effort:"High|Medium|Low",priority:"Do First|Schedule|Delegate|Drop"}],
+      userFlow:[{step:"",description:""}]
+    });
+    const prompt = ar
+      ? `حلّل المحادثة التالية وأنتج JSON بهذا الهيكل بالضبط. لا تضف أي نص خارج JSON:\n${schema}\n\nالمحادثة:\n${convo}`
+      : `Analyze the following interview and output ONLY valid JSON with this exact structure — no text outside the JSON:\n${schema}\n\nConversation:\n${convo}`;
+
+    const raw = await callAI([{role:'system',content:sysMsg},{role:'user',content:prompt}], 0.2, 3000);
+    let data;
+    try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
+    catch(_) { data = {}; }
+
+    // Save analysis back to the stored interview
+    const stored = getAllInterviews();
+    const idx = stored.findIndex(x => x.id === id);
+    if (idx !== -1) { stored[idx].analysis = data; localStorage.setItem('skoon_interviews', JSON.stringify(stored)); }
+
+    hideOv();
+    renderAnalysis(data, iv, 'res-content', iv);
+  } catch(e) {
+    hideOv();
+    alert(t('errAnalysis'));
+  }
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────
+let _dbTab = 'overview';
+
+function dbTab(tab) {
+  // Toggle: clicking the active tab deactivates it
+  const next = _dbTab === tab ? null : tab;
+  _dbTab = next;
+  ['overview','interviews','analysis','insights'].forEach(s => {
+    const pane = document.getElementById('db-pane-' + s);
+    const btn  = document.getElementById('sb-nav-' + s);
+    if (pane) pane.classList.toggle('active', s === next);
+    if (btn)  btn.classList.toggle('active',  s === next);
+  });
+}
+
+function getDisplayName() {
+  const stored = localStorage.getItem('researcher_name');
+  if (stored && stored.trim()) return stored.trim();
+  const email = localStorage.getItem('researcher_email');
+  if (email && email.includes('@')) return email.split('@')[0];
+  return 'User';
+}
+
+// ── Profile panel ──────────────────────────────────────────
+function openProfilePanel() {
+  const panel = document.getElementById('sb-profile-panel');
+  if (!panel) return;
+  const ar    = S.lang === 'ar';
+  const name  = localStorage.getItem('researcher_name')  || '';
+  const email = localStorage.getItem('researcher_email') || '';
+  const job   = localStorage.getItem('researcher_job')   || '';
+  const setT  = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  const setV  = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+
+  // Avatar + display name
+  const display = getDisplayName();
+  setT('spp-avatar',       display.charAt(0).toUpperCase());
+  setT('spp-display-name', display);
+
+  // Stats labels
+  setT('spp-title',     ar ? 'الملف الشخصي'   : 'Profile');
+  setT('spp-lbl-lang',  ar ? 'اللغة'           : 'Language');
+  setT('spp-stat-lang', ar ? 'العربية'          : 'English');
+  setT('spp-lbl-mode',  ar ? 'الوضع'           : 'Mode');
+  setT('spp-stat-mode', S.isResearcher ? (ar ? 'باحث' : 'Researcher') : (ar ? 'مستخدم' : 'User'));
+  setT('spp-lbl-total', ar ? 'المجموع'         : 'Total');
+  setT('spp-lbl-done',  ar ? 'مكتملة'          : 'Completed');
+  setT('spp-lbl-rate',  ar ? 'نسبة الإكمال'   : 'Rate');
+  setT('spp-lbl-last',  ar ? 'آخر نشاط'       : 'Last');
+
+  // API status
+  const key    = S.apiKey || localStorage.getItem('openai_api_key') || '';
+  const apiDot = document.getElementById('spp-api-dot');
+  const apiTxt = document.getElementById('spp-api-txt');
+  if (key) {
+    if (apiDot) apiDot.style.background = '#16a34a';
+    if (apiTxt) { apiTxt.textContent = ar ? 'متصل' : 'Connected'; apiTxt.style.color = '#16a34a'; }
+  } else {
+    if (apiDot) apiDot.style.background = 'var(--muted)';
+    if (apiTxt) { apiTxt.textContent = ar ? 'غير متصل' : 'Not connected'; apiTxt.style.color = 'var(--muted)'; }
+  }
+
+  // Interview stats
+  const allIv  = getAllInterviews();
+  const doneIv = allIv.filter(iv => iv.completed).length;
+  const rate   = allIv.length ? Math.round((doneIv / allIv.length) * 100) : 0;
+  setT('spp-stat-total', String(allIv.length));
+  setT('spp-stat-done',  String(doneIv));
+  setT('spp-stat-rate',  allIv.length ? rate + '%' : '—');
+  const lastRow = document.getElementById('spp-last-row');
+  if (allIv.length) {
+    const last = allIv.slice().sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    const fmt  = new Date(last.date).toLocaleDateString(ar ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' });
+    setT('spp-stat-last', fmt);
+    if (lastRow) lastRow.style.removeProperty('display');
+  } else {
+    if (lastRow) lastRow.style.display = 'none';
+  }
+
+  // Editable field labels
+  setT('spp-lbl-name',  ar ? 'الاسم'               : 'Name');
+  setT('spp-lbl-job',   ar ? 'المسمى الوظيفي'      : 'Job Title');
+  setT('spp-lbl-email', ar ? 'البريد الإلكتروني'   : 'Email');
+  setT('spp-lbl-curpw', ar ? 'كلمة المرور الحالية' : 'Current Password');
+  setT('spp-lbl-newpw', ar ? 'كلمة المرور الجديدة' : 'New Password');
+  setT('spp-save',      ar ? 'حفظ'                 : 'Save');
+  setT('spp-signout',   ar ? 'تسجيل الخروج'         : 'Sign Out');
+
+  // Field values (passwords always cleared on open)
+  setV('spp-inp-name',  name);
+  setV('spp-inp-job',   job);
+  setV('spp-inp-email', email);
+  setV('spp-inp-curpw', '');
+  setV('spp-inp-newpw', '');
+
+  panel.classList.add('open');
+}
+
+function closeProfilePanel() {
+  const panel = document.getElementById('sb-profile-panel');
+  if (panel) panel.classList.remove('open');
+}
+
+function saveProfile() {
+  const ar    = S.lang === 'ar';
+  const name  = (document.getElementById('spp-inp-name')?.value  || '').trim();
+  const job   = (document.getElementById('spp-inp-job')?.value   || '').trim();
+  const email = (document.getElementById('spp-inp-email')?.value || '').trim();
+  const curpw = (document.getElementById('spp-inp-curpw')?.value || '').trim();
+  const newpw = (document.getElementById('spp-inp-newpw')?.value || '').trim();
+
+  if (name)  localStorage.setItem('researcher_name',  name);
+  if (job)   localStorage.setItem('researcher_job',   job);
+  if (email) localStorage.setItem('researcher_email', email);
+
+  // Password change — validates against current access pin, updates both
+  if (newpw) {
+    const currentPin = getResearcherPin();
+    if (curpw !== currentPin) {
+      alert(ar ? 'كلمة المرور الحالية غير صحيحة' : 'Current password is incorrect');
+      return;
+    }
+    localStorage.setItem('researcher_pin', newpw);
+    localStorage.setItem('researcher_pw', newpw);
+  }
+
+  // Refresh sidebar identity row
+  const display = getDisplayName();
+  const role    = localStorage.getItem('researcher_job') || (ar ? 'باحث تجربة المستخدم' : 'UX Researcher');
+  const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setT('sb-uname',         display);
+  setT('sb-urole',         role);
+  setT('sb-avatar',        display.charAt(0).toUpperCase());
+  setT('spp-avatar',       display.charAt(0).toUpperCase());
+  setT('spp-display-name', display);
+  closeProfilePanel();
+}
+
+function editAvatarLetter() {
+  const ar  = S.lang === 'ar';
+  const cur = localStorage.getItem('researcher_name') || '';
+  const val = prompt(ar ? 'أدخل اسمك:' : 'Enter your name:', cur);
+  if (val && val.trim()) {
+    localStorage.setItem('researcher_name', val.trim());
+    saveProfile();
+    openProfilePanel();
+  }
+}
+
+function renderPanel() {
+  const panel = document.getElementById('res-panel');
+  if (!panel) return;
+  if (!S.isResearcher) { panel.style.display = 'none'; return; }
+  panel.style.display = 'flex';
+  const set = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = t(key); };
+  set('sb-tag', 'dbTag');
+  // Dynamic user name
+  const displayName = getDisplayName();
+  const uname = document.getElementById('sb-uname');
+  if (uname) uname.textContent = displayName;
+  const urole = document.getElementById('sb-urole');
+  if (urole) urole.textContent = localStorage.getItem('researcher_job') || (S.lang === 'ar' ? 'باحث تجربة المستخدم' : 'UX Researcher');
+  const avatar = document.getElementById('sb-avatar');
+  if (avatar) avatar.textContent = displayName.charAt(0).toUpperCase();
+  set('sb-lbl-overview',   'dbDashboard');
+  set('sb-lbl-interviews', 'dbInterviews');
+  set('sb-lbl-analysis',   'dbAnalysis');
+  set('sb-lbl-insights',   'dbInsights');
+  // page titles
+  // Greeting heading
+  const greetName = getDisplayName();
+  const greetEl   = document.getElementById('db-ttl-overview');
+  if (greetEl) greetEl.textContent = (S.lang === 'ar' ? 'مرحباً، ' : 'Hello, ') + greetName;
+  set('db-sub-overview', 'dbGlance');
+  set('db-ttl-interviews', 'dbInterviews');
+  set('db-sub-interviews', 'dbAllSessions');
+  set('db-ttl-analysis',   'dbAnalysis');
+  set('db-sub-analysis',   'dbAiInsights');
+  set('db-ttl-insights',   'dbInsights');
+  set('db-sub-insights',   'dbCrossDesc');
+  set('ca-run-btn',        'dbAnalyzeBtn');
+  const allBtn = document.getElementById('ca-all-btn');
+  if (allBtn) allBtn.textContent = t('dbAnalyzeAll');
+  // recent sidebar
+  renderSbRecent();
+}
+
+function renderSbRecent() {
+  const el = document.getElementById('sb-recent');
+  if (!el) return;
+  const all = getAllInterviews().slice().reverse().slice(0, 5);
+  const fmtDate = iso => new Date(iso).toLocaleDateString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { month:'short', day:'numeric' });
+  const lbl = `<span class="block text-[9.5px] font-bold uppercase tracking-widest text-muted px-2 pt-2 pb-1">${t('dbRecent')}</span>`;
+  if (!all.length) { el.innerHTML = lbl; return; }
+  el.innerHTML = lbl + all.map(iv => `
+    <div class="sb-rc-item px-2.5 py-1.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
+      <div class="text-[11.5px] font-semibold text-app-text leading-tight">${S.lang === 'ar' ? 'المقابلة' : 'Interview'} ${iv.num || getInterviewNumber(iv.id)}</div>
+      <div class="text-[10px] text-muted mt-0.5">${fmtDate(iv.date)}</div>
+    </div>`).join('');
+}
+
+function renderOverview() {
+  const all  = getAllInterviews();
+  const done = all.filter(iv => iv.completed).length;
+  const inc  = all.length - done;
+  const rate = all.length ? Math.round((done / all.length) * 100) : 0;
+  const statsEl = document.getElementById('db-stats');
+  const sc = 'iv-card-row bg-surface border border-[var(--border)] rounded p-4 text-center flex flex-col items-center justify-center gap-0.5';
+  if (statsEl) statsEl.innerHTML = `
+    <div class="${sc}" tabindex="0"><div class="text-[18px] font-semibold text-app-text leading-none">${all.length}</div><div class="text-[10px] font-medium text-muted uppercase tracking-wide">${t('dbTotal')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="text-[18px] font-semibold text-app-text leading-none">${done}</div><div class="text-[10px] font-medium text-muted uppercase tracking-wide">${t('dbCompleted')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="text-[18px] font-semibold text-app-text leading-none">${inc}</div><div class="text-[10px] font-medium text-muted uppercase tracking-wide">${t('dbIncomplete')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="text-[18px] font-semibold text-app-text leading-none">${rate}%</div><div class="text-[10px] font-medium text-muted uppercase tracking-wide">${t('dbRate')}</div></div>`;
+
+  const fmtDT  = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
+  const latest = all.slice().reverse().slice(0, 5);
+  const latestEl = document.getElementById('db-latest');
+  if (latestEl) latestEl.innerHTML = all.length ? `
+    <div class="text-[11px] font-semibold text-app-text mb-2">${t('dbLatest')}</div>
+    <div class="flex flex-col gap-1.5">${latest.map(iv => {
+      const num   = iv.num || getInterviewNumber(iv.id);
+      const r     = iv.lastQuestionSeen || 0;
+      const tot   = iv.totalQuestions   || 0;
+      const badge = ivStatusBadge(r, tot);
+      return `<div class="iv-card-row flex items-center gap-2 bg-surface border border-[var(--border)] rounded px-3 py-2.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')" onfocus="this.classList.add('active')" onblur="this.classList.remove('active')">
+        <div class="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
+          <span class="text-[12px] font-semibold text-app-text">${S.lang === 'ar' ? 'المقابلة' : 'Interview'} ${num}</span>
+          <span class="text-[11px] text-muted">${fmtDT(iv.date)}</span>
+        </div>
+        ${badge}
+      </div>`;
+    }).join('')}</div>` : '';
+}
+
+function renderInterviewsTab() {
+  const all = getAllInterviews().slice().reverse();
+  const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
+  const el  = document.getElementById('db-iv-list');
+  if (!el) return;
+  el.innerHTML = all.length
+    ? `<div class="flex flex-col">${all.map(iv => ivRowHtml(iv, fmt, true)).join('')}</div>`
+    : `<div class="text-[13px] text-muted italic">${t('dbNoData')}</div>`;
+}
+
+function ivStatusBadge(reached, total) {
+  const ar   = S.lang === 'ar';
+  const base = 'text-[9.5px] font-bold py-0.5 rounded-md shrink-0 whitespace-nowrap inline-block text-center';
+  const w    = 'style="min-width:52px;padding-left:6px;padding-right:6px;"';
+  if (!total || total === 0) return '';
+  if (reached >= total)
+    return `<span class="${base} bg-green-100 text-green-700" ${w}>${ar ? 'مكتملة' : 'Completed'}</span>`;
+  if (reached >= Math.ceil(total / 2))
+    return `<span class="${base} bg-amber-100 text-amber-700" ${w}>${ar ? 'منتصف' : 'Partial'}</span>`;
+  if (reached > 0)
+    return `<span class="${base} bg-blue-100 text-blue-600" ${w}>${ar ? 'بداية' : 'Early'}</span>`;
+  return `<span class="${base} bg-[var(--bg)] text-muted border border-[var(--border)]" ${w}>${ar ? 'لم تكتمل' : 'Incomplete'}</span>`;
+}
+
+function ivRowHtml(iv, fmt, expandable) {
+  const num     = iv.num || getInterviewNumber(iv.id);
+  const reached = iv.lastQuestionSeen || 0;
+  const total   = iv.totalQuestions   || 0;
+  const pct     = total > 0 ? Math.round((reached / total) * 100) : 0;
+  const badge   = ivStatusBadge(reached, total);
+
+  const answers  = Array.isArray(iv.answers) ? iv.answers : [];
+  const insights = iv.analysis && Array.isArray(iv.analysis.insights) ? iv.analysis.insights.filter(Boolean) : [];
+  const quotes   = iv.analysis && Array.isArray(iv.analysis.quotes)   ? iv.analysis.quotes.filter(Boolean)   : [];
+  const uxIssues = iv.analysis && Array.isArray(iv.analysis.patterns) ? iv.analysis.patterns.filter(Boolean) : [];
+
+  const notesHtml    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-[12px] text-app-text leading-relaxed mb-1.5">${esc(qa.a)}</div>`).join('') : `<div class="text-[12px] text-muted italic">${t('rnNoNotes')}</div>`;
+  const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div class="text-[12px] text-app-text leading-relaxed">${esc(iv.analysis.summary)}</div>` : `<div class="text-[12px] text-muted italic">${t('dbNoAnalysis')}</div>`;
+  const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet text-[12px] text-app-text leading-relaxed mb-1.5">${esc(i)}</div>`).join('') : `<div class="text-[12px] text-muted italic">${t('dbNoAnalysis')}</div>`;
+  const quotesHtml   = quotes.length    ? quotes.map(q => `<div class="iv-quote text-[12px] text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary">"${esc(q)}"</div>`).join('') : `<div class="text-[12px] text-muted italic">${t('rnNoQuotes')}</div>`;
+  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet text-[12px] text-app-text leading-relaxed mb-1.5">${esc(u)}</div>`).join('')  : `<div class="text-[12px] text-muted italic">${t('dbNoAnalysis')}</div>`;
+
+  const bodyHtml = expandable ? `
+    <div class="border-t border-[var(--border)]" id="iv-body-${iv.id}" style="display:none;">
+      <div class="flex border-b border-[var(--border)] bg-app-bg" id="iv-tabs-${iv.id}">
+        <button class="iv-tab active px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','notes')">${t('dbNotes')}</button>
+        <button class="iv-tab px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','summary')">${t('dbSummary')}</button>
+        <button class="iv-tab px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','insights')">${t('dbInsightsTab')}</button>
+        <button class="iv-tab px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','quotes')">${t('dbQuotes')}</button>
+        <button class="iv-tab px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','ux')">${t('dbUxIssues')}</button>
+      </div>
+      <div class="iv-tab-pane active p-4" id="ivp-${iv.id}-notes"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbNotes')}</div>${notesHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-summary"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbSummary')}</div>${summaryHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-insights"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbInsightsTab')}</div>${insightsHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-quotes"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbQuotes')}</div>${quotesHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-ux"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbUxIssues')}</div>${uxHtml}</div>
+    </div>` : '';
+
+  return `<div class="bg-surface border border-[var(--border)] rounded overflow-hidden mb-3" id="ivc-${iv.id}">
+    <div class="iv-card-row flex items-center gap-2.5 px-4 py-3.5" tabindex="0" onclick="${expandable ? `toggleIvCard('${iv.id}')` : `loadInterviewById('${iv.id}')`}" onkeydown="if(event.key==='Enter')${expandable ? `toggleIvCard('${iv.id}')` : `loadInterviewById('${iv.id}')`}" onfocus="this.classList.add('active')" onblur="this.classList.remove('active')">
+      ${expandable ? `<input type="checkbox" class="iv-chk w-4 h-4 accent-primary cursor-pointer shrink-0" id="ca-chk-${iv.id}" onclick="event.stopPropagation();updateCaCount()" />` : ''}
+      <div class="flex-1 min-w-0">
+        <!-- Title row: name + date/time on one side, badge on the other -->
+        <div class="flex items-center gap-2">
+          <span class="text-[12px] font-semibold text-app-text shrink-0">${S.lang === 'ar' ? 'المقابلة' : 'Interview'} ${num}</span>
+          <span class="text-[11px] text-muted truncate">${fmt(iv.date)}</span>
+          <span class="ms-auto shrink-0">${badge}</span>
+        </div>
+        ${total > 0 ? `
+        <div class="flex items-center gap-2 mt-1.5">
+          <div class="flex-1 h-[3px] bg-[var(--border)] rounded-full overflow-hidden">
+            <div class="h-full bg-primary rounded-full opacity-75" style="width:${pct}%"></div>
+          </div>
+          <span class="text-[11px] text-muted whitespace-nowrap shrink-0" style="min-width:30px;text-align:end;">${pct}%</span>
+        </div>` : ''}
+      </div>
+    </div>
+    ${bodyHtml}
+  </div>`;
+}
+
+function ivTab(btn, ivId, tab) {
+  const card = document.getElementById('ivc-' + ivId);
+  if (!card) return;
+  card.querySelectorAll('.iv-tab').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.iv-tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const pane = document.getElementById(`ivp-${ivId}-${tab}`);
+  if (pane) pane.classList.add('active');
+}
+
+function toggleIvCard(ivId) {
+  const body = document.getElementById('iv-body-' + ivId);
+  if (!body) return;
+  body.style.display = body.style.display === 'none' ? '' : 'none';
+}
+
+function renderCrossTab() {
+  // Only completed interviews are eligible for cross-analysis
+  const all = getAllInterviews().filter(iv => iv.completed).slice().reverse();
+  const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
+  const el  = document.getElementById('db-ca-list');
+  if (!el) return;
+  el.innerHTML = all.length
+    ? `<div class="flex flex-col">${all.map(iv => ivRowHtml(iv, fmt, true)).join('')}</div>`
+    : `<div class="text-[13px] text-muted italic">${t('dbNoData')}</div>`;
+  // Add "Analyze All" shortcut button if 2+ completed
+  const allBtn = document.getElementById('ca-all-btn');
+  if (allBtn) allBtn.style.display = all.length >= 2 ? '' : 'none';
+  updateCaCount();
+}
+
+function updateCaCount() {
+  const checked = document.querySelectorAll('#db-ca-list .iv-chk:checked').length;
+  const countEl = document.getElementById('ca-count');
+  const runBtn  = document.getElementById('ca-run-btn');
+  if (countEl) countEl.innerHTML = checked > 0
+    ? `<strong>${t('dbSelCount', checked)}</strong>`
+    : t('dbSelectHint');
+  if (runBtn) runBtn.disabled = checked < 2;
+}
+
+async function runAllAnalysis() {
+  const selected = getAllInterviews().filter(iv => iv.completed);
+  if (selected.length < 1) return;
+  await _doCrossAnalysis(selected);
+}
+
+async function runCrossAnalysis() {
+  const checked = [...document.querySelectorAll('#db-ca-list .iv-chk:checked')];
+  if (checked.length < 2) return;
+  const ids = checked.map(c => c.id.replace('ca-chk-', ''));
+  const all = getAllInterviews();
+  const selected = ids.map(id => all.find(iv => iv.id === id)).filter(Boolean);
+  await _doCrossAnalysis(selected);
+}
+
+async function _doCrossAnalysis(selected) {
+
+  const outEl = document.getElementById('db-ca-out');
+  if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:13px;">${t('dbCrossRunning')}</div>`;
+
+  const convo = selected.map((iv, i) => {
+    const qa = (iv.answers || []).map(a => `Q: ${a.q}\nA: ${a.a}`).join('\n');
+    return `--- Interview ${i+1} (${iv.date}) ---\n${qa}`;
+  }).join('\n\n');
+
+  const schema = JSON.stringify({
+    summary: "2-3 sentence overview of cross-interview findings",
+    insights: ["key insight across all interviews 1", "insight 2", "insight 3"],
+    quotes: ["verbatim quote from participant"],
+    patterns: ["recurring behaviour or attitude across interviews"],
+    recommendations: ["concrete actionable recommendation 1", "recommendation 2"],
+    personas: [{ name:'', age:'', goal:'', pain:'', motivation:'' }],
+    empathy: { thinks:[], feels:[], says:[], does:[] },
+    journey: [{ phase:'', action:'', emotion:'', sentiment:'positive|neutral|negative' }],
+    impactEffort: [{ action:'', impact:'High|Medium|Low', effort:'High|Medium|Low', priority:'Do First|Schedule|Delegate|Drop' }],
+    userFlow: [{ step:'', description:'' }]
+  });
+  const sysMsg = S.lang === 'ar'
+    ? 'أنت محلل UX خبير. حلّل مجموعة مقابلات مكتملة معاً وأنتج JSON صحيح فقط. استخرج الأنماط والسلوكيات المتكررة ونقاط الألم والمحفزات وعوامل القرار الحقيقية من الإجابات. جميع القيم بالعربية الخليجية. sentiment/impact/effort/priority بالإنجليزية دائماً. لا تضف أي نص خارج JSON.'
+    : 'You are a senior UX research analyst. Analyze multiple completed interviews together and output valid JSON only. Extract real patterns, repeated behaviours, pain points, motivations, and decision factors from the actual answers. All values in English. sentiment/impact/effort/priority must be in English. Output ONLY valid JSON.';
+  const prompt = S.lang === 'ar'
+    ? `حلّل المقابلات المكتملة التالية معاً (${selected.length} مقابلة) وأنتج JSON بهذا الهيكل بالضبط. ركّز على ما تكرّر في أكثر من مقابلة:\n${schema}\n\nالمقابلات:\n${convo}`
+    : `Analyze these ${selected.length} completed interviews together and output ONLY valid JSON with this exact structure. Focus on patterns that appear across multiple interviews — repeated behaviours, shared pain points, common motivations:\n${schema}\n\nInterviews:\n${convo}`;
+
+  try {
+    showOv(t('olAnalyze'), t('olSub'));
+    const raw = await callAI([{ role:'system', content:sysMsg },{ role:'user', content:prompt }], 0.3, 4000);
+    hideOv();
+    let data;
+    try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch(_) { data = {}; }
+    renderCrossOutput(data);
+  } catch(e) {
+    hideOv();
+    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:13px;">${t('errAnalysis')}</div>`;
+  }
+}
+
+function renderCrossOutput(d) {
+  const el = document.getElementById('db-ca-out');
+  if (!el) return;
+  if (!d || Object.keys(d).length === 0) {
+    el.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:13px;">${t('dbCrossEmpty')}</div>`;
+    return;
+  }
+  // Reuse renderAnalysis rendering, targeting db-ca-out
+  renderAnalysis(d, null, 'db-ca-out');
 }
 
 // ─── END / ANALYZE ────────────────────────────────────────
 function concludeInterview() {
   S.done = true;
   clearSession();
-  if (S.isResearcher) {
-    analyze();
-  } else {
-    finishMsg();
-  }
+  finishMsg(); // Always go to Thank You — no analysis modal shown to users
 }
 
 function onEndClick() {
@@ -1353,37 +2300,95 @@ async function analyze() {
 // ─── RENDER RESULTS ───────────────────────────────────────
 function renderResults(d) {
   goTo('page-results');
-  const rml = document.getElementById('research-mode-label');
-  if (rml) rml.style.display = S.isResearcher ? 'block' : 'none';
-  const ccl = document.getElementById('completed-count-label');
-  const cc  = document.getElementById('completed-count');
-  if (ccl && cc) {
-    if (S.isResearcher) {
-      cc.textContent  = String(getAllInterviews().length);
-      ccl.style.display = 'block';
-    } else { ccl.style.display = 'none'; }
+  if (!S.isResearcher) {
+    // Non-researcher: just show analysis
+    document.getElementById('res-panel').style.display = 'none';
+    renderAnalysis(d, { lastQuestionSeen: S.mainAsked, totalQuestions: S.numQ });
+    dbTab('analysis');
+    return;
   }
-  document.getElementById('res-ttl').textContent = t('resTitle');
-  document.getElementById('res-sub').textContent = t('resSub');
-  renderHistory(S._iid);
-  renderAnalysis(d);
+  renderPanel();
+  renderOverview();
+  renderInterviewsTab();
+  renderCrossTab();
+  // If d has real analysis data (just finished interview), show it; otherwise load most recent
+  const hasRealData = !!(d && (d.summary || (d.insights && d.insights.length)));
+  if (hasRealData) {
+    const curIv = { lastQuestionSeen: S.mainAsked, totalQuestions: S.numQ };
+    renderAnalysis(d, curIv, 'res-content', null);
+    dbTab('analysis');
+  } else {
+    // Try to load the most recently analyzed interview
+    const all = getAllInterviews().slice().reverse();
+    const analyzed = all.find(iv => iv.analysis && iv.analysis.summary);
+    if (analyzed) {
+      renderAnalysis(analyzed.analysis, analyzed, 'res-content', analyzed);
+    } else if (all.length) {
+      renderAnalysis({}, all[0], 'res-content', all[0]);
+    } else {
+      renderAnalysis({}, null, 'res-content', null);
+    }
+    dbTab('overview');
+  }
 }
 
-function renderAnalysis(d) {
+function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
+  // Reset section detail store
+  window._raDetails = {};
 
-  const ICO = {
-    sum:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`,
-    ins:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
-    pat:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
-    quo:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-    rec:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
+  const CHEV = `<svg class="rtl-flip" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+  // Clickable section header — stores body for detail overlay
+  const secHd = (title, key, bodyHtml) => {
+    window._raDetails[key] = { title, body: bodyHtml };
+    return `<div class="ra-sec-hd" onclick="openSecDetail('${key}')">
+      <span class="ra-sec-ttl">${title}</span>
+      <span class="ra-sec-chev">${CHEV}</span>
+    </div>`;
   };
 
   const numBadge = (n, cls) => `<span class="ra-badge ${cls}">${n}</span>`;
 
   let html = '';
 
-  // 1 — Summary (full width)
+  // 0 — Progress tracker (researcher only) — no #N badge
+  if (S.isResearcher && iv) {
+    const reached = iv.lastQuestionSeen || 0;
+    const total   = iv.totalQuestions   || S.numQ || 0;
+    const pct     = total > 0 ? Math.round((reached / total) * 100) : 0;
+    if (total > 0) {
+      html += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);">
+        <span style="font-size:12px;color:var(--muted);white-space:nowrap;">${TR[S.lang].progLbl(reached, total)}</span>
+        <div style="flex:1;height:3px;background:var(--border);border-radius:99px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:var(--primary);border-radius:99px;"></div>
+        </div>
+        <span style="font-size:12px;font-weight:500;color:var(--primary);white-space:nowrap;min-width:34px;text-align:end;">${pct}%</span>
+      </div>`;
+    }
+  }
+
+  // Empty state — show analyze button if interview has answers but no analysis
+  const hasData = !!(d.summary || (d.insights && d.insights.length) || (d.patterns && d.patterns.length));
+  if (!hasData) {
+    const ar = S.lang === 'ar';
+    const ivId = rawIv && rawIv.id;
+    const hasAnswers = rawIv && rawIv.answers && rawIv.answers.length > 0;
+    const target = document.getElementById(targetId);
+    if (target) target.innerHTML = html + `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:48px 24px;text-align:center;">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--plight);display:flex;align-items:center;justify-content:center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;">${ar ? 'لا يوجد تحليل بعد' : 'No analysis yet'}</div>
+          <div style="font-size:12px;color:var(--muted);">${ar ? 'هذه المقابلة لم يتم تحليلها بعد' : 'This interview has not been analyzed yet'}</div>
+        </div>
+        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:12px;font-weight:500;padding:9px 22px;">${ar ? 'تحليل الآن' : 'Analyze Now'}</button>` : ''}
+      </div>`;
+    return;
+  }
+
+  // 1 — Summary
   if (d.summary) {
     html += `<div class="ra-summary">
       <div class="ra-sum-lbl">${t('summary')}</div>
@@ -1397,135 +2402,118 @@ function renderAnalysis(d) {
   if (insights.length || patterns.length) {
     html += `<div class="grid2">`;
     if (insights.length) {
-      html += `<div class="rc">
-        <div class="rc-hd"><div class="rc-ico ci-b">${ICO.ins}</div><div class="rc-ttl">${t('insights')}</div></div>
-        <div class="rc-items">${insights.map((x,i) => `<div class="ra-num-item">${numBadge(i+1,'ra-badge-b')}<div>${esc(x)}</div></div>`).join('')}</div>
-      </div>`;
+      const insBody = `<div class="rc-items">${insights.map((x,i) => `<div class="ra-num-item">${numBadge(i+1,'ra-badge-b')}<div>${esc(x)}</div></div>`).join('')}</div>`;
+      html += `<div class="rc">${secHd(t('insights'), 'insights', insBody)}${insBody}</div>`;
     }
     if (patterns.length) {
-      html += `<div class="rc">
-        <div class="rc-hd"><div class="rc-ico ci-p">${ICO.pat}</div><div class="rc-ttl">${t('patterns')}</div></div>
-        <div class="rc-items">${patterns.map(x => `<div class="ri"><div class="rbul" style="background:var(--accent);margin-top:8px;flex-shrink:0;"></div><div>${esc(x)}</div></div>`).join('')}</div>
-      </div>`;
+      const patBody = `<div class="rc-items">${patterns.map(x => `<div class="ri"><div class="rbul" style="background:var(--accent);margin-top:8px;flex-shrink:0;"></div><div>${esc(x)}</div></div>`).join('')}</div>`;
+      html += `<div class="rc">${secHd(t('patterns'), 'patterns', patBody)}${patBody}</div>`;
     }
     html += `</div>`;
   }
 
-  // 3 — User Quotes (full width, styled)
+  // 3 — User Quotes
   const quotes = (d.quotes || []).filter(Boolean);
   if (quotes.length) {
-    html += `<div class="rc" style="margin-bottom:16px;">
-      <div class="rc-hd"><div class="rc-ico ci-y">${ICO.quo}</div><div class="rc-ttl">${t('quotes')}</div></div>
-      <div class="ra-quotes">${quotes.map(q => `<div class="ra-quote">"${esc(q)}"</div>`).join('')}</div>
-    </div>`;
+    const quotesBody = `<div class="ra-quotes">${quotes.map(q => `<div class="ra-quote">"${esc(q)}"</div>`).join('')}</div>`;
+    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('quotes'), 'quotes', quotesBody)}${quotesBody}</div>`;
   }
 
-  // 5 — Recommendations (full width, numbered)
+  // 5 — Recommendations
   const recs = (d.recommendations || []).filter(Boolean);
   if (recs.length) {
-    html += `<div class="rc" style="margin-bottom:16px;">
-      <div class="rc-hd"><div class="rc-ico ci-g">${ICO.rec}</div><div class="rc-ttl">${t('recs')}</div></div>
-      <div class="rc-items">${recs.map((x,i) => `<div class="ra-num-item">${numBadge(i+1,'ra-badge-g')}<div>${esc(x)}</div></div>`).join('')}</div>
-    </div>`;
+    const recsBody = `<div class="rc-items">${recs.map((x,i) => `<div class="ra-num-item">${numBadge(i+1,'ra-badge-g')}<div>${esc(x)}</div></div>`).join('')}</div>`;
+    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('recs'), 'recs', recsBody)}${recsBody}</div>`;
   }
 
   // ── RESEARCHER-ONLY SECTIONS ─────────────────────────────
   if (S.isResearcher) {
-    const ph = `<span style="color:var(--muted);font-size:12px;font-style:italic;">${t('noData')}</span>`;
+    const ph = `<span style="color:var(--muted);font-size:12px;font-style:italic;">—</span>`;
 
     // 6 — Personas
     const personas = (d.personas || []).filter(Boolean);
-    html += `<div class="rc" style="margin-bottom:16px;">
-      <div class="ra-section-hd">
-        <div class="ra-section-ico ci-p"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-        <div class="ra-section-ttl">${t('personas')}</div>
-      </div>
-      ${personas.length ? `<div class="persona-grid">${personas.map(p => `
-        <div class="persona-card">
-          <div class="persona-name">${esc(p.name||'')}</div>
-          ${p.age        ? `<div class="persona-row">${t('pAge')}: <span>${esc(p.age)}</span></div>` : ''}
-          ${p.goal       ? `<div class="persona-row">${t('pGoal')}: <span>${esc(p.goal)}</span></div>` : ''}
-          ${p.pain       ? `<div class="persona-row">${t('pPain')}: <span>${esc(p.pain)}</span></div>` : ''}
-          ${p.motivation ? `<div class="persona-row">${t('pMotivation')}: <span>${esc(p.motivation)}</span></div>` : ''}
-        </div>`).join('')}</div>` : ph}
-    </div>`;
+    const personasBody = personas.length ? `<div class="persona-grid">${personas.map(p => `
+      <div class="persona-card">
+        <div class="persona-name">${esc(p.name||'')}</div>
+        ${p.age        ? `<div class="persona-row">${t('pAge')}: <span>${esc(p.age)}</span></div>` : ''}
+        ${p.goal       ? `<div class="persona-row">${t('pGoal')}: <span>${esc(p.goal)}</span></div>` : ''}
+        ${p.pain       ? `<div class="persona-row">${t('pPain')}: <span>${esc(p.pain)}</span></div>` : ''}
+        ${p.motivation ? `<div class="persona-row">${t('pMotivation')}: <span>${esc(p.motivation)}</span></div>` : ''}
+      </div>`).join('')}</div>` : ph;
+    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('personas'), 'personas', personasBody)}${personasBody}</div>`;
 
     // 7 — Empathy Map
     const emp = d.empathy || {};
     const empLabel = { thinks: t('emThinks'), feels: t('emFeels'), says: t('emSays'), does: t('emDoes') };
-    html += `<div class="rc" style="margin-bottom:16px;">
-      <div class="ra-section-hd">
-        <div class="ra-section-ico ci-o"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
-        <div class="ra-section-ttl">${t('empathy')}</div>
-      </div>
-      <div class="empathy-grid">${['thinks','feels','says','does'].map(k => `
-        <div class="empathy-cell">
-          <div class="empathy-lbl">${empLabel[k]}</div>
-          <div class="empathy-items">${(emp[k]||[]).length ? (emp[k]).map(x=>`• ${esc(x)}`).join('<br>') : `<span style="color:var(--muted);font-size:12px;font-style:italic;">—</span>`}</div>
-        </div>`).join('')}
-      </div>
-    </div>`;
+    const empBody = `<div class="empathy-grid">${['thinks','feels','says','does'].map(k => `
+      <div class="empathy-cell">
+        <div class="empathy-lbl">${empLabel[k]}</div>
+        <div class="empathy-items">${(emp[k]||[]).length ? emp[k].map(x=>`• ${esc(x)}`).join('<br>') : `<span style="color:var(--muted);font-size:12px;font-style:italic;">—</span>`}</div>
+      </div>`).join('')}</div>`;
+    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('empathy'), 'empathy', empBody)}${empBody}</div>`;
 
     // 8 — User Journey Map
     const journey = (d.journey || []).filter(Boolean);
     const sentClass = s => s==='positive'?'js-pos':s==='negative'?'js-neg':'js-neu';
     const sentLabel = s => s==='positive'?t('sentPos'):s==='negative'?t('sentNeg'):t('sentNeu');
-    html += `<div class="rc" style="margin-bottom:16px;">
-      <div class="ra-section-hd">
-        <div class="ra-section-ico ci-b"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
-        <div class="ra-section-ttl">${t('journey')}</div>
-      </div>
-      ${journey.length ? `<div class="journey-steps">${journey.map(j => `
-        <div class="journey-step">
-          <div class="journey-phase">${esc(j.phase||'')}</div>
-          <div class="journey-action">${esc(j.action||'')}</div>
-          <div class="journey-emotion">${esc(j.emotion||'')}</div>
-          ${j.sentiment ? `<span class="journey-sentiment ${sentClass(j.sentiment)}">${sentLabel(j.sentiment)}</span>` : ''}
-        </div>`).join('')}</div>` : ph}
-    </div>`;
+    const journeyBody = journey.length ? `<div class="journey-steps">${journey.map(j => `
+      <div class="journey-step">
+        <div class="journey-phase">${esc(j.phase||'')}</div>
+        <div class="journey-action">${esc(j.action||'')}</div>
+        <div class="journey-emotion">${esc(j.emotion||'')}</div>
+        ${j.sentiment ? `<span class="journey-sentiment ${sentClass(j.sentiment)}">${sentLabel(j.sentiment)}</span>` : ''}
+      </div>`).join('')}</div>` : ph;
+    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('journey'), 'journey', journeyBody)}${journeyBody}</div>`;
 
     // 9 — Impact vs Effort
     const ie = (d.impactEffort || []).filter(Boolean);
     const chipClass = v => v==='High'?'ie-hi':v==='Low'?'ie-lo':'ie-md';
-    html += `<div class="rc" style="margin-bottom:16px;">
-      <div class="ra-section-hd">
-        <div class="ra-section-ico ci-r"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-        <div class="ra-section-ttl">${t('impactEff')}</div>
-      </div>
-      ${ie.length ? `<table class="ie-table">
-        <thead><tr><th>${t('ieAction')}</th><th>${t('ieImpact')}</th><th>${t('ieEffort')}</th><th>${t('iePriority')}</th></tr></thead>
-        <tbody>${ie.map(r => `<tr>
-          <td>${esc(r.action||'')}</td>
-          <td><span class="ie-chip ${chipClass(r.impact)}">${esc(r.impact||'')}</span></td>
-          <td><span class="ie-chip ${chipClass(r.effort)}">${esc(r.effort||'')}</span></td>
-          <td><strong>${esc(r.priority||'')}</strong></td>
-        </tr>`).join('')}</tbody>
-      </table>` : ph}
-    </div>`;
+    const ieBody = ie.length ? `<table class="ie-table">
+      <thead><tr><th>${t('ieAction')}</th><th>${t('ieImpact')}</th><th>${t('ieEffort')}</th><th>${t('iePriority')}</th></tr></thead>
+      <tbody>${ie.map(r => `<tr>
+        <td>${esc(r.action||'')}</td>
+        <td><span class="ie-chip ${chipClass(r.impact)}">${esc(r.impact||'')}</span></td>
+        <td><span class="ie-chip ${chipClass(r.effort)}">${esc(r.effort||'')}</span></td>
+        <td><strong>${esc(r.priority||'')}</strong></td>
+      </tr>`).join('')}</tbody>
+    </table>` : ph;
+    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('impactEff'), 'ie', ieBody)}${ieBody}</div>`;
 
     // 10 — User Flow
     const flow = (d.userFlow || []).filter(Boolean);
-    html += `<div class="rc" style="margin-bottom:16px;">
-      <div class="ra-section-hd">
-        <div class="ra-section-ico ci-g"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
-        <div class="ra-section-ttl">${t('userFlow')}</div>
-      </div>
-      ${flow.length ? `<div class="flow-steps">${flow.map((s,i) => `
-        <div class="flow-row">
-          <div class="flow-left">
-            <div class="flow-dot">${i+1}</div>
-            <div class="flow-line"></div>
-          </div>
-          <div class="flow-content">
-            <div class="flow-step-ttl">${esc(s.step||'')}</div>
-            <div class="flow-step-desc">${esc(s.description||'')}</div>
-          </div>
-        </div>`).join('')}</div>` : ph}
-    </div>`;
+    const flowBody = flow.length ? `<div class="flow-steps">${flow.map((s,i) => `
+      <div class="flow-row">
+        <div class="flow-left">
+          <div class="flow-dot">${i+1}</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step-ttl">${esc(s.step||'')}</div>
+          <div class="flow-step-desc">${esc(s.description||'')}</div>
+        </div>
+      </div>`).join('')}</div>` : ph;
+    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('userFlow'), 'flow', flowBody)}${flowBody}</div>`;
 
   } // end isResearcher
 
-  document.getElementById('res-content').innerHTML = html;
+  const target = document.getElementById(targetId);
+  if (target) target.innerHTML = html;
+}
+
+function openSecDetail(key) {
+  const entry = (window._raDetails || {})[key];
+  if (!entry) return;
+  const ttlEl  = document.getElementById('sec-det-ttl');
+  const bodyEl = document.getElementById('sec-det-body');
+  if (ttlEl)  ttlEl.textContent = entry.title;
+  if (bodyEl) bodyEl.innerHTML  = entry.body;
+  document.getElementById('sec-ov').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSecDetail() {
+  document.getElementById('sec-ov').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 // ─── OVERLAY ──────────────────────────────────────────────
@@ -1571,7 +2559,7 @@ function restoreSession() {
     // Re-render conversation from saved messages
     goTo('page-chat');
     document.getElementById('msgs').innerHTML = '';
-    document.getElementById('end-row').style.display = 'block';
+    document.getElementById('end-row').style.display = S.mainAsked >= 4 ? 'block' : 'none';
     S.msgs.filter(m => m.role !== 'system').forEach(m => addMsg(m.role, m.content));
     renderProg();
     S.waitingForAnswer = true; setSend(false);
@@ -1581,7 +2569,10 @@ function restoreSession() {
 }
 
 // ─── RESEARCHER ACCESS ────────────────────────────────────
-const RESEARCHER_PIN = '1589';
+const RESEARCHER_PIN_DEFAULT = '1589';
+function getResearcherPin() {
+  return localStorage.getItem('researcher_pin') || RESEARCHER_PIN_DEFAULT;
+}
 let _brandTaps = 0, _brandTimer = null;
 
 function onBrandClick() {
@@ -1608,7 +2599,7 @@ function closeResearcherModal() {
 
 function submitResearcherPin() {
   const pin = document.getElementById('researcher-pin').value;
-  if (pin === RESEARCHER_PIN) {
+  if (pin === getResearcherPin()) {
     localStorage.setItem('researcher_access', 'true');
     S.isResearcher = true;
     closeResearcherModal();
@@ -1621,13 +2612,16 @@ function submitResearcherPin() {
 }
 
 // ─── RESTART ──────────────────────────────────────────────
-function goHome() { goTo('page-setup'); }
+function goHome() {
+  // Researchers go back to setup/config; regular users go to intro
+  goTo(S.isResearcher ? 'page-setup' : 'page-intro');
+}
 
 function restart() {
   clearSession();
   S.msgs = []; S.mainAsked = 0; S.followUps = 0;
   S.waitingForAnswer = false; S.done = false;
-  goTo('page-setup');
+  goTo(S.isResearcher ? 'page-setup' : 'page-intro');
 }
 </script>
 </body>
