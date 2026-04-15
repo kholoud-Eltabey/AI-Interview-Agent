@@ -824,28 +824,13 @@ a:focus-visible,
       </div>
     </div>
 
-    <!-- API key card — removed: key lives on the server -->
-    <div class="card" style="display:none;">
-      <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API SETTINGS</span></div>
-
-      <div class="fg">
-        <div class="fl"><span id="s-key-lbl">OpenAI API Key</span></div>
-        <div class="key-wrap">
-          <input type="password" class="inp" id="inp-key" placeholder="sk-…" autocomplete="off">
-          <button class="key-eye" onclick="toggleKeyVis()" title="Show / hide">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-        <div class="key-ok" id="key-ok">✓ <span id="s-key-saved">API key saved</span></div>
-        <div class="hint" id="s-key-hint">Stored locally. Never sent anywhere except OpenAI.</div>
-        <div class="errtxt" id="key-err"></div>
-        <div class="key-acts">
-          <button class="btn btn-s" onclick="clearKey()" id="s-clear-btn">Clear Key</button>
-          <button class="btn btn-s" onclick="saveKey()"  id="s-save-btn">Save Key</button>
-        </div>
+    <!-- API status card — key is pre-configured on the server, never exposed to UI -->
+    <div class="card">
+      <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="api-status-dot" style="width:8px;height:8px;border-radius:50%;background:#16a34a;flex-shrink:0;"></span>
+        <span id="api-status-lbl" style="font-size:14px;font-weight:500;color:var(--text);">Connected</span>
+        <span id="api-status-sub" style="font-size:12px;color:var(--muted);margin-inline-start:auto;">Powered by OpenAI GPT-4o</span>
       </div>
     </div>
 
@@ -1401,6 +1386,10 @@ function renderTR() {
   set('prestart-back-lbl',  t('prestartBack'));
 
   document.querySelectorAll('.tagline-lbl').forEach(el => el.textContent = t('tagline'));
+  // API status card
+  set('api-status-lbl', S.lang === 'ar' ? 'متصل' : 'Connected');
+  set('api-status-sub', S.lang === 'ar' ? 'مدعوم بـ OpenAI GPT-4o' : 'Powered by OpenAI GPT-4o');
+
   set('s-ctx-lbl',  t('ctxLbl'));
   set('s-biz-lbl',  t('bizLbl'));
   set('s-goal-lbl', t('goalLbl'));
@@ -1865,17 +1854,11 @@ function openProfilePanel() {
   setT('spp-lbl-rate',  ar ? 'نسبة الإكمال'   : 'Rate');
   setT('spp-lbl-last',  ar ? 'آخر نشاط'       : 'Last');
 
-  // API status
-  const key    = S.apiKey || localStorage.getItem('openai_api_key') || '';
+  // API status — key is pre-configured on server, always connected
   const apiDot = document.getElementById('spp-api-dot');
   const apiTxt = document.getElementById('spp-api-txt');
-  if (key) {
-    if (apiDot) apiDot.style.background = '#16a34a';
-    if (apiTxt) { apiTxt.textContent = ar ? 'متصل' : 'Connected'; apiTxt.style.color = '#16a34a'; }
-  } else {
-    if (apiDot) apiDot.style.background = 'var(--muted)';
-    if (apiTxt) { apiTxt.textContent = ar ? 'غير متصل' : 'Not connected'; apiTxt.style.color = 'var(--muted)'; }
-  }
+  if (apiDot) apiDot.style.background = '#16a34a';
+  if (apiTxt) { apiTxt.textContent = ar ? 'متصل' : 'Connected'; apiTxt.style.color = '#16a34a'; }
 
   // Interview stats
   const allIv  = getAllInterviews();
