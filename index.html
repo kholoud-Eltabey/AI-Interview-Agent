@@ -588,12 +588,12 @@ a:focus-visible,
   cursor: pointer; gap: 8px; transition: color var(--tr);
 }
 .ra-sec-hd:hover .ra-sec-ttl { color: var(--primary); }
-.ra-sec-ttl { font-size: 18px; font-weight: 500; color: var(--text); }
+.ra-sec-ttl { font-size: 16px; font-weight: 500; color: var(--text); }
 .ra-sec-chev { color: var(--muted); display: flex; align-items: center; flex-shrink: 0; transition: color var(--tr); }
 .ra-sec-hd:hover .ra-sec-chev { color: var(--primary); }
 
 /* rc-ttl override for analysis cards */
-#res-inner .rc-ttl { font-size: 18px; font-weight: 500; }
+#res-inner .rc-ttl { font-size: 16px; font-weight: 500; }
 
 /* Section detail overlay */
 .sec-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 180; align-items: center; justify-content: center; padding: 16px; }
@@ -1979,7 +1979,7 @@ async function analyzeStoredInterview(id) {
   showOv(t('olAnalyze'), t('olSub'));
   try {
     const convo = iv.answers.map(qa => `Researcher: ${qa.q}\nParticipant: ${qa.a}`).join('\n\n');
-    const ar = (iv.lang || S.lang) === 'ar';
+    const ar = S.lang === 'ar'; // always follow current UI language, not interview language
     const sysMsg = ar
       ? 'أنت محلل UX بحثي متخصص. مهمتك تحليل مقابلة بحثية وإنتاج JSON صحيح فقط — بدون أي نص خارجه. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. إذا تحدث المشارك بالإنجليزية، ترجم اقتباساته إلى العربية الخليجية الطبيعية مع الحفاظ على المعنى الأصلي. الاستثناءات الوحيدة المسموحة بالإنجليزية: اسم "Skoon"، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). اكتب بأسلوب UX بحثي احترافي — دقيق ومبني على الأدلة.'
       : 'You are a senior UX research analyst. Your task is to analyze a research interview and output valid JSON only — no text outside the JSON. Language rule is absolute: every text value in the JSON must be in English only, with zero Arabic words or code-switching. The only fixed-enum values allowed are: sentiment (positive/neutral/negative), impact (High/Medium/Low), effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name is always "Skoon". Write in a clear, professional UX research tone — concise, specific, and evidence-based.';
