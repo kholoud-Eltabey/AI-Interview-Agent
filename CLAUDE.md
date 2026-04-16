@@ -4,6 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## ⚠️ Development Rules (MUST FOLLOW)
+
+1. **Test locally after every change** — open `index.html` in a browser and verify the affected feature works before considering the task done
+2. **Push to GitHub only after local validation** — never push unverified code
+3. **Never break existing features** — before touching any function, check what else calls it; regression is not acceptable
+
+**Checklist before any push:**
+- [ ] Feature works in both English and Arabic (`cycleLang()` tested)
+- [ ] Feature works in light and dark theme (`toggleTheme()` tested)
+- [ ] Researcher mode works (triple-click brand → passcode → dashboard)
+- [ ] Regular user flow works (setup → chat → done screen)
+- [ ] No console errors
+
+---
+
 ## Project Overview
 
 **Skoon Interview Agent** — an AI-powered user interview tool for Skoon, a Saudi rental property platform.
@@ -12,79 +27,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 |---|---|
 | **Single file** | `index.html` — all HTML, CSS, and JS inline in one file |
 | **No tooling** | No build step, no framework, no package.json, no dependencies |
-| **AI model** | OpenAI GPT-4o — called via Cloudflare Worker (`/api/chat`) — key never in browser |
+| **AI model** | OpenAI GPT-4o — called directly from the browser |
 | **Languages** | Gulf Arabic / English — switchable at any time |
-| **Local dev** | `wrangler pages dev .` — required for `/api/chat` Worker to work locally |
-| **Deploy** | `wrangler pages deploy . --project-name skoon-interview-agent --branch main` |
-
----
-
-## Architecture
-
-```
-Browser (index.html)
-    │
-    └── POST /api/chat
-            │
-            └── functions/api/chat.js  (Cloudflare Pages Function)
-                    │
-                    └── OpenAI API  (key stored as Cloudflare secret)
-```
-
-- The OpenAI API key is stored **only** as a Cloudflare encrypted secret (`OPENAI_API_KEY`)
-- The browser never sees the key — it calls `/api/chat` and the Worker calls OpenAI
-- Auth middleware lives in `functions/_middleware.js` — HMAC-signed cookie, shared password
+| **Run** | Open `index.html` directly in a browser, or `npx serve .` |
 
 ---
 
 ## 1. Four-Page Flow
 
-The app renders one `<div class="page">` at a time, navigating via `goTo(pageId)`:
-
 ```
-page-setup  →  page-prestart  →  page-chat  →  page-done      (regular user)
-                                            ↘  page-results   (researcher only, via triple-click)
+page-setup  →  page-chat  →  page-results  (researcher only)
+                          ↘  page-done      (regular user)
 ```
 
 | Page | ID | Purpose |
 |------|----|---------|
-| Setup | `page-setup` | Landing page — interview config (goal, audience). API shows "Connected" read-only. |
-| Pre-start | `page-prestart` | Warm-up / heads-up page shown before the interview starts |
-| Chat | `page-chat` | Live interview conversation — question and answer |
-| Done | `page-done` | Thank-you screen shown to regular users after interview ends |
-| Results | `page-results` | Researcher analysis dashboard — accessed only via triple-click |
-
-**Navigation rules:**
-- `page-setup` is the active landing page (has `class="page active"` in HTML)
-- Setup "Start Interview" button → `goTo('page-prestart')`
-- Pre-start "Start Interview" button → `startInterview()` → `goTo('page-chat')`
-- Pre-start Back button → `goTo('page-setup')`
-- `goHome()` and `restart()` both return to `page-setup`
-- `concludeInterview()` always calls `finishMsg()` → `goTo('page-done')` — never shows analysis to users
+| Setup | `page-setup` | API key entry + interview config |
+| Chat | `page-chat` | Live interview conversation |
+| Results | `page-results` | Researcher dashboard — passcode protected |
+| Done | `page-done` | Thank-you screen for regular users |
 
 ---
 
 ## 2. State Object `S`
 
-Single source of truth for all runtime state:
-
 ```js
 const S = {
-  lang: 'en',            // current language: 'en' or 'ar'
+  lang: 'en',            // 'en' or 'ar'
   theme: 'light',        // 'light' or 'dark'
-  apiKey: '',            // unused — key is server-side only
-  numQ: 10,              // number of questions (fixed at 10)
-  goal: '',              // interview goal (set by researcher on setup page)
-  audience: '',          // target audience description
-  biz: 'Skoon',          // product name
-  msgs: [],              // full conversation message history
-  mainAsked: 0,          // number of main questions asked so far
-  followUps: 0,          // number of follow-up questions asked
-  maxFollowUps: 0,
-  waitingForAnswer: false,
-  done: false,
+  apiKey: '',
+  numQ: 10,
+  goal: '', audience: '', biz: 'Skoon',
+  msgs: [],
+  mainAsked: 0, followUps: 0, maxFollowUps: 0,
+  waitingForAnswer: false, done: false,
   isResearcher: localStorage.getItem('researcher_access') === 'true',
-  _iid: undefined,       // unique interview ID — set at startInterview()
+  _iid: undefined,
 };
 ```
 
@@ -92,11 +70,10 @@ const S = {
 
 ## 3. Translations `TR` / `t()`
 
-**Golden rule:** every string visible to the user must go through `t('key')` — never hardcode text in render functions.
-
-- All strings live in the `TR` object with `TR.en` and `TR.ar` sub-objects
-- `t('key')` reads `TR[S.lang][key]` automatically
-- When adding any new string → add it to **both languages** at the same time
+- All strings in `TR.en` and `TR.ar`
+- `t('key')` reads `TR[S.lang][key]`
+- Some values are **functions**: `TR[S.lang].progLbl(n, total)` → `"4 of 10"` / `"4 من 10"`
+- **Always add to both languages simultaneously**
 
 ---
 
@@ -104,175 +81,225 @@ const S = {
 
 | Key | Stores |
 |-----|--------|
-| `skoon_theme` | Selected theme (`light` / `dark`) |
-| `skoon_lang` | Selected language (`en` / `ar`) |
-| `researcher_access` | `'true'` when researcher passcode has been entered |
-| `skoon_session` | In-progress interview (JSON) — cleared on completion |
-| `skoon_interviews` | Append-only array of all completed interviews — never deleted |
-
-> `skoon_api_key` is no longer used. The key lives server-side only.
+| `skoon_api_key` | OpenAI API key |
+| `skoon_theme` | `light` / `dark` |
+| `skoon_lang` | `en` / `ar` |
+| `researcher_access` | `'true'` when passcode entered |
+| `researcher_pin` | Custom passcode (default: `1589`) |
+| `researcher_name` | Researcher display name |
+| `researcher_email` | Researcher email |
+| `researcher_job` | Job title shown in sidebar |
+| `researcher_pw` | Legacy password field (mirrors `researcher_pin`) |
+| `skoon_session` | In-progress interview JSON — cleared on completion |
+| `skoon_interviews` | Append-only array of all interviews — never deleted |
 
 ---
 
 ## 5. Interview Persistence
 
-Every completed interview is appended to `skoon_interviews` — **nothing is ever deleted or overwritten.**
-
 ```js
 // Shape of each saved record
 {
   id,                    // unique ID (S._iid)
-  num,                   // sequential interview number (1-based)
   date,                  // ISO date string
-  lang,                  // language at interview time
-  completed,             // always true
-  goal,                  // interview goal
-  audience,              // target audience
+  lang,
+  completed,             // true when fully saved
+  goal, audience,
   lastQuestionSeen,      // S.mainAsked at save time
   totalQuestions,        // S.numQ
-  progressPercent,       // percentage complete
-  keyNotes,              // summary string (from analysis, if available)
-  answers: [{ q, a }],  // every question paired with its answer
+  answers: [{ q, a }],
   analysis: null | {...} // GPT-4o results (researcher only)
 }
 ```
 
-- `saveInterview(analysis)` checks `S._iid` before saving to prevent duplicates
-- `extractQA()` pulls question/answer pairs out of `S.msgs`
-- `renderAnalysis(d, iv)` receives the full record as `iv` — `iv.lastQuestionSeen / iv.totalQuestions` renders progress bar at top of analysis
+- `saveInterview(analysis)` checks `S._iid` to prevent duplicates
+- `analyzeStoredInterview(id)` — re-runs GPT analysis on any stored interview and saves the result back
 
 ---
 
-## 6. Researcher Access (Hidden)
+## 6. Researcher Access
 
-Regular users see no admin UI — access is completely hidden from the DOM.
+**Hidden from regular users — completely absent from DOM.**
 
 **How to access:**
-1. **Triple-click** the "Skoon" brand name in the topbar (3 consecutive clicks within 600 ms)
-2. A passcode modal appears
-3. Enter `1589`
-4. Researcher dashboard opens
+1. **Triple-click** the "Skoon" brand name in the sidebar
+2. Passcode modal appears → enter passcode (default: `1589`)
+3. `renderResults({})` opens the researcher dashboard
 
-**Rules — do not change:**
-- Triple-click is the ONLY trigger — no other path, no shortcuts, no URL params
-- 1 or 2 clicks do nothing; counter resets if interrupted
-- `isResearcher` flag enables 5 extra analysis sections (Personas, Empathy Map, Journey, Impact/Effort, User Flow)
-- These sections are never added to the DOM for regular users — not CSS-hidden, simply never rendered
+**Changing the passcode:**
+- Open the profile panel → Current Password + New Password → Save
+- Stored in `localStorage.researcher_pin`
+- `getResearcherPin()` always reads from localStorage, falling back to `'1589'`
 
 ---
 
-## 7. Analysis Pipeline
+## 7. Researcher Dashboard — 4 Tabs
+
+| Tab | ID | Content |
+|-----|----|---------|
+| Overview | `db-pane-overview` | Greeting, stat cards (total/done/incomplete/rate), latest 5 interviews |
+| Interviews | `db-pane-interviews` | All interviews as expandable cards with tabs (Notes, Summary, Insights, Quotes, UX Issues) |
+| Analysis | `db-pane-analysis` | Full GPT analysis for selected interview (see §8) |
+| Cross Analysis | `db-pane-insights` | Analyze multiple/all completed interviews together |
+
+**Sidebar UI:**
+- Brand area: Skoon logo + lang/theme `ic-btn` icons (32×32px, 16×16px SVG)
+- Profile row below brand → opens `sb-profile-panel` overlay
+- Nav items: `.sb-nav-item` — hover/active use `--plight` background + `--primary` color
+- Recent interviews: `.sb-rc-item` — name only + date only
+
+---
+
+## 8. Analysis Pipeline
 
 ```
 concludeInterview()
-    │
-    └── finishMsg()  →  saveInterview(null)  →  goTo('page-done')
-                        (always — no analysis shown to regular users)
-
-Researcher triggers analysis manually from dashboard:
-    analyzeStoredInterview(id)  →  callAI(...)  →  renderAnalysis(data, iv)
+    ├── isResearcher → analyze() → GPT-4o → renderResults(data)
+    └── !isResearcher → finishMsg() → page-done
 ```
 
-**Important:**
-- `renderResults()` = page navigation + dashboard scaffold
-- `renderAnalysis()` = analysis content only, injected into `#res-content`
-- When switching between past interviews → call `renderAnalysis()` alone, not `renderResults()`
+**`renderResults(d)`** — smart routing:
+- If `d` has real data (just finished) → shows Analysis tab with that data
+- If `d` is empty (login / nav) → loads most recently analyzed interview; falls back to empty state
+
+**`renderAnalysis(d, iv, targetId='res-content', rawIv=null)`:**
+- `d` — analysis JSON
+- `iv` — `{ lastQuestionSeen, totalQuestions }` for progress bar
+- `targetId` — DOM element to inject into (supports cross-analysis output)
+- `rawIv` — full stored interview object; used to show "Analyze Now" button when `d` is empty
+- Empty state: shows search icon + "No analysis yet" + **"Analyze Now"** button → calls `analyzeStoredInterview(id)`
+
+**Section headers** are clickable (`.ra-sec-hd`) → `openSecDetail(key)` → opens `#sec-ov` overlay with full section content. Sections stored in `window._raDetails`.
 
 ---
 
-## 8. API Call — `callAI(messages, temp, maxTok)`
+## 9. Analysis Sections
 
-All OpenAI requests go through the Cloudflare Worker:
+All 10 fields always requested from GPT-4o:
 
-```js
-async function callAI(messages, temp = 0.85, maxTok = 700) {
-  const res = await fetch('/api/chat', { method: 'POST', ... });
-  // logs status + response body to console on failure
-  // throws on non-OK — caller's catch block shows errAi string
-}
-```
+| Field | Shown to |
+|-------|----------|
+| `summary` | Everyone |
+| `insights` | Everyone |
+| `quotes` | Everyone |
+| `patterns` | Everyone |
+| `recommendations` | Everyone |
+| `personas` | Researcher only |
+| `empathy` | Researcher only |
+| `journey` | Researcher only |
+| `impactEffort` | Researcher only |
+| `userFlow` | Researcher only |
 
-- On network error: logs to console, throws `'Network error — could not reach /api/chat'`
-- On non-OK HTTP: logs `status` + first 400 chars of body, throws parsed error message
-- **After an error in `askQuestion`**: `S.waitingForAnswer` is reset to `true` so the user can retry
-
----
-
-## 9. RTL / Bilingual Layout
-
-- `[dir="rtl"]` on `<html>` controls layout direction globally
-- **Always use CSS logical properties:**
-  - ✅ `margin-inline-start` / `padding-inline-end` / `border-inline-start`
-  - ❌ `margin-left` / `padding-right`
-- Arabic font: `IBM Plex Sans Arabic` — English font: `IBM Plex Sans`
-- `cycleLang()` toggles `S.lang`, updates the `dir` attribute, re-renders the current page
-
----
-
-## 10. Interview System Prompt `buildSys()`
-
-The AI plays the role of a **friendly, curious conversation partner** — not a formal researcher.
-
-Built once in `startInterview()` and pushed as `{ role: 'system' }` into `S.msgs`.
-
-**Q1:** No greeting or preamble — jump straight into the first question.
-
-**Q2+:** Start every question with a short natural acknowledgment phrase (1-3 words):
-- EN: `"Interesting,"` / `"Got it,"` / `"Makes sense,"` / `"Okay,"` / `"Oh nice,"`
-- AR: `"آه واضح،"` / `"طيب،"` / `"ما شاء الله،"` / `"فاهم،"`
-- Rotate — never repeat the same phrase twice in a row
-
-**Strict rules:**
-- One question per message — never combine two
-- Open-ended only — never yes/no
-- One short sentence, under 15 words
-- Build on what the user just said
-- Cover new topics — never repeat
-
-**Arabic:** Gulf/Saudi dialect only — never Egyptian dialect
-
----
-
-## 11. Analysis Prompt `analyzeStoredInterview()`
-
-Called by researchers from the dashboard. Passes the full Q&A to GPT-4o, expects JSON only.
-
-- `temperature: 0.2` — `max_tokens: 3000`
-- Output must be **valid JSON only** — no text outside the JSON block
-
-**10 required fields:** `summary`, `insights`, `quotes`, `patterns`, `recommendations`, `personas`, `empathy`, `journey`, `impactEffort`, `userFlow`
-
-**Fixed enum values — always in English, even in Arabic mode:**
+**Fixed enum values — always English even in Arabic mode:**
 - `sentiment`: `positive` / `neutral` / `negative`
 - `impact` / `effort`: `High` / `Medium` / `Low`
 - `priority`: `Do First` / `Schedule` / `Delegate` / `Drop`
 
----
-
-## 12. Local Development
-
-```bash
-# 1. Copy secrets file
-cp .dev.vars.example .dev.vars
-# Edit .dev.vars — add real OPENAI_API_KEY, AUTH_PASSWORD, JWT_SECRET
-
-# 2. Start local dev server (runs Workers + static files)
-wrangler pages dev .
-```
-
-`npx serve .` does NOT work for full testing — it has no Functions support, so `/api/chat` returns 404.
+**Empathy Map labels:** plain text only — no emoji (Thinks / Feels / Says / Does)
 
 ---
 
-## 13. Deployment
+## 10. Cross Analysis
 
-```bash
-# Deploy to Cloudflare Pages
-wrangler pages deploy . --project-name skoon-interview-agent --branch main
+**Tab: "التحليل المقارن" / "Cross Analysis"**
 
-# Update OpenAI API key secret
-wrangler pages secret put OPENAI_API_KEY --project-name skoon-interview-agent
+- Only **completed** interviews appear (`iv.completed === true`)
+- **"Analyze All Completed"** button (`ca-all-btn`) → `runAllAnalysis()` → selects all completed, runs `_doCrossAnalysis(selected)`
+- **"Analyze Selected"** button → `runCrossAnalysis()` → reads checked `.iv-chk` boxes
+- Both route to `_doCrossAnalysis(selected)` which calls GPT then `renderCrossOutput(data)`
+- `renderCrossOutput(data)` calls `renderAnalysis(data, null, 'db-ca-out')` — same visual output as single-interview analysis
 
-# Auto-deploy: every push to GitHub master triggers deploy via GitHub Actions
-# Requires CLOUDFLARE_API_TOKEN secret in GitHub repo settings
+---
+
+## 11. CSS Variables & Design Tokens
+
+```css
+--primary: #0B5E57        /* teal */
+--phover:  #094D47
+--plight:  rgba(11,94,87,0.08)   /* active/selected bg */
+--phlight: rgba(11,94,87,0.04)   /* hover bg (lighter) */
+--bg, --surface, --border, --text, --muted, --danger, --accent
 ```
+
+Dark mode overrides via `[data-theme="dark"]`.
+
+**Progress bars** — uniform `3px` height everywhere:
+- Chat: `.prog-track { height: 3px }`
+- Interview cards: `h-[3px]`
+- Analysis tracker: `height:3px` inline
+
+**Icon buttons** — `.ic-btn`: 32×32px circle, 16×16px SVG inside
+
+**Interview cards** — `.iv-card-row`: hover/active use `--phlight` bg + `--primary` border
+
+**Section headers** — `.ra-sec-hd`: flex row, title `.ra-sec-ttl` (font-weight 500) + chevron, cursor pointer
+
+---
+
+## 12. RTL / Bilingual Layout
+
+- `[dir="rtl"]` on `<html>` — set by `cycleLang()`
+- **Always CSS logical properties**: `margin-inline-start`, `padding-inline-end`, `border-inline-start`
+- **Never**: `margin-left`, `padding-right`
+- `[dir="rtl"] .rtl-flip { transform: scaleX(-1); }` — for chevron/arrow icons
+- Arabic font: `IBM Plex Sans Arabic`, English: `IBM Plex Sans`
+- Arabic text: `line-height: 1.9` for readability
+
+---
+
+## 13. Profile Panel (`sb-profile-panel`)
+
+Absolute overlay inside `#res-panel` sidebar nav.
+
+**Stats shown:** Language, API status (dot + Connected/Not connected), Mode, Total interviews, Completed, Completion rate, Last activity
+
+**Editable fields:** Name, Job Title, Email, Current Password, New Password
+
+**`openProfilePanel()`** — populates all fields from localStorage, computes stats from `getAllInterviews()`
+
+**`saveProfile()`** — validates current password against `getResearcherPin()`, saves new pin to `researcher_pin`, refreshes sidebar identity row
+
+**`getDisplayName()`** — reads `researcher_name` from localStorage, falls back to "Researcher"
+
+---
+
+## 14. Interview Card Status Badges
+
+`ivStatusBadge(reached, total)` — returns colored badge:
+
+| Condition | Badge | Color |
+|-----------|-------|-------|
+| `reached >= total` | مكتملة / Completed | Green |
+| `reached >= ceil(total/2)` | منتصف / Partial | Amber |
+| `reached > 0` | بداية / Early | Blue |
+| `reached === 0` | لم تكتمل / Incomplete | Gray |
+
+All badges: `min-width: 52px`, uniform size.
+
+---
+
+## 15. Key Functions Reference
+
+| Function | Purpose |
+|----------|---------|
+| `goTo(pageId)` | Navigate between pages |
+| `cycleLang()` | Toggle en/ar, update dir, re-render |
+| `toggleTheme()` | Toggle light/dark |
+| `startInterview()` | Build system prompt, begin chat |
+| `concludeInterview()` | End session, route to analyze or done |
+| `analyze()` | GPT-4o analysis of current session |
+| `analyzeStoredInterview(id)` | GPT-4o analysis of any stored interview |
+| `renderResults(d)` | Navigate to results page, smart-route analysis |
+| `renderAnalysis(d, iv, targetId, rawIv)` | Render analysis content |
+| `renderOverview()` | Render dashboard Overview tab |
+| `renderInterviewsTab()` | Render all interview cards |
+| `renderCrossTab()` | Render cross-analysis tab (completed only) |
+| `runAllAnalysis()` | Analyze all completed interviews together |
+| `loadInterviewById(id)` | Load stored interview into Analysis tab |
+| `openSecDetail(key)` | Open section detail overlay |
+| `openProfilePanel()` | Open profile overlay panel |
+| `saveProfile()` | Save profile + passcode changes |
+| `getResearcherPin()` | Read pin from localStorage (default `1589`) |
+| `ivStatusBadge(reached, total)` | Status badge HTML |
+| `ivRowHtml(iv, fmt, expandable)` | Interview card HTML |
+| `getAllInterviews()` | Read + number all interviews from localStorage |

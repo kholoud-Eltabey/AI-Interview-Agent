@@ -434,7 +434,7 @@ a:focus-visible,
 .rc-ico  { width: 34px; height: 34px; border-radius: var(--rxs); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
 .rc-ttl  { font-size: 13px; font-weight: 700; }
 .rc-items { display: flex; flex-direction: column; gap: 8px; }
-.ri      { display: flex; gap: 8px; font-size: 13px; line-height: 1.55; }
+.ri      { display: flex; gap: 8px; font-size: 14px; line-height: 1.65; }
 .rbul    { width: 5px; height: 5px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
 .qblock  {
   border-left: 3px solid var(--primary); padding: 11px 14px;
@@ -517,7 +517,7 @@ a:focus-visible,
 }
 
 /* ── ADVANCED ANALYSIS ── */
-#res-inner { font-family: inherit; }
+#res-inner, #res-inner * { font-family: inherit; }
 
 /* Analysis weight hierarchy */
 .ra-sec-ttl,
@@ -579,7 +579,7 @@ a:focus-visible,
 
 /* Summary */
 .ra-sum-lbl { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
-.ra-sum-txt  { font-size: 16px; font-weight: 400; line-height: 1.85; color: var(--text); }
+.ra-sum-txt  { font-size: 14px; font-weight: 400; line-height: 1.85; color: var(--text); }
 
 /* Numbered badges */
 .ra-num-item { display: flex; gap: 11px; align-items: flex-start; font-size: 14px; line-height: 1.65; margin-bottom: 10px; }
@@ -596,7 +596,7 @@ a:focus-visible,
 /* Persona cards */
 .persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px; }
 .persona-card { border: 1px solid var(--border); border-radius: var(--r); padding: 18px; background: var(--bg); }
-.persona-name { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+.persona-name { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
 .persona-row  { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 3px; }
 .persona-row span { color: var(--text); font-weight: 600; }
 
@@ -644,7 +644,7 @@ a:focus-visible,
 .flow-line { width: 2px; flex: 1; background: var(--border); min-height: 18px; margin-top: 4px; }
 .flow-row:last-child .flow-line { display: none; }
 .flow-content { padding-top: 5px; }
-.flow-step-ttl  { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.flow-step-ttl  { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
 .flow-step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
 
 /* ── INTERVIEW HISTORY / RESEARCH NOTES ── */
@@ -702,17 +702,6 @@ a:focus-visible,
 }
 .prestart-back:hover { color: var(--primary); }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .grid2     { grid-template-columns: 1fr; }
-  .card, .rc { padding: 18px; }
-  .chat-scroll, #res-scroll { padding: 14px; }
-  #res-scroll { padding-bottom: 60px; }
-  .res-ttl    { font-size: 20px; }
-  .input-bar  { padding: 11px 14px 13px; }
-  .topbar     { padding: 11px 14px; }
-  #page-setup { padding: 24px 14px 60px; }
-}
 </style>
 </head>
 <body>
@@ -1056,6 +1045,8 @@ a:focus-visible,
     <div class="flex-1 overflow-y-auto px-7 pt-7 pb-16" id="res-scroll">
       <div class="max-w-[900px] mx-auto" id="res-inner">
 
+        </div>
+
         <!-- Non-researcher topbar -->
         <div id="res-topbar-simple" style="display:none;margin-bottom:20px;gap:8px;justify-content:flex-end;">
           <button class="ic-btn" onclick="cycleLang()">
@@ -1218,6 +1209,7 @@ const TR = {
     greetHello: 'Hello, ',
     badgeCompleted: 'Completed', badgePartial: 'Partial', badgeEarly: 'Early', badgeIncomplete: 'Incomplete',
     noAnalysisYet: 'No analysis yet', noAnalysisDesc: 'This interview has not been analyzed yet', analyzeNow: 'Analyze Now',
+    reanalyze: 'Re-analyze', reanalyzeTip: 'Regenerate analysis in current language',
     errNoKey:  'Please enter your OpenAI API key to continue.',
     errNoConv: 'Please answer at least a couple of questions first.',
     errAi:     'Something went wrong. Please try again.',
@@ -1303,6 +1295,7 @@ const TR = {
     greetHello: 'مرحباً، ',
     badgeCompleted: 'مكتملة', badgePartial: 'منتصف', badgeEarly: 'بداية', badgeIncomplete: 'لم تكتمل',
     noAnalysisYet: 'لا يوجد تحليل بعد', noAnalysisDesc: 'هذه المقابلة لم يتم تحليلها بعد', analyzeNow: 'تحليل الآن',
+    reanalyze: 'إعادة التحليل', reanalyzeTip: 'إعادة توليد التحليل باللغة الحالية',
     errNoKey:  'من فضلك أدخل مفتاح OpenAI API لتقدر تكمل.',
     errNoConv: 'جاوب على سؤال أو أكثر أولاً.',
     errAi:     'صار خطأ، جرّب مرة ثانية.',
@@ -1357,7 +1350,7 @@ function applyTheme(th) {
   document.documentElement.setAttribute('data-theme', th);
   localStorage.setItem('app_theme', th);
   const ico = th === 'dark' ? ICON_SUN : ICON_MOON;
-  ['theme-icon-prestart', 'theme-icon-setup', 'theme-icon-chat', 'theme-icon-res2', 'theme-icon-sb'].forEach(id => {
+  ['theme-icon-prestart', 'theme-icon-setup', 'theme-icon-chat', 'theme-icon-res2', 'theme-icon-sb', 'theme-icon-mob'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = ico;
   });
@@ -1763,7 +1756,7 @@ function saveInterview(analysis) {
     num:              all.length + 1,   // sequential number, 1-based
     date:             new Date().toISOString(),
     lang:             S.lang,
-    completed:        true,
+    completed:        S.mainAsked >= S.numQ,
     goal:             S.goal || '',
     audience:         S.audience || '',
     lastQuestionSeen: S.mainAsked,
@@ -1786,6 +1779,8 @@ function loadInterviewById(id) {
   const iv  = all.find(x => x.id === id);
   if (!iv) return;
   _currentAnalysisId = id;
+  // Force analysis tab open (don't toggle off if already active)
+  _dbTab = null;
   dbTab('analysis');
   renderAnalysis(iv.analysis || {}, iv, 'res-content', iv);
 }
@@ -2043,32 +2038,36 @@ function renderPanel() {
   renderOverview();
   renderInterviewsTab();
   renderCrossTab();
-  // Re-render analysis tab if an interview is loaded
+  // Re-render analysis tab
   if (_currentAnalysisId) {
     const iv = getAllInterviews().find(x => x.id === _currentAnalysisId);
     if (iv) renderAnalysis(iv.analysis || {}, iv, 'res-content', iv);
   } else {
-    // Re-render aggregated analysis
-    const allIvs = getAllInterviews().slice().reverse();
-    const allAnalyzed = allIvs.filter(iv => iv.analysis && iv.analysis.summary);
-    if (allAnalyzed.length > 1) {
-      const merged = { summary: '', insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: { thinks:[], feels:[], says:[], does:[] }, journey: [], impactEffort: [], userFlow: [] };
-      allAnalyzed.forEach(iv => {
-        const a = iv.analysis;
-        if (a.summary) merged.summary += (merged.summary ? ' ' : '') + a.summary;
-        ['insights','quotes','patterns','recommendations'].forEach(k => { if (a[k]) merged[k].push(...a[k]); });
-        if (a.personas) merged.personas.push(...a.personas);
-        if (a.empathy) { ['thinks','feels','says','does'].forEach(k => { if (a.empathy[k]) merged.empathy[k].push(...a.empathy[k]); }); }
-        if (a.journey) merged.journey.push(...a.journey);
-        if (a.impactEffort) merged.impactEffort.push(...a.impactEffort);
-        if (a.userFlow) merged.userFlow.push(...a.userFlow);
-      });
-      renderAnalysis(merged, null, 'res-content', null);
-    } else if (allAnalyzed.length === 1) {
-      renderAnalysis(allAnalyzed[0].analysis, allAnalyzed[0], 'res-content', allAnalyzed[0]);
-    } else if (allIvs.length) {
-      renderAnalysis({}, allIvs[0], 'res-content', allIvs[0]);
-    }
+    renderAllAnalysis();
+  }
+}
+
+// No interview selected → merge ALL interviews that have analysis
+function renderAllAnalysis() {
+  const allIvs = getAllInterviews().slice().reverse();
+  const allAnalyzed = allIvs.filter(iv => iv.analysis && iv.analysis.summary);
+  if (allAnalyzed.length > 0) {
+    const merged = { summary: '', insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: { thinks:[], feels:[], says:[], does:[] }, journey: [], impactEffort: [], userFlow: [] };
+    allAnalyzed.forEach(iv => {
+      const a = iv.analysis;
+      if (a.summary) merged.summary += (merged.summary ? ' ' : '') + a.summary;
+      ['insights','quotes','patterns','recommendations'].forEach(k => { if (a[k]) merged[k].push(...a[k]); });
+      if (a.personas) merged.personas.push(...a.personas);
+      if (a.empathy) { ['thinks','feels','says','does'].forEach(k => { if (a.empathy[k]) merged.empathy[k].push(...a.empathy[k]); }); }
+      if (a.journey) merged.journey.push(...a.journey);
+      if (a.impactEffort) merged.impactEffort.push(...a.impactEffort);
+      if (a.userFlow) merged.userFlow.push(...a.userFlow);
+    });
+    renderAnalysis(merged, null, 'res-content', null);
+  } else if (allIvs.length) {
+    renderAnalysis({}, allIvs[0], 'res-content', allIvs[0]);
+  } else {
+    renderAnalysis({}, null, 'res-content', null);
   }
 }
 
@@ -2087,7 +2086,7 @@ function renderSbRecent() {
 
 function renderOverview() {
   const all  = getAllInterviews();
-  const done = all.filter(iv => iv.completed).length;
+  const done = all.filter(iv => (iv.lastQuestionSeen || 0) >= (iv.totalQuestions || 10)).length;
   const inc  = all.length - done;
   const rate = all.length ? Math.round((done / all.length) * 100) : 0;
   const statsEl = document.getElementById('db-stats');
@@ -2434,6 +2433,8 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
   let html = '';
 
   // 0 — Progress tracker (researcher only) — no #N badge
+  const ivId = rawIv && rawIv.id;
+  const hasAnswers = rawIv && rawIv.answers && rawIv.answers.length > 0;
   if (S.isResearcher && iv) {
     const reached = iv.lastQuestionSeen || 0;
     const total   = iv.totalQuestions   || S.numQ || 0;
@@ -2448,12 +2449,19 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
       </div>`;
     }
   }
+  // Re-analyze button — shown when viewing a specific interview that has answers
+  if (S.isResearcher && hasAnswers && ivId) {
+    html += `<div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+      <button class="btn btn-s" onclick="analyzeStoredInterview('${ivId}')" style="font-size:10.5px;font-weight:500;padding:5px 14px;gap:5px;display:inline-flex;align-items:center;" title="${t('reanalyzeTip')}">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        ${t('reanalyze')}
+      </button>
+    </div>`;
+  }
 
   // Empty state — show analyze button if interview has answers but no analysis
   const hasData = !!(d.summary || (d.insights && d.insights.length) || (d.patterns && d.patterns.length));
   if (!hasData) {
-    const ivId = rawIv && rawIv.id;
-    const hasAnswers = rawIv && rawIv.answers && rawIv.answers.length > 0;
     const target = document.getElementById(targetId);
     if (target) target.innerHTML = html + `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:48px 24px;text-align:center;">
@@ -2483,7 +2491,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
   if (insights.length || patterns.length) {
     html += `<div class="grid2">`;
     if (insights.length) {
-      const insBody = `<div class="rc-items">${insights.map((x,i) => `<div class="ra-num-item">${numBadge(i+1,'ra-badge-b')}<div>${esc(x)}</div></div>`).join('')}</div>`;
+      const insBody = `<div class="rc-items">${insights.map(x => `<div class="ri"><div class="rbul" style="background:var(--primary);margin-top:8px;flex-shrink:0;"></div><div>${esc(x)}</div></div>`).join('')}</div>`;
       html += `<div class="rc">${secHd(t('insights'), 'insights', insBody)}${insBody}</div>`;
     }
     if (patterns.length) {
