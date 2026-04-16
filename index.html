@@ -96,6 +96,7 @@ body {
 }
 [dir="rtl"] body {
   font-family: 'IBM Plex Sans Arabic', sans-serif;
+  text-align: right;
 }
 /* Ensure all interactive elements inherit IBM Plex */
 button, input, textarea, select, table, th, td {
@@ -237,10 +238,10 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 }
 
 /* ── CHAT ── */
-.chat-scroll { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; }
+.chat-scroll { flex: 1; overflow-y: auto; padding: 22px; }
 .msgs {
   max-width: 700px; width: 100%; margin: 0 auto;
-  display: flex; flex-direction: column; gap: 13px; flex: 1;
+  display: flex; flex-direction: column; gap: 13px;
 }
 .msg { display: flex; gap: 10px; max-width: 88%; animation: upIn .24s ease both; }
 @keyframes upIn { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
@@ -253,9 +254,10 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .msg.ai  .av { background: var(--plight); color: var(--primary); }
 .msg.usr .av { background: var(--border); color: var(--muted); }
 .msg-inner { display: flex; flex-direction: column; gap: 3px; }
-.bbl { padding: 9px 13px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
-.msg.ai  .bbl { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 3px; }
-.msg.usr .bbl { background: var(--primary); color: #fff; border-top-right-radius: 3px; }
+.bbl { padding: 9px 13px; border-radius: 16px; line-height: 1.6; font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+.msg.ai  .bbl { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 3px; font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+.msg.usr .bbl { background: rgba(11,94,87,0.13); color: var(--text); border-top-right-radius: 3px; font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+[data-theme="dark"] .msg.usr .bbl { background: rgba(15,118,110,0.22); color: var(--text); }
 .msg-t { font-size: 10px; color: var(--muted); padding: 0 2px; }
 .msg.usr .msg-t { text-align: right; }
 
@@ -284,22 +286,29 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   background: var(--surface); border-top: 1px solid var(--border);
   padding: 13px 22px 15px; position: sticky; bottom: 0;
 }
-.inp-inner { max-width: 700px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-end; }
+.inp-inner { max-width: 560px; margin: 0 auto; }
+.ta-wrap { flex: 1; position: relative; }
 .chat-ta {
-  flex: 1; padding: 10px 14px; border: 1.5px solid var(--border);
+  width: 100%; padding: 10px 68px 10px 14px; border: 1.5px solid var(--border);
   border-radius: var(--rsm); background: var(--bg); color: var(--text);
-  font-size: 14px; font-family: inherit; resize: none; outline: none;
+  font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; resize: none; outline: none; box-sizing: border-box;
   min-height: 44px; max-height: 140px; line-height: 1.5; transition: border-color var(--tr);
 }
+[dir="rtl"] .chat-ta { padding-inline-start: 68px; padding-inline-end: 14px; }
 .chat-ta:focus { border-color: var(--primary); }
-.send-btn {
-  width: 44px; height: 44px; border-radius: var(--rsm); background: var(--primary);
-  color: #fff; border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  transition: all var(--tr);
+.send-btn, .mic-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 20px; height: 20px; background: none; border: none; cursor: pointer; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); transition: color var(--tr);
 }
-.send-btn:hover    { background: var(--phover); }
-.send-btn:disabled { opacity: .4; cursor: not-allowed; }
+.mic-btn  { inset-inline-end: 38px; }
+.send-btn { inset-inline-end: 10px; }
+.send-btn:hover { color: var(--primary); }
+.send-btn:disabled { opacity: .35; cursor: not-allowed; }
+.mic-btn:hover { color: var(--primary); }
+.mic-btn.mic-active { color: #ef4444; animation: mic-pulse 1s ease-in-out infinite; }
+@keyframes mic-pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
 .end-row { width: 100%; padding: 14px 0 20px; text-align: center; }
 .end-btn {
   background: var(--surface); color: var(--muted);
@@ -419,8 +428,8 @@ a:focus-visible,
 }
 
 /* Accent-colored quotes border */
-.ra-quote { border-inline-start: 3px solid var(--accent); }
-[dir="rtl"] .ra-quote { border-inline-start: none; border-inline-end: 3px solid var(--accent); }
+.ra-quote { border-inline-start: 3px solid var(--primary); }
+[dir="rtl"] .ra-quote { border-inline-start: none; border-inline-end: 3px solid var(--primary); }
 
 .res-ttl { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 4px; }
 .res-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
@@ -554,12 +563,12 @@ a:focus-visible,
   cursor: pointer; gap: 8px; transition: color var(--tr);
 }
 .ra-sec-hd:hover .ra-sec-ttl { color: var(--primary); }
-.ra-sec-ttl { font-size: 13px; font-weight: 500; color: var(--text); }
+.ra-sec-ttl { font-size: 18px; font-weight: 500; color: var(--text); }
 .ra-sec-chev { color: var(--muted); display: flex; align-items: center; flex-shrink: 0; transition: color var(--tr); }
 .ra-sec-hd:hover .ra-sec-chev { color: var(--primary); }
 
 /* rc-ttl override for analysis cards */
-#res-inner .rc-ttl { font-size: 13px; font-weight: 500; }
+#res-inner .rc-ttl { font-size: 18px; font-weight: 500; }
 
 /* Section detail overlay */
 .sec-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 180; align-items: center; justify-content: center; padding: 16px; }
@@ -581,16 +590,15 @@ a:focus-visible,
 .ra-sum-lbl { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
 .ra-sum-txt  { font-size: 14px; font-weight: 400; line-height: 1.85; color: var(--text); }
 
-/* Numbered badges */
+/* Bullet items (replaces numbered badges) */
 .ra-num-item { display: flex; gap: 11px; align-items: flex-start; font-size: 14px; line-height: 1.65; margin-bottom: 10px; }
 .ra-num-item:last-child { margin-bottom: 0; }
-.ra-badge { min-width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
-.ra-badge-b { background: var(--primary); }
-.ra-badge-g { background: #16a34a; }
+.ra-badge { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); flex-shrink: 0; margin-top: 8px; font-size: 0; }
+.ra-badge-b, .ra-badge-g { background: var(--primary); }
 
 /* Quotes */
 .ra-quotes { display: flex; flex-direction: column; gap: 10px; }
-.ra-quote { font-size: 14px; font-style: italic; line-height: 1.75; color: var(--text); border-inline-start: 3px solid var(--accent); padding: 11px 15px; background: var(--bg); border-radius: 0 var(--rxs) var(--rxs) 0; }
+.ra-quote { font-size: 14px; font-style: italic; line-height: 1.75; color: var(--text); border-inline-start: 3px solid var(--primary); padding: 11px 15px; background: var(--bg); border-radius: 0 var(--rxs) var(--rxs) 0; }
 [dir="rtl"] .ra-quote { border-radius: var(--rxs) 0 0 var(--rxs); }
 
 /* Persona cards */
@@ -611,7 +619,7 @@ a:focus-visible,
 .journey-step {
   flex: 1; min-width: 145px;
   padding: 16px 14px 14px; background: var(--bg);
-  border: 1px solid var(--border); border-radius: var(--rsm); text-align: center;
+  border: 1px solid var(--primary); border-radius: var(--rsm); text-align: center;
 }
 .journey-phase  { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
 .journey-action { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
@@ -626,9 +634,10 @@ a:focus-visible,
 .ie-table th {
   text-align: start; padding: 10px 14px; font-size: 11px; font-weight: 700;
   letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted);
-  border-bottom: 1.5px solid var(--border);
+  border-bottom: 1.5px solid var(--primary);
 }
-.ie-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); line-height: 1.55; vertical-align: middle; }
+[dir="rtl"] .ie-table th { text-transform: none; letter-spacing: 0; }
+.ie-table td { padding: 12px 14px; border-bottom: 1px solid var(--primary); line-height: 1.55; vertical-align: middle; }
 .ie-table tr:last-child td { border-bottom: none; }
 .ie-chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 8px; white-space: nowrap; font-family: inherit; }
 .ie-hi { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .ie-hi { background:#450a0a; color:#fca5a5; }
@@ -693,6 +702,7 @@ a:focus-visible,
   font-size: 14px; color: var(--text); line-height: 1.6;
   padding-top: 8px;
 }
+.prestart-bul { color: var(--primary); font-size: 20px; line-height: 1; padding-top: 6px; flex-shrink: 0; width: 38px; text-align: center; }
 [dir="rtl"] .prestart-row-txt { line-height: 1.8; }
 .prestart-back {
   display: block; text-align: center; margin-top: 14px;
@@ -743,23 +753,23 @@ a:focus-visible,
     <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-prestart"></span></button>
   </div>
   <div class="prestart-wrap">
-    <div class="prestart-title" id="prestart-title-lbl">Just a quick heads up before you start 😊</div>
-    <div class="prestart-sub" id="prestart-sub-lbl">Here's what to expect</div>
+    <div class="prestart-title" id="prestart-title-lbl">Just a quick heads up before you start</div>
+    <div class="prestart-sub" id="prestart-sub-lbl">User Interview Powered By AI</div>
     <div class="prestart-items">
       <div class="prestart-row">
-        <div class="prestart-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <span class="prestart-bul">•</span>
         <span class="prestart-row-txt" id="prestart-p1-lbl">This is a friendly conversation — about 15 minutes</span>
       </div>
       <div class="prestart-row">
-        <div class="prestart-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <span class="prestart-bul">•</span>
         <span class="prestart-row-txt" id="prestart-p2-lbl">No right or wrong answers — just be yourself</span>
       </div>
       <div class="prestart-row">
-        <div class="prestart-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <span class="prestart-bul">•</span>
         <span class="prestart-row-txt" id="prestart-p3-lbl">Your answers help us make Skoon better for everyone</span>
       </div>
       <div class="prestart-row">
-        <div class="prestart-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <span class="prestart-bul">•</span>
         <span class="prestart-row-txt" id="prestart-p4-lbl">You can stop at any time</span>
       </div>
     </div>
@@ -861,24 +871,32 @@ a:focus-visible,
 
   <div class="chat-scroll">
     <div class="msgs" id="msgs"></div>
+    <div class="end-row" id="end-row" style="display:none;">
+      <button class="end-btn" onclick="onEndClick()"><span id="s-end-txt">End Interview</span></button>
+    </div>
+    <div id="chat-btm" style="height:1px;"></div>
   </div>
 
   <div class="input-bar">
     <div class="inp-inner">
-      <textarea class="chat-ta" id="chat-ta" rows="2"
-        placeholder="Type your answer…"
-        onkeydown="onKey(event)"
-        oninput="growTa(this)"></textarea>
-      <button class="send-btn" id="send-btn" onclick="submitAnswer()" disabled>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="22" y1="2" x2="11" y2="13"/>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-        </svg>
-      </button>
+      <div class="ta-wrap">
+        <textarea class="chat-ta" id="chat-ta" rows="1"
+          placeholder="Type your answer…"
+          onkeydown="onKey(event)"
+          oninput="growTa(this)"></textarea>
+        <button class="mic-btn" id="mic-btn" onclick="toggleMic()" title="Voice input" type="button">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M7 4a3 3 0 0 1 6 0v6a3 3 0 1 1-6 0V4Z"/>
+            <path d="M5.5 9.643a.75.75 0 0 0-1.5 0V10a6 6 0 0 0 5.25 5.955V17.5h-1.5a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5h-1.5v-1.545A6 6 0 0 0 16 10v-.357a.75.75 0 0 0-1.5 0V10a4.5 4.5 0 0 1-9 0v-.357Z"/>
+          </svg>
+        </button>
+        <button class="send-btn" id="send-btn" onclick="submitAnswer()" disabled title="Send">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M3.105 2.289a.75.75 0 0 0-.826.95l1.414 4.925A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.896 28.896 0 0 0 15.293-7.154.75.75 0 0 0 0-1.115A28.897 28.897 0 0 0 3.105 2.289Z"/>
+          </svg>
+        </button>
+      </div>
     </div>
-  </div>
-  <div class="end-row" id="end-row" style="display:none;">
-    <button class="end-btn" onclick="onEndClick()"><span id="s-end-txt">End Interview</span></button>
   </div>
 </div>
 
@@ -1096,7 +1114,7 @@ a:focus-visible,
         <div id="res-history" style="display:none;"></div>
         <div id="res-notes"   style="display:none;"></div>
 
-        <div class="flex justify-center gap-2.5 mt-8 pb-2">
+        <div class="flex justify-center gap-2.5 mt-8 pb-2" id="db-bottom-btns">
           <button class="btn btn-s" onclick="restart()" id="s-new-btn" style="font-size:11px;font-weight:500;">New Interview</button>
           <button class="btn btn-s" onclick="goHome()" id="s-home-btn" style="font-size:11px;font-weight:500;">Home</button>
         </div>
@@ -1177,9 +1195,11 @@ const TR = {
     impactEff: 'Impact vs Effort',
     userFlow:  'User Flow',
     emThinks:  'Thinks', emFeels: 'Feels', emSays: 'Says', emDoes: 'Does',
-    sentPos:   '😊 Positive', sentNeu: '😐 Neutral', sentNeg: '😟 Negative',
+    sentPos:   'Positive', sentNeu: 'Neutral', sentNeg: 'Negative',
     pAge:      'Age', pGoal: 'Goal', pPain: 'Pain', pMotivation: 'Motivation',
     ieAction:  'Action', ieImpact: 'Impact', ieEffort: 'Effort', iePriority: 'Priority',
+    ieHigh: 'High', ieMedium: 'Medium', ieLow: 'Low',
+    ieDoFirst: 'Do First', ieSchedule: 'Schedule', ieDelegate: 'Delegate', ieDrop: 'Drop',
     noData:    'Run an interview to generate data',
     ihTotal:   'Interviews', ihCompleted: 'Completed', ihAnalyzed: 'Analyzed', ihDone: 'Done',
     ihEmpty:   'No saved interviews yet.',
@@ -1210,6 +1230,7 @@ const TR = {
     badgeCompleted: 'Completed', badgePartial: 'Partial', badgeEarly: 'Early', badgeIncomplete: 'Incomplete',
     noAnalysisYet: 'No analysis yet', noAnalysisDesc: 'This interview has not been analyzed yet', analyzeNow: 'Analyze Now',
     reanalyze: 'Re-analyze', reanalyzeTip: 'Regenerate analysis in current language',
+    anTotalIvs: 'Total Interviews', anTotalAns: 'Answered Questions',
     errNoKey:  'Please enter your OpenAI API key to continue.',
     errNoConv: 'Please answer at least a couple of questions first.',
     errAi:     'Something went wrong. Please try again.',
@@ -1217,8 +1238,8 @@ const TR = {
     introTagline: 'Your experience shapes what we build',
     introDesc: "We'd love to hear about your experience renting in Saudi Arabia. It's a short, friendly chat — no right or wrong answers.",
     introStart: 'Get Started',
-    prestartTitle: 'Just a quick heads up before you start 😊',
-    prestartSub: "Here's what to expect",
+    prestartTitle: 'Just a quick heads up before you start',
+    prestartSub: 'User Interview Powered By AI',
     prestartP1: 'This is a friendly conversation — about 15 minutes',
     prestartP2: 'No right or wrong answers — just be yourself',
     prestartP3: 'Your answers help us make Skoon better for everyone',
@@ -1263,9 +1284,11 @@ const TR = {
     impactEff: 'التأثير مقابل الجهد',
     userFlow:  'تدفق المستخدم',
     emThinks:  'يفكر', emFeels: 'يشعر', emSays: 'يقول', emDoes: 'يفعل',
-    sentPos:   '😊 إيجابي', sentNeu: '😐 محايد', sentNeg: '😟 سلبي',
+    sentPos:   'إيجابي', sentNeu: 'محايد', sentNeg: 'سلبي',
     pAge:      'العمر', pGoal: 'الهدف', pPain: 'نقطة الألم', pMotivation: 'الدافع',
     ieAction:  'الإجراء', ieImpact: 'التأثير', ieEffort: 'الجهد', iePriority: 'الأولوية',
+    ieHigh: 'عالي', ieMedium: 'متوسط', ieLow: 'منخفض',
+    ieDoFirst: 'نفّذ أولاً', ieSchedule: 'جدولة', ieDelegate: 'تفويض', ieDrop: 'تجاهل',
     noData:    'أجرِ مقابلة لتوليد البيانات',
     ihTotal:   'المقابلات', ihCompleted: 'مكتملة', ihAnalyzed: 'محلّلة', ihDone: 'مكتملة',
     ihEmpty:   'لا توجد مقابلات محفوظة بعد.',
@@ -1296,6 +1319,7 @@ const TR = {
     badgeCompleted: 'مكتملة', badgePartial: 'منتصف', badgeEarly: 'بداية', badgeIncomplete: 'لم تكتمل',
     noAnalysisYet: 'لا يوجد تحليل بعد', noAnalysisDesc: 'هذه المقابلة لم يتم تحليلها بعد', analyzeNow: 'تحليل الآن',
     reanalyze: 'إعادة التحليل', reanalyzeTip: 'إعادة توليد التحليل باللغة الحالية',
+    anTotalIvs: 'إجمالي المقابلات', anTotalAns: 'الأسئلة المُجابة',
     errNoKey:  'من فضلك أدخل مفتاح OpenAI API لتقدر تكمل.',
     errNoConv: 'جاوب على سؤال أو أكثر أولاً.',
     errAi:     'صار خطأ، جرّب مرة ثانية.',
@@ -1303,8 +1327,8 @@ const TR = {
     introTagline: 'تجربتك تُشكّل ما نبنيه',
     introDesc: 'يسعدنا نسمع تجربتك في البحث عن عقار للإيجار في السعودية. هي محادثة قصيرة وودية — ما في إجابة صح أو غلط.',
     introStart: 'ابدأ',
-    prestartTitle: 'تنبيه سريع قبل ما تبدأ 😊',
-    prestartSub: 'هذا اللي راح يصير',
+    prestartTitle: 'تنبيه سريع قبل ما تبدأ',
+    prestartSub: 'مقابلة مستخدم مدعومة بالذكاء الاصطناعي',
     prestartP1: 'هي محادثة ودية — تقريباً 15 دقيقة',
     prestartP2: 'ما في إجابة صح أو غلط، شارك اللي يجيك طبيعي',
     prestartP3: 'إجاباتك تساعدنا نطوّر Skoon لي أحسن للجميع',
@@ -1476,64 +1500,68 @@ async function startInterview() {
 // ─── SYSTEM PROMPT ────────────────────────────────────────
 function buildSys() {
   const ar = S.lang === 'ar';
-  if (ar) return `أنت صديق محادث ودود تتحدث مع شخص عن تجربته الشخصية في البحث عن عقار للإيجار في السعودية.
-هدفك: تفهم تجربته هو — مشاعره، خطواته، ومشاكله — بشكل طبيعي وبدون رسمية.
+  if (ar) return `أنت باحث UX محترف تجري مقابلة بحثية مع شخص عن تجربته في البحث عن عقار للإيجار في السعودية.
 
-سياق المحادثة:
-- موضوع النقاش: ${S.goal}
-- الشخص الذي تتحدث معه: ${S.audience}
+قاعدة اللغة — مطلقة وغير قابلة للنقض:
+استجب بالعربية الخليجية فقط في كل رسالة بدون استثناء. ممنوع أي كلمة إنجليزية أو عبارة أجنبية في ردودك عدا اسم "Skoon" فقط. إذا رد المستخدم بالإنجليزية، واصل بالعربية الخليجية.
+
+سياق المقابلة:
+- الموضوع: ${S.goal}
+- المشارك: ${S.audience}
 - عدد الأسئلة: ${S.numQ}
 
-المواضيع التي تريد تفهمها — اطرحها بسلاسة وبحسب سياق المحادثة:
-1. كيف يبحث حالياً عن عقار (وين يدور؟ وش يستخدم؟)
+المحاور التي تريد استكشافها — اطرحها بشكل طبيعي حسب سياق المحادثة:
+1. كيف يبحث حالياً عن عقار — وين يدور وش يستخدم
 2. أكثر شيء يضايقه في تجربة البحث
-3. كيف يقارن بين الخيارات ويختار
+3. كيف يقارن الخيارات ويتخذ قراره
 4. وش الذي يخليه يقرر يتواصل أو يأجر
-5. رأيه في الصور والأوصاف — قد يثق فيها؟
-6. تجربته مع التواصل مع الملاك أو الوسطاء
-7. لو كان بيده يغير شيء في التجربة — وش كان يغير؟
-8. كيف يحس أثناء رحلة البحث — هادي؟ متوتر؟ محتار؟
+5. مدى ثقته في الصور والأوصاف على الإنترنت
+6. تجربته في التواصل مع الملاك أو الوسطاء
+7. لو بيده يغير شيء في التجربة — وش كان يغير
+8. كيف يحس أثناء رحلة البحث — هادي أو متوتر أو محتار
 
-قواعد صارمة:
-- اكتب بعربية خليجية بسيطة ودافئة مناسبة للسعودية ودول الخليج. لا تستخدم اللهجة المصرية أو أي تعابير غير خليجية.
-- اسم المنتج "Skoon" بالإنجليزية دائماً ولا يُترجم.
-- سؤال واحد فقط في كل رسالة — لا تجمع أسئلة.
-- كل سؤال مفتوح يحكي فيه الشخص — لا نعم/لا.
-- جملة واحدة قصيرة، لا تتجاوز 12 كلمة.
-- ابدأ بـ: "وش"، "كيف"، "ليش"، "متى"، "وين" — لا تبدأ بـ "هل يمكنك" أو "حدثني عن".
-- ابنِ كل سؤال على اللي قاله للتو — لا تتجاهل كلامه.
-- غطِّ مواضيع جديدة لم تُطرح بعد — لا تكرر.
-- ابدأ كل سؤال (من الثاني) بعبارة طبيعية قصيرة (1-3 كلمات) مثل: "آه واضح،"، "طيب،"، "ما شاء الله،"، "فاهم،". غيّر العبارة في كل مرة.
-- لا مديح مطوّل ولا تعليق على الإجابات — فقط العبارة القصيرة وسؤالك.`;
+قواعد المقابلة:
+- عربية خليجية طبيعية دافئة مناسبة للسعودية والخليج — لا مصرية ولا فصحى رسمية.
+- اسم "Skoon" بالإنجليزية دائماً ولا يُترجم أبداً.
+- سؤال واحد فقط في كل رسالة — ممنوع تجمع أسئلة.
+- أسئلة مفتوحة فقط — لا نعم/لا.
+- جملة قصيرة لا تتجاوز 12 كلمة.
+- ابدأ بـ: "وش"، "كيف"، "ليش"، "وين"، "متى" — لا "هل يمكنك" ولا "حدثني عن".
+- ابنِ كل سؤال على اللي قاله المشارك — لا تتجاهل كلامه.
+- غطِّ مواضيع جديدة لم تُطرح — لا تكرر.
+- ابدأ كل سؤال من الثاني بعبارة قصيرة طبيعية (1-3 كلمات) مثل: "آه واضح،" أو "طيب،" أو "فاهم،" أو "ما شاء الله،" — غيّر العبارة في كل مرة.
+- لا مديح مطوّل — فقط العبارة القصيرة ثم سؤالك مباشرة.`;
 
-  return `You are a friendly, curious conversation partner talking with a real person about their personal experience searching for a rental property in Saudi Arabia.
-Your goal is to deeply understand their experience — their feelings, their steps, their struggles — in a warm and natural way, not a formal interview.
+  return `You are a professional UX researcher conducting a research interview about someone's personal experience searching for a rental property in Saudi Arabia.
 
-Context:
+Language rule — absolute, no exceptions:
+Respond in English ONLY in every single message. Never switch to Arabic or any other language, even if the participant writes in Arabic. Every word you produce must be English, except the product name "Skoon" which stays as-is.
+
+Interview context:
 - Topic: ${S.goal}
-- Who you're talking with: ${S.audience}
+- Participant: ${S.audience}
 - Number of questions: ${S.numQ}
 
-Topics to explore naturally through the conversation:
-1. How they currently search for a rental (where do they go? what do they use?)
-2. What frustrates them most during the search
-3. How they compare options and make choices
-4. What makes them decide to reach out or commit
-5. How much they trust photos and descriptions online
+Areas to explore naturally as the conversation unfolds:
+1. How they currently search for a rental — where they look and what they use
+2. What frustrates them most during the search process
+3. How they compare options and arrive at a decision
+4. What triggers them to reach out or commit to a place
+5. How much they trust photos and descriptions they find online
 6. Their experience communicating with landlords or agents
-7. What they wish was different about the whole experience
-8. How they feel emotionally during the search — calm, anxious, overwhelmed?
+7. What they would change about the overall experience if they could
+8. How they feel emotionally throughout the search — calm, stressed, overwhelmed?
 
-Strict rules:
-- Write every word in English ONLY. Product name is always "Skoon" — never translate.
-- ONE question per message — never combine two questions.
-- Open-ended only — never yes/no or closed questions.
-- ONE short sentence, under 15 words.
-- Start with: "What", "How", "Why", "When", "Where" — NEVER start with "walk me through", "could you describe", "tell me about", "elaborate".
-- Each question MUST connect directly to what the person just said.
-- Cover new topics not yet explored — never repeat a question.
-- Start every question (from Q2 onward) with a brief natural phrase (1-3 words) that acknowledges the previous answer: "Okay,", "Got it,", "Interesting,", "Makes sense,", "Oh nice,". Rotate — never use the same phrase twice in a row.
-- Keep the phrase short (max 3 words) — no extended commentary or praise.`;
+Interview rules:
+- English ONLY — every word. Product name is always "Skoon", never translated.
+- ONE question per message — never stack two questions together.
+- Open-ended questions only — no yes/no, no closed questions.
+- One short sentence per question, under 15 words.
+- Start with: "What", "How", "Why", "When", "Where" — never "walk me through", "could you describe", "tell me about", or "elaborate on".
+- Every question must connect directly to what the participant just said — never ignore their answer.
+- Cover unexplored topics — never repeat a question already asked.
+- From Q2 onward, open with a short natural acknowledgement (1-3 words): "Okay,", "Got it,", "Interesting,", "Makes sense,", "Fair enough,". Rotate — never repeat the same phrase twice in a row.
+- No extended praise or commentary — just the brief acknowledgement then your question.`;
 }
 
 // ─── PROGRESS ─────────────────────────────────────────────
@@ -1601,8 +1629,26 @@ function showTyping() {
   wrap.appendChild(div);
   scrollBtm();
 }
-function rmTyping()  { const e = document.getElementById('typing-ind'); if (e) e.remove(); }
-function scrollBtm() { const s = document.querySelector('.chat-scroll'); if (s) s.scrollTop = s.scrollHeight; }
+function rmTyping()  { const e = document.getElementById('typing-ind'); if (e) e.remove(); scrollBtm(); }
+function scrollBtm() {
+  // rAF → setTimeout(0) guarantees execution after browser has painted new content
+  requestAnimationFrame(() => setTimeout(() => {
+    const anchor = document.getElementById('chat-btm');
+    if (anchor) anchor.scrollIntoView({ behavior: 'instant', block: 'end' });
+  }, 0));
+}
+
+// Failsafe: MutationObserver fires scrollBtm on every DOM change inside #msgs
+(function initMsgObserver() {
+  const init = () => {
+    const msgs = document.getElementById('msgs');
+    if (!msgs) { setTimeout(init, 200); return; }
+    new MutationObserver(scrollBtm).observe(msgs, { childList: true });
+  };
+  document.readyState === 'loading'
+    ? document.addEventListener('DOMContentLoaded', init)
+    : init();
+})();
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
           .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
@@ -1610,6 +1656,66 @@ function esc(s) {
 function growTa(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 140) + 'px'; }
 function setSend(d) { document.getElementById('send-btn').disabled = d; }
 function onKey(e)   { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitAnswer(); } }
+
+// ─── MICROPHONE ────────────────────────────────────────────
+let _micRec = null;
+function toggleMic() {
+  // second click → stop
+  if (_micRec) { _micRec.stop(); return; }
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    alert(S.lang === 'ar'
+      ? 'التعرف على الصوت غير مدعوم في هذا المتصفح. استخدم Chrome أو Edge.'
+      : 'Speech recognition is not supported. Please use Chrome or Edge.');
+    return;
+  }
+
+  const btn  = document.getElementById('mic-btn');
+  const ta   = document.getElementById('chat-ta');
+  const base = ta.value.trim();   // preserve whatever was already typed
+  let committed = '';              // finalized speech segments
+
+  _micRec = new SR();
+  _micRec.lang            = S.lang === 'ar' ? 'ar-SA' : 'en-US';
+  _micRec.interimResults  = true;   // live text while speaking
+  _micRec.continuous      = true;   // keep listening until user clicks stop
+  _micRec.maxAlternatives = 1;
+
+  _micRec.onstart = () => btn.classList.add('mic-active');
+
+  _micRec.onresult = (e) => {
+    let interim = '';
+    // process only new results from this event — prevents double-counting
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const txt = e.results[i][0].transcript;
+      if (e.results[i].isFinal) committed += txt + ' ';
+      else                       interim   += txt;
+    }
+    // show committed text + live interim in the field
+    ta.value = [base, (committed + interim).trim()].filter(Boolean).join(' ');
+    growTa(ta);
+  };
+
+  _micRec.onend = () => {
+    btn.classList.remove('mic-active');
+    // settle on committed text only (drop any unfinished interim)
+    ta.value = [base, committed.trim()].filter(Boolean).join(' ').trim();
+    growTa(ta);
+    _micRec = null; committed = '';
+  };
+
+  _micRec.onerror = (err) => {
+    console.warn('[mic]', err.error);
+    if (err.error === 'not-allowed')
+      alert(S.lang === 'ar'
+        ? 'تم رفض الوصول للميكروفون. يرجى السماح به من إعدادات المتصفح.'
+        : 'Microphone access denied. Please allow it in browser settings.');
+    btn.classList.remove('mic-active'); _micRec = null; committed = '';
+  };
+
+  _micRec.start();
+}
 
 // ─── INTRO MESSAGE ────────────────────────────────────────
 async function sendIntro() {
@@ -1691,6 +1797,7 @@ async function submitAnswer() {
   S.msgs.push({ role: 'user', content: ans });
   ta.value = ''; ta.style.height = 'auto';
   S.waitingForAnswer = false;
+  scrollBtm();
   saveSession();
 
   // Intro phase — mainAsked is still 0, go straight to Q1
@@ -1795,8 +1902,8 @@ async function analyzeStoredInterview(id) {
     const convo = iv.answers.map(qa => `Researcher: ${qa.q}\nParticipant: ${qa.a}`).join('\n\n');
     const ar = S.lang === 'ar';
     const sysMsg = ar
-      ? 'أنت محلل UX خبير. حلّل محادثة المقابلة وأنتج JSON صحيح فقط. جميع القيم والنصوص يجب أن تكون بالعربية الخليجية حصراً — لا تستخدم الإنجليزية أبداً إلا في: sentiment/impact/effort/priority. الملخص والتوصيات والأنماط والرؤى كلها بالعربية.'
-      : 'You are a senior UX research analyst. Analyze the interview and output valid JSON only. ALL text values (summary, insights, patterns, recommendations, quotes, personas, journey, userFlow) MUST be in English only — never Arabic. sentiment/impact/effort/priority in English.';
+      ? 'أنت محلل UX متخصص. مهمتك تحليل مقابلة بحثية وإنتاج JSON صحيح فقط — بدون أي نص خارجه. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة المسموحة بالإنجليزية: اسم "Skoon"، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). أي نص آخر يجب أن يكون بالعربية الخليجية.'
+      : 'You are a senior UX research analyst. Your task is to analyze a research interview and output valid JSON only — no text outside the JSON. Language rule is absolute: every text value in the JSON must be in English only, with zero Arabic words or code-switching. The only fixed-enum values allowed are: sentiment (positive/neutral/negative), impact (High/Medium/Low), effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name is always "Skoon". Write in a clear, professional UX research tone — concise, specific, and evidence-based.';
     const schema = JSON.stringify({
       summary:"2-3 sentence overview",insights:["insight 1","insight 2"],quotes:["verbatim quote"],patterns:["pattern 1"],
       recommendations:["recommendation 1"],
@@ -1833,15 +1940,16 @@ let _dbTab = 'overview';
 let _currentAnalysisId = null;
 
 function dbTab(tab) {
-  // Toggle: clicking the active tab deactivates it
-  const next = _dbTab === tab ? null : tab;
-  _dbTab = next;
+  _dbTab = tab;
   ['overview','interviews','analysis','insights'].forEach(s => {
     const pane = document.getElementById('db-pane-' + s);
     const btn  = document.getElementById('sb-nav-' + s);
-    if (pane) pane.classList.toggle('active', s === next);
-    if (btn)  btn.classList.toggle('active',  s === next);
+    if (pane) pane.classList.toggle('active', s === tab);
+    if (btn)  btn.classList.toggle('active',  s === tab);
   });
+  // "New Interview" + "Home" buttons visible only on Dashboard (overview)
+  const btns = document.getElementById('db-bottom-btns');
+  if (btns) btns.style.display = (tab === 'overview') ? '' : 'none';
 }
 
 function getDisplayName() {
@@ -2276,8 +2384,8 @@ async function _doCrossAnalysis(selected) {
     userFlow: [{ step:'', description:'' }]
   });
   const sysMsg = S.lang === 'ar'
-    ? 'أنت محلل UX خبير. حلّل مجموعة مقابلات مكتملة معاً وأنتج JSON صحيح فقط. استخرج الأنماط والسلوكيات المتكررة ونقاط الألم والمحفزات وعوامل القرار الحقيقية من الإجابات. جميع القيم والنصوص يجب أن تكون بالعربية الخليجية حصراً — لا تستخدم الإنجليزية أبداً إلا في: sentiment/impact/effort/priority. لا تضف أي نص خارج JSON.'
-    : 'You are a senior UX research analyst. Analyze multiple completed interviews together and output valid JSON only. Extract real patterns, repeated behaviours, pain points, motivations, and decision factors from the actual answers. ALL text values MUST be in English only — never Arabic. sentiment/impact/effort/priority must be in English. Output ONLY valid JSON.';
+    ? 'أنت محلل UX متخصص. مهمتك تحليل مجموعة مقابلات بحثية مكتملة معاً وإنتاج JSON صحيح فقط — بدون أي نص خارجه. استخرج الأنماط الحقيقية والسلوكيات المتكررة ونقاط الألم والمحفزات وعوامل القرار من الإجابات الفعلية. قاعدة اللغة مطلقة: كل قيمة نصية يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة: اسم "Skoon"، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop).'
+    : 'You are a senior UX research analyst. Your task is to analyze multiple completed research interviews together and output valid JSON only — no text outside the JSON. Extract real cross-interview patterns: repeated behaviours, shared pain points, common motivations, and decision-making factors grounded in the actual participant answers. Language rule is absolute: every text value must be in English only, with zero Arabic or code-switching. The only fixed-enum values allowed are: sentiment (positive/neutral/negative), impact (High/Medium/Low), effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name is always "Skoon". Write in a clear, professional UX research tone — concise, specific, and evidence-based.';
   const prompt = S.lang === 'ar'
     ? `حلّل المقابلات المكتملة التالية معاً (${selected.length} مقابلة) وأنتج JSON بهذا الهيكل بالضبط. ركّز على ما تكرّر في أكثر من مقابلة:\n${schema}\n\nالمقابلات:\n${convo}`
     : `Analyze these ${selected.length} completed interviews together and output ONLY valid JSON with this exact structure. Focus on patterns that appear across multiple interviews — repeated behaviours, shared pain points, common motivations:\n${schema}\n\nInterviews:\n${convo}`;
@@ -2327,8 +2435,8 @@ async function analyze() {
       .join('\n\n');
 
     const sysMsg = S.lang === 'ar'
-      ? 'أنت محلل UX خبير. حلّل محادثة المقابلة وأنتج JSON صحيح فقط. قواعد صارمة: جميع القيم باللغة العربية حصراً. اسم المنتج "Skoon" بالإنجليزية فقط ولا يُترجم أبداً.'
-      : 'You are a senior UX research analyst. Analyze the interview and output valid JSON only. Strict rules: all values in English only. Product name always "Skoon" — never translated.';
+      ? 'أنت محلل UX متخصص. مهمتك تحليل مقابلة بحثية وإنتاج JSON صحيح فقط — بدون أي نص خارجه. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة المسموحة بالإنجليزية: اسم "Skoon"، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). أي نص آخر يجب أن يكون بالعربية الخليجية.'
+      : 'You are a senior UX research analyst. Your task is to analyze a research interview and output valid JSON only — no text outside the JSON. Language rule is absolute: every text value in the JSON must be in English only, with zero Arabic words or code-switching. The only fixed-enum values allowed are: sentiment (positive/neutral/negative), impact (High/Medium/Low), effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name is always "Skoon". Write in a clear, professional UX research tone — concise, specific, and evidence-based.';
 
     const schema = JSON.stringify({
       summary: "2-3 sentence overview",
@@ -2449,6 +2557,21 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
       </div>`;
     }
   }
+  // Analysis stats — total interviews + total answered questions
+  if (S.isResearcher) {
+    const _allIvs = getAllInterviews();
+    const _totalAns = _allIvs.reduce((sum, x) => sum + (Array.isArray(x.answers) ? x.answers.length : 0), 0);
+    html += `<div style="display:flex;gap:12px;margin-bottom:16px;">
+      <div style="flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-align:center;">
+        <div style="font-size:18px;font-weight:500;color:var(--text);">${_allIvs.length}</div>
+        <div style="font-size:14px;font-weight:400;color:var(--muted);">${t('anTotalIvs')}</div>
+      </div>
+      <div style="flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-align:center;">
+        <div style="font-size:18px;font-weight:500;color:var(--text);">${_totalAns}</div>
+        <div style="font-size:14px;font-weight:400;color:var(--muted);">${t('anTotalAns')}</div>
+      </div>
+    </div>`;
+  }
   // Re-analyze button — shown when viewing a specific interview that has answers
   if (S.isResearcher && hasAnswers && ivId) {
     html += `<div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
@@ -2495,7 +2618,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
       html += `<div class="rc">${secHd(t('insights'), 'insights', insBody)}${insBody}</div>`;
     }
     if (patterns.length) {
-      const patBody = `<div class="rc-items">${patterns.map(x => `<div class="ri"><div class="rbul" style="background:var(--accent);margin-top:8px;flex-shrink:0;"></div><div>${esc(x)}</div></div>`).join('')}</div>`;
+      const patBody = `<div class="rc-items">${patterns.map(x => `<div class="ri"><div class="rbul" style="background:var(--primary);margin-top:8px;flex-shrink:0;"></div><div>${esc(x)}</div></div>`).join('')}</div>`;
       html += `<div class="rc">${secHd(t('patterns'), 'patterns', patBody)}${patBody}</div>`;
     }
     html += `</div>`;
@@ -2511,7 +2634,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
   // 5 — Recommendations
   const recs = (d.recommendations || []).filter(Boolean);
   if (recs.length) {
-    const recsBody = `<div class="rc-items">${recs.map((x,i) => `<div class="ra-num-item">${numBadge(i+1,'ra-badge-g')}<div>${esc(x)}</div></div>`).join('')}</div>`;
+    const recsBody = `<div class="rc-items">${recs.map(x => `<div class="ri"><div class="rbul" style="background:var(--primary);margin-top:8px;flex-shrink:0;"></div><div>${esc(x)}</div></div>`).join('')}</div>`;
     html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('recs'), 'recs', recsBody)}${recsBody}</div>`;
   }
 
@@ -2552,28 +2675,30 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
         <div class="journey-emotion">${esc(j.emotion||'')}</div>
         ${j.sentiment ? `<span class="journey-sentiment ${sentClass(j.sentiment)}">${sentLabel(j.sentiment)}</span>` : ''}
       </div>`).join('')}</div>` : ph;
-    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('journey'), 'journey', journeyBody)}${journeyBody}</div>`;
+    html += `<div class="rc" style="margin-bottom:16px;"><div class="ra-sec-hd" style="pointer-events:none;cursor:default;"><span class="ra-sec-ttl">${t('journey')}</span></div>${journeyBody}</div>`;
 
     // 9 — Impact vs Effort
     const ie = (d.impactEffort || []).filter(Boolean);
     const chipClass = v => v==='High'?'ie-hi':v==='Low'?'ie-lo':'ie-md';
+    const ieChip = v => { const m={'High':t('ieHigh'),'Medium':t('ieMedium'),'Low':t('ieLow')}; return m[v]||v; };
+    const iePri = v => { const m={'Do First':t('ieDoFirst'),'Schedule':t('ieSchedule'),'Delegate':t('ieDelegate'),'Drop':t('ieDrop')}; return m[v]||v; };
     const ieBody = ie.length ? `<table class="ie-table">
       <thead><tr><th>${t('ieAction')}</th><th>${t('ieImpact')}</th><th>${t('ieEffort')}</th><th>${t('iePriority')}</th></tr></thead>
       <tbody>${ie.map(r => `<tr>
         <td>${esc(r.action||'')}</td>
-        <td><span class="ie-chip ${chipClass(r.impact)}">${esc(r.impact||'')}</span></td>
-        <td><span class="ie-chip ${chipClass(r.effort)}">${esc(r.effort||'')}</span></td>
-        <td><strong>${esc(r.priority||'')}</strong></td>
+        <td><span class="ie-chip ${chipClass(r.impact)}">${esc(ieChip(r.impact||''))}</span></td>
+        <td><span class="ie-chip ${chipClass(r.effort)}">${esc(ieChip(r.effort||''))}</span></td>
+        <td><strong>${esc(iePri(r.priority||''))}</strong></td>
       </tr>`).join('')}</tbody>
     </table>` : ph;
     html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('impactEff'), 'ie', ieBody)}${ieBody}</div>`;
 
     // 10 — User Flow
     const flow = (d.userFlow || []).filter(Boolean);
-    const flowBody = flow.length ? `<div class="flow-steps">${flow.map((s,i) => `
+    const flowBody = flow.length ? `<div class="flow-steps">${flow.map(s => `
       <div class="flow-row">
         <div class="flow-left">
-          <div class="flow-dot">${i+1}</div>
+          <div class="flow-dot" style="width:10px;height:10px;min-width:10px;font-size:0;"></div>
           <div class="flow-line"></div>
         </div>
         <div class="flow-content">
