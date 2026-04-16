@@ -107,6 +107,8 @@ button, input, textarea, select, table, th, td {
 /* ── PAGES ── */
 .page { display: none; min-height: 100vh; flex-direction: column; }
 .page.active { display: flex; }
+/* Chat page: fixed viewport height so flex layout pins input + End Interview at bottom */
+#page-chat { height: 100vh; min-height: unset; overflow: hidden; }
 
 /* ── SETUP ── */
 #page-setup { align-items: center; padding: 40px 20px 64px; }
@@ -284,7 +286,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 /* Input bar */
 .input-bar {
   background: var(--surface); border-top: 1px solid var(--border);
-  padding: 13px 22px 15px; position: sticky; bottom: 0;
+  padding: 13px 22px 15px; flex-shrink: 0;
 }
 .inp-inner { max-width: 560px; margin: 0 auto; }
 .ta-wrap { flex: 1; position: relative; }
@@ -294,7 +296,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; resize: none; outline: none; box-sizing: border-box;
   min-height: 44px; max-height: 140px; line-height: 1.5; transition: border-color var(--tr);
 }
-[dir="rtl"] .chat-ta { padding-inline-start: 68px; padding-inline-end: 14px; }
+[dir="rtl"] .chat-ta { direction: rtl; text-align: right; padding-inline-start: 14px; padding-inline-end: 68px; }
 .chat-ta:focus { border-color: var(--primary); }
 .send-btn, .mic-btn {
   position: absolute; top: 50%; transform: translateY(-50%);
@@ -309,7 +311,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .mic-btn:hover { color: var(--primary); }
 .mic-btn.mic-active { color: #ef4444; animation: mic-pulse 1s ease-in-out infinite; }
 @keyframes mic-pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
-.end-row { width: 100%; padding: 14px 0 20px; text-align: center; }
+.end-row { width: 100%; padding: 10px 0 16px; text-align: center; background: var(--surface); flex-shrink: 0; }
 .end-btn {
   background: var(--surface); color: var(--muted);
   border: 1.5px solid var(--border);
@@ -411,9 +413,6 @@ a:focus-visible,
 .sb-profile-panel        { display: none; position: absolute; inset: 0; background: var(--surface); z-index: 100; flex-direction: column; overflow-y: auto; }
 .sb-profile-panel.open   { display: flex; }
 
-/* RTL-aware directional icons */
-[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
-
 /* Profile input fields */
 .profile-inp {
   width: 100%; padding: 7px 10px; font-size: 12px;
@@ -480,13 +479,39 @@ a:focus-visible,
 .ov-ttl { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .ov-sub { font-size: 12px; color: var(--muted); }
 
-/* RTL chat bubble adjustments */
+/* ═══════════════════════════════════════════════════════════════
+   CENTRALIZED RTL/LTR DIRECTION CONTROL
+   Single source of truth — ALL [dir="rtl"] layout overrides live here.
+   applyLang() sets dir="rtl" on <html> which activates every rule below.
+   Components must NOT set direction individually.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 1 — Global text direction & font (already on body above, kept for clarity) */
+
+/* 2 — Textarea: cursor + placeholder start from the right in Arabic */
+/* [dir="rtl"] .chat-ta handled above near the input CSS */
+
+/* 3 — Input icons: inset-inline-end keeps them on the LEFT in RTL (end of text flow).
+        Send icon has rtl-flip class → mirrors to point LEFT in Arabic. */
+
+/* 4 — Chat bubbles: AI on RIGHT (flex-start in RTL), user on LEFT (flex-end in RTL)
+        AI:  flex-direction:row         → avatar on right, bubble extends left
+        User: flex-direction:row-reverse (base rule) → avatar on left, bubble extends right */
 [dir="rtl"] .msg.ai  { flex-direction: row; }
-[dir="rtl"] .msg.usr { flex-direction: row-reverse; }
-[dir="rtl"] .msg.ai  .bbl { border-top-left-radius: 16px; border-top-right-radius: 3px; }
-[dir="rtl"] .msg.usr .bbl { border-top-right-radius: 16px; border-top-left-radius: 3px; }
-[dir="rtl"] .typing-bbl   { border-top-left-radius: 16px; border-top-right-radius: 3px; }
-[dir="rtl"] .msg.usr .msg-t { text-align: left; }
+/* User keeps base rule: align-self:flex-end (=left in RTL), flex-direction:row-reverse */
+
+/* 5 — Bubble notch corners in RTL:
+        AI  → avatar on RIGHT  → notch on top-right of bubble
+        User → avatar on LEFT  → notch on top-left  of bubble */
+[dir="rtl"] .msg.ai  .bbl { border-top-right-radius: 3px;  border-top-left-radius: 16px; }
+[dir="rtl"] .msg.usr .bbl { border-top-left-radius: 3px;   border-top-right-radius: 16px; }
+[dir="rtl"] .typing-bbl   { border-top-right-radius: 3px;  border-top-left-radius: 16px; }
+
+/* 6 — Timestamp: user timestamp aligns to the avatar side (left in RTL) */
+[dir="rtl"] .msg.usr .msg-t { text-align: end; }
+
+/* 7 — Directional icons: chevrons/arrows flip; send does NOT */
+[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
 
 /* ── DONE SCREEN ── */
 #page-done {
@@ -871,10 +896,6 @@ a:focus-visible,
 
   <div class="chat-scroll">
     <div class="msgs" id="msgs"></div>
-    <div class="end-row" id="end-row" style="display:none;">
-      <button class="end-btn" onclick="onEndClick()"><span id="s-end-txt">End Interview</span></button>
-    </div>
-    <div id="chat-btm" style="height:1px;"></div>
   </div>
 
   <div class="input-bar">
@@ -891,12 +912,16 @@ a:focus-visible,
           </svg>
         </button>
         <button class="send-btn" id="send-btn" onclick="submitAnswer()" disabled title="Send">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <svg class="rtl-flip" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M3.105 2.289a.75.75 0 0 0-.826.95l1.414 4.925A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.896 28.896 0 0 0 15.293-7.154.75.75 0 0 0 0-1.115A28.897 28.897 0 0 0 3.105 2.289Z"/>
           </svg>
         </button>
       </div>
     </div>
+  </div>
+
+  <div class="end-row" id="end-row" style="display:none;">
+    <button class="end-btn" onclick="onEndClick()"><span id="s-end-txt">End Interview</span></button>
   </div>
 </div>
 
