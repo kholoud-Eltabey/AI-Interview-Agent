@@ -1865,19 +1865,36 @@ let _ivCache = [];
 let _ivLoaded = false;
 
 async function loadInterviewsFromAPI() {
+  // Always read localStorage first so we never lose old data
+  let local = [];
+  try { local = JSON.parse(localStorage.getItem('skoon_interviews') || '[]'); }
+  catch(_) { local = []; }
+
   try {
     const res = await fetch('/api/interviews');
     if (res.ok) {
-      _ivCache  = await res.json();
+      const remote = await res.json();
+
+      // Merge: start with remote, then add any local records not yet in KV
+      const remoteIds = new Set(remote.map(iv => iv.id));
+      const onlyLocal = local.filter(iv => !remoteIds.has(iv.id));
+
+      _ivCache  = [...remote, ...onlyLocal];
       _ivLoaded = true;
-      // Mirror to localStorage as offline fallback
+
+      // Push any local-only records up to KV so they're never lost
+      for (const iv of onlyLocal) {
+        _postIvToAPI(iv);
+      }
+
+      // Keep localStorage in sync with the merged result
       localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
       return;
     }
   } catch(_) {}
-  // Fallback: load from localStorage
-  try { _ivCache = JSON.parse(localStorage.getItem('skoon_interviews') || '[]'); }
-  catch(__) { _ivCache = []; }
+
+  // API unreachable — fall back to localStorage only
+  _ivCache  = local;
   _ivLoaded = true;
 }
 
