@@ -1365,7 +1365,7 @@ const TR = {
 const t = (k, ...a) => { const v = TR[S.lang][k]; return typeof v === 'function' ? v(...a) : (v ?? k); };
 
 // ─── INIT ─────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // API key lives on the server — nothing to restore
   // Restore theme
   applyTheme(localStorage.getItem('app_theme') || 'light');
@@ -1377,6 +1377,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', () => { el.dataset.edited = '1'; });
   });
+
+  // Load all interviews from KV (server) so dashboard always has fresh data
+  await loadInterviewsFromAPI();
 
   // Restore in-progress session if one exists
   restoreSession();
@@ -1853,10 +1856,43 @@ function finishMsg() {
   goTo('page-done');
 }
 
-// ─── INTERVIEW STORAGE ────────────────────────────────────
+// ─── INTERVIEW STORAGE (KV-backed, in-memory cache) ───────
+// _ivCache is the single source of truth at runtime.
+// It is populated from /api/interviews on load and kept in sync.
+// localStorage acts as a fallback when the API is unreachable.
+
+let _ivCache = [];
+let _ivLoaded = false;
+
+async function loadInterviewsFromAPI() {
+  try {
+    const res = await fetch('/api/interviews');
+    if (res.ok) {
+      _ivCache  = await res.json();
+      _ivLoaded = true;
+      // Mirror to localStorage as offline fallback
+      localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
+      return;
+    }
+  } catch(_) {}
+  // Fallback: load from localStorage
+  try { _ivCache = JSON.parse(localStorage.getItem('skoon_interviews') || '[]'); }
+  catch(__) { _ivCache = []; }
+  _ivLoaded = true;
+}
+
+async function _postIvToAPI(record) {
+  try {
+    await fetch('/api/interviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(record),
+    });
+  } catch(_) { /* silent — localStorage already has it */ }
+}
+
 function getAllInterviews() {
-  try { return JSON.parse(localStorage.getItem('skoon_interviews') || '[]'); }
-  catch(_) { return []; }
+  return _ivCache;
 }
 
 function extractQA() {
@@ -1898,8 +1934,9 @@ function saveInterview(analysis) {
     answers:          extractQA(),
     analysis:         analysis || null,
   };
-  all.push(record);
-  localStorage.setItem('skoon_interviews', JSON.stringify(all));
+  _ivCache.push(record);
+  localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
+  _postIvToAPI(record); // sync to KV (fire and forget)
 }
 
 // kept as no-op for backward compat (renderResults calls it)
@@ -1948,9 +1985,12 @@ async function analyzeStoredInterview(id) {
     catch(_) { data = {}; }
 
     // Save analysis back to the stored interview
-    const stored = getAllInterviews();
-    const idx = stored.findIndex(x => x.id === id);
-    if (idx !== -1) { stored[idx].analysis = data; localStorage.setItem('skoon_interviews', JSON.stringify(stored)); }
+    const idx = _ivCache.findIndex(x => x.id === id);
+    if (idx !== -1) {
+      _ivCache[idx].analysis = data;
+      localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
+      _postIvToAPI(_ivCache[idx]); // sync updated record to KV
+    }
 
     hideOv();
     renderAnalysis(data, iv, 'res-content', iv);
@@ -2498,7 +2538,7 @@ async function analyze() {
 }
 
 // ─── RENDER RESULTS ───────────────────────────────────────
-function renderResults(d) {
+async function renderResults(d) {
   goTo('page-results');
   if (!S.isResearcher) {
     // Non-researcher: just show analysis
@@ -2507,6 +2547,8 @@ function renderResults(d) {
     dbTab('analysis');
     return;
   }
+  // Refresh from KV so dashboard always shows latest data from all devices
+  await loadInterviewsFromAPI();
   renderPanel();
   renderOverview();
   renderInterviewsTab();
