@@ -8,11 +8,11 @@
 .env
 .env.*
 .dev.vars
+.env 2.txt
 
 # OS files
 .DS_Store
 Thumbs.db
 
-.env
-.env.*
-.env 2.txt
+# Wrangler temp files
+.wrangler/
