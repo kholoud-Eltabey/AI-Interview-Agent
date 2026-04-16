@@ -406,8 +406,8 @@ a:focus-visible,
 .iv-bullet { padding-inline-start: 14px; position: relative; }
 .iv-bullet::before { content: '•'; position: absolute; inset-inline-start: 0; color: var(--primary); font-weight: 700; }
 
-/* IV quote RTL border */
-[dir="rtl"] .iv-quote { border-left: none; border-right: 3px solid var(--primary); }
+/* IV quote — border-inline-start (Tailwind border-s) auto-flips in RTL; just fix border-radius */
+[dir="rtl"] .iv-quote { border-radius: var(--rxs) 0 0 var(--rxs); }
 
 /* Profile overlay panel */
 .sb-profile-panel        { display: none; position: absolute; inset: 0; background: var(--surface); z-index: 100; flex-direction: column; overflow-y: auto; }
@@ -426,9 +426,9 @@ a:focus-visible,
   box-shadow: 0 0 0 3px var(--plight);
 }
 
-/* Accent-colored quotes border */
+/* Accent-colored quotes border — border-inline-start auto-flips to right in RTL */
 .ra-quote { border-inline-start: 3px solid var(--primary); }
-[dir="rtl"] .ra-quote { border-inline-start: none; border-inline-end: 3px solid var(--primary); }
+[dir="rtl"] .ra-quote { border-radius: var(--rxs) 0 0 var(--rxs); }
 
 .res-ttl { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 4px; }
 .res-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
@@ -445,11 +445,11 @@ a:focus-visible,
 .ri      { display: flex; gap: 8px; font-size: 14px; line-height: 1.65; }
 .rbul    { width: 5px; height: 5px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
 .qblock  {
-  border-left: 3px solid var(--primary); padding: 11px 14px;
+  border-inline-start: 3px solid var(--primary); padding: 11px 14px;
   background: var(--plight); border-radius: 0 var(--rxs) var(--rxs) 0;
   font-size: 13px; font-style: italic; line-height: 1.6; margin-bottom: 9px;
 }
-[dir="rtl"] .qblock { border-left: none; border-right: 3px solid var(--primary); border-radius: var(--rxs) 0 0 var(--rxs); }
+[dir="rtl"] .qblock { border-radius: var(--rxs) 0 0 var(--rxs); }
 .full {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--r); padding: 22px; box-shadow: var(--sh);
@@ -1962,9 +1962,9 @@ async function analyzeStoredInterview(id) {
   showOv(t('olAnalyze'), t('olSub'));
   try {
     const convo = iv.answers.map(qa => `Researcher: ${qa.q}\nParticipant: ${qa.a}`).join('\n\n');
-    const ar = S.lang === 'ar';
+    const ar = (iv.lang || S.lang) === 'ar';
     const sysMsg = ar
-      ? 'أنت محلل UX متخصص. مهمتك تحليل مقابلة بحثية وإنتاج JSON صحيح فقط — بدون أي نص خارجه. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة المسموحة بالإنجليزية: اسم "Skoon"، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). أي نص آخر يجب أن يكون بالعربية الخليجية.'
+      ? 'أنت محلل UX بحثي متخصص. مهمتك تحليل مقابلة بحثية وإنتاج JSON صحيح فقط — بدون أي نص خارجه. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. إذا تحدث المشارك بالإنجليزية، ترجم اقتباساته إلى العربية الخليجية الطبيعية مع الحفاظ على المعنى الأصلي. الاستثناءات الوحيدة المسموحة بالإنجليزية: اسم "Skoon"، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). اكتب بأسلوب UX بحثي احترافي — دقيق ومبني على الأدلة.'
       : 'You are a senior UX research analyst. Your task is to analyze a research interview and output valid JSON only — no text outside the JSON. Language rule is absolute: every text value in the JSON must be in English only, with zero Arabic words or code-switching. The only fixed-enum values allowed are: sentiment (positive/neutral/negative), impact (High/Medium/Low), effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name is always "Skoon". Write in a clear, professional UX research tone — concise, specific, and evidence-based.';
     const schema = JSON.stringify({
       summary:"2-3 sentence overview",insights:["insight 1","insight 2"],quotes:["verbatim quote"],patterns:["pattern 1"],
@@ -1976,7 +1976,7 @@ async function analyzeStoredInterview(id) {
       userFlow:[{step:"",description:""}]
     });
     const prompt = ar
-      ? `حلّل المحادثة التالية وأنتج JSON بهذا الهيكل بالضبط. لا تضف أي نص خارج JSON:\n${schema}\n\nالمحادثة:\n${convo}`
+      ? `حلّل المحادثة التالية وأنتج JSON بهذا الهيكل بالضبط. لا تضف أي نص خارج JSON:\n${schema}\n\nالمحادثة:\n${convo}\n\nتنبيه: إذا تحدث المشارك بالإنجليزية، ترجم اقتباساته (quotes) إلى العربية الخليجية الطبيعية. كل القيم النصية يجب أن تكون بالعربية الخليجية بدون استثناء عدا الحقول الثابتة.`
       : `Analyze the following interview and output ONLY valid JSON with this exact structure — no text outside the JSON:\n${schema}\n\nConversation:\n${convo}`;
 
     const raw = await callAI([{role:'system',content:sysMsg},{role:'user',content:prompt}], 0.2, 3000);
@@ -2500,7 +2500,7 @@ async function analyze() {
       .join('\n\n');
 
     const sysMsg = S.lang === 'ar'
-      ? 'أنت محلل UX متخصص. مهمتك تحليل مقابلة بحثية وإنتاج JSON صحيح فقط — بدون أي نص خارجه. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة المسموحة بالإنجليزية: اسم "Skoon"، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). أي نص آخر يجب أن يكون بالعربية الخليجية.'
+      ? 'أنت محلل UX بحثي متخصص. مهمتك تحليل مقابلة بحثية وإنتاج JSON صحيح فقط — بدون أي نص خارجه. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. إذا تحدث المشارك بالإنجليزية، ترجم اقتباساته إلى العربية الخليجية الطبيعية مع الحفاظ على المعنى الأصلي. الاستثناءات الوحيدة المسموحة بالإنجليزية: اسم "Skoon"، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). اكتب بأسلوب UX بحثي احترافي — دقيق ومبني على الأدلة.'
       : 'You are a senior UX research analyst. Your task is to analyze a research interview and output valid JSON only — no text outside the JSON. Language rule is absolute: every text value in the JSON must be in English only, with zero Arabic words or code-switching. The only fixed-enum values allowed are: sentiment (positive/neutral/negative), impact (High/Medium/Low), effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name is always "Skoon". Write in a clear, professional UX research tone — concise, specific, and evidence-based.';
 
     const schema = JSON.stringify({
@@ -2516,7 +2516,7 @@ async function analyze() {
       userFlow: [{ step:"Step name", description:"brief description" }]
     });
     const prompt = S.lang === 'ar'
-      ? `حلّل المحادثة التالية وأنتج JSON بهذا الهيكل بالضبط. لا تضف أي نص خارج JSON:\n${schema}\n\nالمحادثة:\n${convo}\n\nتعليمات لكل حقل:\n- summary: ملخص موجز للنتائج الرئيسية\n- insights: أبرز الاستنتاجات\n- quotes: اقتباسات حرفية من كلام المشارك فقط\n- patterns: الأنماط والسلوكيات المتكررة\n- recommendations: توصيات قابلة للتنفيذ\n- personas: شخصية مستخدم واحدة أو أكثر مستخلصة من المقابلة\n- empathy: خريطة تعاطف (thinks/feels/says/does)\n- journey: مراحل رحلة المستخدم مع sentiment إما positive أو neutral أو negative\n- impactEffort: توصيات مصنّفة حسب التأثير والجهد\n- userFlow: خطوات تدفق المستخدم المعتاد\nجميع القيم نصوص بالعربية الخليجية. "Skoon" بالإنجليزية فقط. sentiment و impact و effort و priority بالإنجليزية دائماً.`
+      ? `حلّل المحادثة التالية وأنتج JSON بهذا الهيكل بالضبط. لا تضف أي نص خارج JSON:\n${schema}\n\nالمحادثة:\n${convo}\n\nتعليمات لكل حقل:\n- summary: ملخص موجز للنتائج الرئيسية بالعربية الخليجية\n- insights: أبرز الاستنتاجات بالعربية الخليجية\n- quotes: اقتباسات من كلام المشارك — إذا قالها بالإنجليزية ترجمها للعربية الخليجية مع الحفاظ على المعنى\n- patterns: الأنماط والسلوكيات المتكررة بالعربية الخليجية\n- recommendations: توصيات قابلة للتنفيذ بالعربية الخليجية\n- personas: شخصية مستخدم واحدة أو أكثر مستخلصة من المقابلة بالعربية الخليجية\n- empathy: خريطة تعاطف (thinks/feels/says/does) بالعربية الخليجية\n- journey: مراحل رحلة المستخدم مع sentiment إما positive أو neutral أو negative\n- impactEffort: توصيات مصنّفة حسب التأثير والجهد\n- userFlow: خطوات تدفق المستخدم المعتاد بالعربية الخليجية\nجميع القيم نصوص بالعربية الخليجية. "Skoon" بالإنجليزية فقط. sentiment و impact و effort و priority بالإنجليزية دائماً.`
       : `Analyze the following interview and output ONLY valid JSON with this exact structure — no text outside the JSON:\n${schema}\n\nConversation:\n${convo}\n\nField instructions:\n- summary: 2-3 sentence overview of key findings\n- insights: most important takeaways\n- quotes: verbatim participant quotes only\n- patterns: recurring behaviours or attitudes\n- recommendations: concrete product team actions\n- personas: 1-2 user personas derived from the interview\n- empathy: empathy map with thinks/feels/says/does arrays\n- journey: user journey phases with phase/action/emotion/sentiment (sentiment must be positive, neutral, or negative)\n- impactEffort: recommendations ranked by impact/effort with priority (Do First/Schedule/Delegate/Drop)\n- userFlow: sequential steps the user takes in their current flow\nAll values in English only. Product name always "Skoon".`;
 
     const raw = await callAI(
