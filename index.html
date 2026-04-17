@@ -1630,18 +1630,28 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
   return data.choices[0].message.content.trim();
 }
 
-// ─── ANALYSIS TRANSLATION HELPER ──────────────────────────
-// Always analyze in English (GPT's strongest language), then translate
-// to Gulf Arabic as a separate focused call when the interview is Arabic.
+// ─── ANALYSIS TRANSLATION HELPERS ─────────────────────────
+// Always analyze in English (GPT's strongest language), then run a
+// dedicated translation pass to match the dashboard language exactly.
+
 async function _translateToArabic(data) {
-  const KEEP_KEYS = new Set(['sentiment','impact','effort','priority']);
   const sysMsg = 'أنت مترجم متخصص في أبحاث UX. مهمتك ترجمة قيم JSON من الإنجليزية إلى العربية الخليجية الطبيعية. قواعد صارمة: (1) ترجم كل قيمة نصية بالكامل إلى العربية الخليجية. (2) لا تغيّر هيكل JSON أبداً — نفس المفاتيح بنفس الترتيب. (3) لا تترجم: اسم "Skoon"، وقيم sentiment (positive/neutral/negative)، impact/effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). (4) أنتج JSON فقط — ممنوع أي نص خارجه.';
   const prompt = `ترجم قيم هذا JSON إلى العربية الخليجية:\n${JSON.stringify(data)}`;
   try {
     const raw = await callAI([{role:'system',content:sysMsg},{role:'user',content:prompt}], 0, 4000);
     const m = raw.match(/\{[\s\S]*\}/);
     return m ? JSON.parse(m[0]) : data;
-  } catch(_) { return data; } // fallback: return English if translation fails
+  } catch(_) { return data; }
+}
+
+async function _translateToEnglish(data) {
+  const sysMsg = 'You are a UX research translator. Your only job is to ensure every text value in the provided JSON is written in English. Rules: (1) Translate any non-English text to natural professional English. (2) Never alter the JSON structure — same keys, same order. (3) Do NOT translate: the name "Skoon", sentiment values (positive/neutral/negative), impact/effort values (High/Medium/Low), priority values (Do First/Schedule/Delegate/Drop). (4) Output JSON only — no text outside the JSON object.';
+  const prompt = `Ensure all text values in this JSON are in English:\n${JSON.stringify(data)}`;
+  try {
+    const raw = await callAI([{role:'system',content:sysMsg},{role:'user',content:prompt}], 0, 4000);
+    const m = raw.match(/\{[\s\S]*\}/);
+    return m ? JSON.parse(m[0]) : data;
+  } catch(_) { return data; }
 }
 
 // ─── CHAT HELPERS ─────────────────────────────────────────
@@ -2014,9 +2024,9 @@ async function analyzeStoredInterview(id) {
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch(_) { data = {}; }
-    // Step 2: Translate to Gulf Arabic if UI language is Arabic
-    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
-      data = await _translateToArabic(data);
+    // Step 2: Enforce dashboard language — translate regardless of conversation language
+    if (data && Object.keys(data).length > 0) {
+      data = S.lang === 'ar' ? await _translateToArabic(data) : await _translateToEnglish(data);
     }
 
     // Save analysis back to the stored interview
@@ -2493,10 +2503,10 @@ async function _doCrossAnalysis(selected) {
     hideOv();
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch(_) { data = {}; }
-    // Step 2: Translate to Gulf Arabic if UI language is Arabic
-    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
+    // Step 2: Enforce dashboard language — translate regardless of conversation language
+    if (data && Object.keys(data).length > 0) {
       showOv(t('olAnalyze'), t('olSub'));
-      data = await _translateToArabic(data);
+      data = S.lang === 'ar' ? await _translateToArabic(data) : await _translateToEnglish(data);
       hideOv();
     }
     renderCrossOutput(data);
@@ -2562,9 +2572,9 @@ async function analyze() {
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch (_) { data = { summary: raw, insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: {}, journey: [], impactEffort: [], userFlow: [] }; }
 
-    // Step 2: Translate to Gulf Arabic if UI language is Arabic
-    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
-      data = await _translateToArabic(data);
+    // Step 2: Enforce dashboard language — translate regardless of conversation language
+    if (data && Object.keys(data).length > 0) {
+      data = S.lang === 'ar' ? await _translateToArabic(data) : await _translateToEnglish(data);
     }
 
     saveInterview(data);
