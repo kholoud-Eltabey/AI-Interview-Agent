@@ -2795,7 +2795,12 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
   } // end isResearcher
 
   const target = document.getElementById(targetId);
-  if (target) target.innerHTML = html;
+  if (target) {
+    target.innerHTML = html;
+    // Auto-scroll to top of analysis content whenever it renders
+    const scroller = document.getElementById('res-scroll');
+    if (scroller) scroller.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
 function openSecDetail(key) {
