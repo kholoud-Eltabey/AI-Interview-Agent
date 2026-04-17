@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
     return json({ error: 'messages required.' }, 400);
   }
 
-  const model = 'gpt-4o-mini';
+  const model = 'gpt-4.5-preview';
   const payload = {
     model,
     messages,
