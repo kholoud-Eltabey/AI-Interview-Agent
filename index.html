@@ -124,7 +124,7 @@ button, input, textarea, select, table, th, td {
 
 .hero { text-align: center; margin-bottom: 32px; }
 .brand {
-  font-size: 38px; font-weight: 700; letter-spacing: -1.5px;
+  font-size: 16px; font-weight: 700; letter-spacing: -0.5px;
   color: var(--primary); display: block; margin-bottom: 6px;
 }
 .hero-sub { color: var(--muted); font-size: 14px; }
@@ -727,7 +727,7 @@ a:focus-visible,
   font-size: 14px; color: var(--text); line-height: 1.6;
   padding-top: 8px;
 }
-.prestart-bul { color: var(--primary); font-size: 20px; line-height: 1; padding-top: 6px; flex-shrink: 0; width: 38px; text-align: center; }
+.prestart-bul { color: var(--primary); font-size: 16px; line-height: 1; padding-top: 6px; flex-shrink: 0; width: 38px; text-align: center; }
 [dir="rtl"] .prestart-row-txt { line-height: 1.8; }
 .prestart-back {
   display: block; text-align: center; margin-top: 14px;
@@ -845,7 +845,7 @@ a:focus-visible,
       </div>
 
       <div class="fg">
-        <div class="hint" id="s-nq-note" style="font-size:12.5px;color:var(--muted);padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);">This interview contains 10 questions.</div>
+        <div class="hint" id="s-nq-note" style="font-size:12px;color:var(--muted);padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);">This interview contains 10 questions.</div>
       </div>
     </div>
 
@@ -941,13 +941,13 @@ a:focus-visible,
           <button onclick="closeProfilePanel()" class="ic-btn shrink-0" style="width:28px;height:28px;border-radius:var(--rxs);" title="Back">
             <svg class="rtl-flip" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <span class="text-[13px] font-semibold text-app-text" id="spp-title">Profile</span>
+          <span class="text-[12px] font-semibold text-app-text" id="spp-title">Profile</span>
         </div>
 
         <!-- Avatar -->
         <div class="flex flex-col items-center gap-2 px-4 pt-5 pb-3 shrink-0">
           <div class="relative">
-            <div class="w-[56px] h-[56px] rounded-full bg-plight flex items-center justify-center text-[20px] font-bold text-primary" id="spp-avatar">U</div>
+            <div class="w-[56px] h-[56px] rounded-full bg-plight flex items-center justify-center text-[16px] font-bold text-primary" id="spp-avatar">U</div>
             <button onclick="editAvatarLetter()" class="absolute bottom-0 end-0 w-[20px] h-[20px] rounded-full bg-primary flex items-center justify-center border-2 border-surface" title="Edit">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
@@ -958,35 +958,35 @@ a:focus-visible,
         <!-- Stats rows -->
         <div class="px-4 shrink-0">
           <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
-            <span class="text-[10px] text-muted font-medium" id="spp-lbl-lang">Language</span>
-            <span class="text-[11px] font-medium text-app-text" id="spp-stat-lang">—</span>
+            <span class="text-[12px] text-muted font-medium" id="spp-lbl-lang">Language</span>
+            <span class="text-[12px] font-medium text-app-text" id="spp-stat-lang">—</span>
           </div>
           <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
-            <span class="text-[10px] text-muted font-medium">API</span>
+            <span class="text-[12px] text-muted font-medium">API</span>
             <span class="flex items-center gap-1.5">
               <span class="w-[7px] h-[7px] rounded-full shrink-0" id="spp-api-dot" style="background:var(--muted)"></span>
-              <span class="text-[11px] font-medium" id="spp-api-txt">—</span>
+              <span class="text-[12px] font-medium" id="spp-api-txt">—</span>
             </span>
           </div>
           <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
-            <span class="text-[10px] text-muted font-medium" id="spp-lbl-mode">Mode</span>
-            <span class="text-[11px] font-medium text-app-text" id="spp-stat-mode">—</span>
+            <span class="text-[12px] text-muted font-medium" id="spp-lbl-mode">Mode</span>
+            <span class="text-[12px] font-medium text-app-text" id="spp-stat-mode">—</span>
           </div>
           <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
-            <span class="text-[10px] text-muted font-medium" id="spp-lbl-total">Total</span>
-            <span class="text-[11px] font-semibold text-primary" id="spp-stat-total">0</span>
+            <span class="text-[12px] text-muted font-medium" id="spp-lbl-total">Total</span>
+            <span class="text-[12px] font-semibold text-primary" id="spp-stat-total">0</span>
           </div>
           <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
-            <span class="text-[10px] text-muted font-medium" id="spp-lbl-done">Completed</span>
-            <span class="text-[11px] font-semibold text-primary" id="spp-stat-done">0</span>
+            <span class="text-[12px] text-muted font-medium" id="spp-lbl-done">Completed</span>
+            <span class="text-[12px] font-semibold text-primary" id="spp-stat-done">0</span>
           </div>
           <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
-            <span class="text-[10px] text-muted font-medium" id="spp-lbl-rate">Rate</span>
-            <span class="text-[11px] font-semibold text-primary" id="spp-stat-rate">—</span>
+            <span class="text-[12px] text-muted font-medium" id="spp-lbl-rate">Rate</span>
+            <span class="text-[12px] font-semibold text-primary" id="spp-stat-rate">—</span>
           </div>
           <div class="flex items-center justify-between py-2" id="spp-last-row">
-            <span class="text-[10px] text-muted font-medium" id="spp-lbl-last">Last</span>
-            <span class="text-[11px] font-medium text-app-text" id="spp-stat-last">—</span>
+            <span class="text-[12px] text-muted font-medium" id="spp-lbl-last">Last</span>
+            <span class="text-[12px] font-medium text-app-text" id="spp-stat-last">—</span>
           </div>
         </div>
 
@@ -994,17 +994,17 @@ a:focus-visible,
         <div class="px-4 pt-3 flex flex-col gap-3 pb-4">
           <!-- Name -->
           <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-name">Name</label>
+            <label class="text-[12px] text-muted font-medium" id="spp-lbl-name">Name</label>
             <input class="profile-inp" id="spp-inp-name" type="text" autocomplete="off" />
           </div>
           <!-- Job title -->
           <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-job">Job Title</label>
+            <label class="text-[12px] text-muted font-medium" id="spp-lbl-job">Job Title</label>
             <input class="profile-inp" id="spp-inp-job" type="text" autocomplete="off" />
           </div>
           <!-- Email -->
           <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-email">Email</label>
+            <label class="text-[12px] text-muted font-medium" id="spp-lbl-email">Email</label>
             <input class="profile-inp" id="spp-inp-email" type="email" autocomplete="off" />
           </div>
 
@@ -1013,12 +1013,12 @@ a:focus-visible,
 
           <!-- Current password -->
           <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-curpw">Current Password</label>
+            <label class="text-[12px] text-muted font-medium" id="spp-lbl-curpw">Current Password</label>
             <input class="profile-inp" id="spp-inp-curpw" type="password" autocomplete="current-password" />
           </div>
           <!-- New password -->
           <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-muted uppercase tracking-wide font-medium" id="spp-lbl-newpw">New Password</label>
+            <label class="text-[12px] text-muted font-medium" id="spp-lbl-newpw">New Password</label>
             <input class="profile-inp" id="spp-inp-newpw" type="password" autocomplete="new-password" />
           </div>
 
@@ -1037,8 +1037,8 @@ a:focus-visible,
       <div class="px-4 pt-4 pb-2 shrink-0">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-[15px] font-bold text-primary" id="sb-brand-name-el">Skoon</div>
-            <div class="text-[10px] text-muted font-medium" id="sb-tag">Research Dashboard</div>
+            <div class="text-[16px] font-bold text-primary" id="sb-brand-name-el">Skoon</div>
+            <div class="text-[12px] text-muted font-medium" id="sb-tag">Research Dashboard</div>
           </div>
           <!-- Small lang + theme icons -->
           <div class="flex items-center gap-0.5">
@@ -1051,10 +1051,10 @@ a:focus-visible,
 
         <!-- Profile row — below brand, clickable → opens profile panel -->
         <div class="flex items-center gap-2 mt-3 px-1.5 py-1.5 -mx-1.5 rounded-[var(--rxs)] cursor-pointer hover:bg-app-bg transition-colors group" onclick="openProfilePanel()">
-          <div class="w-[32px] h-[32px] rounded-full bg-plight flex items-center justify-center text-[13px] font-bold text-primary shrink-0" id="sb-avatar">U</div>
+          <div class="w-[32px] h-[32px] rounded-full bg-plight flex items-center justify-center text-[12px] font-bold text-primary shrink-0" id="sb-avatar">U</div>
           <div class="flex-1 min-w-0">
             <div class="text-[12px] font-semibold text-app-text truncate leading-tight" id="sb-uname">Researcher</div>
-            <div class="text-[10px] text-muted truncate" id="sb-urole">UX Researcher</div>
+            <div class="text-[12px] text-muted truncate" id="sb-urole">UX Researcher</div>
           </div>
           <svg class="rtl-flip text-muted shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
@@ -1064,17 +1064,17 @@ a:focus-visible,
 
       <!-- Nav -->
       <div class="px-2 pt-2 pb-1 shrink-0">
-        <button class="sb-nav-item active flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" id="sb-nav-overview" onclick="dbTab('overview')">
-          <span class="w-4 text-center shrink-0 text-[13px]">▦</span><span id="sb-lbl-overview">Dashboard</span>
+        <button class="sb-nav-item active flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" id="sb-nav-overview" onclick="dbTab('overview')">
+          <span class="w-4 text-center shrink-0 text-[12px]">▦</span><span id="sb-lbl-overview">Dashboard</span>
         </button>
-        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" id="sb-nav-interviews" onclick="dbTab('interviews')">
-          <span class="w-4 text-center shrink-0 text-[13px]">◫</span><span id="sb-lbl-interviews">Interviews</span>
+        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" id="sb-nav-interviews" onclick="dbTab('interviews')">
+          <span class="w-4 text-center shrink-0 text-[12px]">◫</span><span id="sb-lbl-interviews">Interviews</span>
         </button>
-        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" id="sb-nav-analysis" onclick="dbTab('analysis')">
-          <span class="w-4 text-center shrink-0 text-[13px]">◎</span><span id="sb-lbl-analysis">Analysis</span>
+        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" id="sb-nav-analysis" onclick="dbTab('analysis')">
+          <span class="w-4 text-center shrink-0 text-[12px]">◎</span><span id="sb-lbl-analysis">Analysis</span>
         </button>
-        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[11.5px] font-medium text-muted transition-colors" id="sb-nav-insights" onclick="dbTab('insights')">
-          <span class="w-4 text-center shrink-0 text-[13px]">◈</span><span id="sb-lbl-insights">Insights</span>
+        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" id="sb-nav-insights" onclick="dbTab('insights')">
+          <span class="w-4 text-center shrink-0 text-[12px]">◈</span><span id="sb-lbl-insights">Insights</span>
         </button>
       </div>
 
@@ -2349,7 +2349,7 @@ function renderInterviewsTab() {
 }
 
 function ivStatusBadge(reached, total) {
-  const base = 'text-[9.5px] font-bold py-0.5 rounded-md shrink-0 whitespace-nowrap inline-block text-center';
+  const base = 'text-[12px] font-medium py-0.5 rounded-md shrink-0 whitespace-nowrap inline-block text-center';
   const w    = 'style="min-width:52px;padding-left:6px;padding-right:6px;"';
   if (!total || total === 0) return '';
   if (reached >= total)
