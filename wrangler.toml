@@ -5,4 +5,4 @@ pages_build_output_dir = "."
 [[kv_namespaces]]
 binding = "SKOON_INTERVIEWS"
 id = "e6eb84d2e7194511a65d9f73ef75c11d"
-preview_id = "5d3a0c7cc1924ea6a6bf8ff8a0dc993f"
+preview_id = "e6eb84d2e7194511a65d9f73ef75c11d"
