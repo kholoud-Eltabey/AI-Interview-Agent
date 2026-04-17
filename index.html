@@ -1629,6 +1629,20 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
   return data.choices[0].message.content.trim();
 }
 
+// ─── ANALYSIS TRANSLATION HELPER ──────────────────────────
+// Always analyze in English (GPT's strongest language), then translate
+// to Gulf Arabic as a separate focused call when Arabic UI is active.
+async function _translateToArabic(data) {
+  const KEEP_KEYS = new Set(['sentiment','impact','effort','priority']);
+  const sysMsg = 'أنت مترجم متخصص في أبحاث UX. مهمتك ترجمة قيم JSON من الإنجليزية إلى العربية الخليجية الطبيعية. قواعد صارمة: (1) ترجم كل قيمة نصية بالكامل إلى العربية الخليجية. (2) لا تغيّر هيكل JSON أبداً — نفس المفاتيح بنفس الترتيب. (3) لا تترجم: اسم "Skoon"، وقيم sentiment (positive/neutral/negative)، impact/effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). (4) أنتج JSON فقط — ممنوع أي نص خارجه.';
+  const prompt = `ترجم قيم هذا JSON إلى العربية الخليجية:\n${JSON.stringify(data)}`;
+  try {
+    const raw = await callAI([{role:'system',content:sysMsg},{role:'user',content:prompt}], 0, 4000);
+    const m = raw.match(/\{[\s\S]*\}/);
+    return m ? JSON.parse(m[0]) : data;
+  } catch(_) { return data; } // fallback: return English if translation fails
+}
+
 // ─── CHAT HELPERS ─────────────────────────────────────────
 function addMsg(role, content) {
   const wrap  = document.getElementById('msgs');
@@ -1982,19 +1996,8 @@ async function analyzeStoredInterview(id) {
   showOv(t('olAnalyze'), t('olSub'));
   try {
     const convo = iv.answers.map(qa => `Researcher: ${qa.q}\nParticipant: ${qa.a}`).join('\n\n');
-    const ar = S.lang === 'ar'; // always follow current UI language, not interview language
-    const sysMsg = ar
-      ? '⚠️ قاعدة اللغة — أعلى أولوية — لا استثناء: كل كلمة في ردّك يجب أن تكون بالعربية الخليجية فقط. إذا كانت إجابات المشارك بالإنجليزية أو أي لغة أخرى، ترجمها ترجمة كاملة إلى العربية الخليجية قبل استخدامها. ممنوع منعاً باتاً وضع أي كلمة إنجليزية في أي قيمة نصية داخل الـ JSON — سواء في الملخص أو الأفكار أو الاقتباسات أو أي حقل آخر. الاستثناءات الوحيدة: اسم "Skoon" فقط، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). أنت محلل UX بحثي متخصص. مهمتك تحليل مقابلة بحثية وإنتاج JSON صحيح فقط — بدون أي نص خارجه. اكتب بأسلوب UX بحثي احترافي — دقيق ومبني على الأدلة.'
-      : '⚠️ LANGUAGE RULE — highest priority — no exceptions: Every single word in your response must be in English only. If the participant answered in Arabic or any other language, translate their answers fully into English before using them. It is strictly forbidden to include any Arabic or non-English words in any JSON text value — summary, insights, quotes, or any other field. The only allowed exceptions are fixed enum values: sentiment (positive/neutral/negative), impact (High/Medium/Low), effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop), and the product name "Skoon". You are a senior UX research analyst. Analyze the research interview and output valid JSON only — no text outside the JSON. Write in a clear, professional UX research tone — concise, specific, and evidence-based.';
-    const schema = ar ? JSON.stringify({
-      summary:"ملخص موجز للنتائج الرئيسية",insights:["استنتاج 1","استنتاج 2"],quotes:["اقتباس من المشارك"],patterns:["نمط متكرر 1"],
-      recommendations:["توصية 1"],
-      personas:[{name:"الاسم",age:"الفئة العمرية",goal:"الهدف الرئيسي",pain:"نقطة الألم",motivation:"المحفز"}],
-      empathy:{thinks:["فكرة"],feels:["شعور"],says:["ما قاله"],does:["ما فعله"]},
-      journey:[{phase:"المرحلة",action:"ما يفعله المستخدم",emotion:"الحالة العاطفية",sentiment:"positive|neutral|negative"}],
-      impactEffort:[{action:"الإجراء",impact:"High|Medium|Low",effort:"High|Medium|Low",priority:"Do First|Schedule|Delegate|Drop"}],
-      userFlow:[{step:"الخطوة",description:"وصف موجز"}]
-    }) : JSON.stringify({
+    // Step 1: Always analyze in English (most reliable for GPT)
+    const enSchema = JSON.stringify({
       summary:"2-3 sentence overview",insights:["insight 1","insight 2"],quotes:["verbatim quote"],patterns:["pattern 1"],
       recommendations:["recommendation 1"],
       personas:[{name:"",age:"",goal:"",pain:"",motivation:""}],
@@ -2003,14 +2006,16 @@ async function analyzeStoredInterview(id) {
       impactEffort:[{action:"",impact:"High|Medium|Low",effort:"High|Medium|Low",priority:"Do First|Schedule|Delegate|Drop"}],
       userFlow:[{step:"",description:""}]
     });
-    const prompt = ar
-      ? `حلّل المحادثة التالية وأنتج JSON بهذا الهيكل بالضبط. لا تضف أي نص خارج JSON. كل قيمة نصية بالعربية الخليجية فقط:\n${schema}\n\nالمحادثة:\n${convo}`
-      : `Analyze the following interview and output ONLY valid JSON with this exact structure — no text outside the JSON. Every text value in English only:\n${schema}\n\nConversation:\n${convo}`;
-
-    const raw = await callAI([{role:'system',content:sysMsg},{role:'user',content:prompt}], 0, 3000);
+    const enSys = 'You are a senior UX research analyst. Output valid JSON only — no text outside the JSON. All text values in English. Fixed enums only: sentiment (positive/neutral/negative), impact/effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name: "Skoon".';
+    const enPrompt = `Analyze this interview and output ONLY valid JSON matching this structure exactly:\n${enSchema}\n\nConversation:\n${convo}`;
+    const raw = await callAI([{role:'system',content:enSys},{role:'user',content:enPrompt}], 0, 3000);
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch(_) { data = {}; }
+    // Step 2: If Arabic UI, translate the English JSON to Gulf Arabic
+    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
+      data = await _translateToArabic(data);
+    }
 
     // Save analysis back to the stored interview
     const idx = _ivCache.findIndex(x => x.id === id);
@@ -2464,18 +2469,8 @@ async function _doCrossAnalysis(selected) {
     return `--- Interview ${i+1} (${iv.date}) ---\n${qa}`;
   }).join('\n\n');
 
-  const schema = S.lang === 'ar' ? JSON.stringify({
-    summary: "ملخص موجز للنتائج عبر المقابلات",
-    insights: ["استنتاج مشترك 1","استنتاج 2","استنتاج 3"],
-    quotes: ["اقتباس من مشارك"],
-    patterns: ["نمط متكرر عبر المقابلات"],
-    recommendations: ["توصية قابلة للتنفيذ 1","توصية 2"],
-    personas: [{ name:'الاسم', age:'الفئة العمرية', goal:'الهدف', pain:'نقطة الألم', motivation:'المحفز' }],
-    empathy: { thinks:["فكرة"], feels:["شعور"], says:["ما قاله"], does:["ما فعله"] },
-    journey: [{ phase:'المرحلة', action:'ما يفعله المستخدم', emotion:'الحالة العاطفية', sentiment:'positive|neutral|negative' }],
-    impactEffort: [{ action:'الإجراء', impact:'High|Medium|Low', effort:'High|Medium|Low', priority:'Do First|Schedule|Delegate|Drop' }],
-    userFlow: [{ step:'الخطوة', description:'وصف موجز' }]
-  }) : JSON.stringify({
+  // Step 1: Always analyze in English
+  const schema = JSON.stringify({
     summary: "2-3 sentence overview of cross-interview findings",
     insights: ["key insight across all interviews 1", "insight 2", "insight 3"],
     quotes: ["verbatim quote from participant"],
@@ -2487,12 +2482,8 @@ async function _doCrossAnalysis(selected) {
     impactEffort: [{ action:'', impact:'High|Medium|Low', effort:'High|Medium|Low', priority:'Do First|Schedule|Delegate|Drop' }],
     userFlow: [{ step:'', description:'' }]
   });
-  const sysMsg = S.lang === 'ar'
-    ? '⚠️ قاعدة اللغة — أعلى أولوية — لا استثناء: كل كلمة في ردّك يجب أن تكون بالعربية الخليجية فقط. إذا كانت إجابات المشاركين بالإنجليزية أو أي لغة أخرى، ترجمها ترجمة كاملة إلى العربية الخليجية قبل استخدامها. ممنوع منعاً باتاً وضع أي كلمة إنجليزية في أي قيمة نصية داخل الـ JSON. الاستثناءات الوحيدة: اسم "Skoon" فقط، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). أنت محلل UX متخصص. مهمتك تحليل مجموعة مقابلات بحثية مكتملة معاً وإنتاج JSON صحيح فقط — بدون أي نص خارجه. استخرج الأنماط الحقيقية والسلوكيات المتكررة ونقاط الألم والمحفزات وعوامل القرار من الإجابات الفعلية.'
-    : '⚠️ LANGUAGE RULE — highest priority — no exceptions: Every single word in your response must be in English only. If participants answered in Arabic or any other language, translate their answers fully into English before using them. It is strictly forbidden to include any Arabic or non-English words in any JSON text value. The only allowed exceptions are fixed enum values: sentiment (positive/neutral/negative), impact (High/Medium/Low), effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop), and the product name "Skoon". You are a senior UX research analyst. Analyze multiple completed research interviews together and output valid JSON only — no text outside the JSON. Extract real cross-interview patterns: repeated behaviours, shared pain points, common motivations, and decision-making factors.';
-  const prompt = S.lang === 'ar'
-    ? `حلّل المقابلات المكتملة التالية معاً (${selected.length} مقابلة) وأنتج JSON بهذا الهيكل بالضبط. كل قيمة نصية بالعربية الخليجية فقط:\n${schema}\n\nالمقابلات:\n${convo}`
-    : `Analyze these ${selected.length} completed interviews together and output ONLY valid JSON with this exact structure. Every text value in English only:\n${schema}\n\nInterviews:\n${convo}`;
+  const sysMsg = 'You are a senior UX research analyst. Output valid JSON only — no text outside the JSON. All text values in English. Fixed enums only: sentiment (positive/neutral/negative), impact/effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name: "Skoon".';
+  const prompt = `Analyze these ${selected.length} completed interviews together and output ONLY valid JSON matching this structure. Focus on patterns across interviews:\n${schema}\n\nInterviews:\n${convo}`;
 
   try {
     showOv(t('olAnalyze'), t('olSub'));
@@ -2500,6 +2491,12 @@ async function _doCrossAnalysis(selected) {
     hideOv();
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch(_) { data = {}; }
+    // Step 2: Translate to Gulf Arabic if Arabic UI
+    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
+      showOv(t('olAnalyze'), t('olSub'));
+      data = await _translateToArabic(data);
+      hideOv();
+    }
     renderCrossOutput(data);
   } catch(e) {
     hideOv();
@@ -2538,22 +2535,8 @@ async function analyze() {
       .map(m => `${m.role === 'assistant' ? 'Researcher' : 'Participant'}: ${m.content}`)
       .join('\n\n');
 
-    const sysMsg = S.lang === 'ar'
-      ? '⚠️ قاعدة اللغة — أعلى أولوية — لا استثناء: كل كلمة في ردّك يجب أن تكون بالعربية الخليجية فقط. إذا كانت إجابات المشارك بالإنجليزية أو أي لغة أخرى، ترجمها ترجمة كاملة إلى العربية الخليجية قبل استخدامها. ممنوع منعاً باتاً وضع أي كلمة إنجليزية في أي قيمة نصية داخل الـ JSON — سواء في الملخص أو الأفكار أو الاقتباسات أو أي حقل آخر. الاستثناءات الوحيدة: اسم "Skoon" فقط، وقيم الحقول الثابتة: sentiment (positive/neutral/negative)، impact (High/Medium/Low)، effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). أنت محلل UX بحثي متخصص. مهمتك تحليل مقابلة بحثية وإنتاج JSON صحيح فقط — بدون أي نص خارجه. اكتب بأسلوب UX بحثي احترافي — دقيق ومبني على الأدلة.'
-      : '⚠️ LANGUAGE RULE — highest priority — no exceptions: Every single word in your response must be in English only. If the participant answered in Arabic or any other language, translate their answers fully into English before using them. It is strictly forbidden to include any Arabic or non-English words in any JSON text value — summary, insights, quotes, or any other field. The only allowed exceptions are fixed enum values: sentiment (positive/neutral/negative), impact (High/Medium/Low), effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop), and the product name "Skoon". You are a senior UX research analyst. Analyze the research interview and output valid JSON only — no text outside the JSON. Write in a clear, professional UX research tone — concise, specific, and evidence-based.';
-
-    const schema = S.lang === 'ar' ? JSON.stringify({
-      summary: "ملخص موجز للنتائج الرئيسية",
-      insights: ["استنتاج 1","استنتاج 2","استنتاج 3"],
-      quotes: ["اقتباس من المشارك 1","اقتباس 2"],
-      patterns: ["نمط متكرر 1","نمط 2","نمط 3"],
-      recommendations: ["توصية 1","توصية 2","توصية 3"],
-      personas: [{ name:"اسم الشخصية", age:"الفئة العمرية", goal:"الهدف الرئيسي", pain:"نقطة الألم", motivation:"المحفز الرئيسي" }],
-      empathy: { thinks:["فكرة"], feels:["شعور"], says:["ما قاله"], does:["ما فعله"] },
-      journey: [{ phase:"المرحلة", action:"ما يفعله المستخدم", emotion:"الحالة العاطفية", sentiment:"positive|neutral|negative" }],
-      impactEffort: [{ action:"الإجراء", impact:"High|Medium|Low", effort:"High|Medium|Low", priority:"Do First|Schedule|Delegate|Drop" }],
-      userFlow: [{ step:"الخطوة", description:"وصف موجز" }]
-    }) : JSON.stringify({
+    // Step 1: Always analyze in English
+    const schema = JSON.stringify({
       summary: "2-3 sentence overview",
       insights: ["insight 1","insight 2","insight 3"],
       quotes: ["verbatim quote 1","verbatim quote 2"],
@@ -2565,9 +2548,8 @@ async function analyze() {
       impactEffort: [{ action:"action item", impact:"High|Medium|Low", effort:"High|Medium|Low", priority:"Do First|Schedule|Delegate|Drop" }],
       userFlow: [{ step:"Step name", description:"brief description" }]
     });
-    const prompt = S.lang === 'ar'
-      ? `حلّل المحادثة التالية وأنتج JSON بهذا الهيكل بالضبط. لا تضف أي نص خارج JSON. كل قيمة نصية بالعربية الخليجية فقط:\n${schema}\n\nالمحادثة:\n${convo}`
-      : `Analyze the following interview and output ONLY valid JSON with this exact structure — no text outside the JSON. Every text value in English only:\n${schema}\n\nConversation:\n${convo}`;
+    const sysMsg = 'You are a senior UX research analyst. Output valid JSON only — no text outside the JSON. All text values in English. Fixed enums only: sentiment (positive/neutral/negative), impact/effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name: "Skoon".';
+    const prompt = `Analyze this interview and output ONLY valid JSON matching this structure exactly:\n${schema}\n\nConversation:\n${convo}`;
 
     const raw = await callAI(
       [{ role: 'system', content: sysMsg }, { role: 'user', content: prompt }],
@@ -2577,6 +2559,11 @@ async function analyze() {
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch (_) { data = { summary: raw, insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: {}, journey: [], impactEffort: [], userFlow: [] }; }
+
+    // Step 2: Translate to Gulf Arabic if Arabic UI
+    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
+      data = await _translateToArabic(data);
+    }
 
     saveInterview(data);
     hideOv();
