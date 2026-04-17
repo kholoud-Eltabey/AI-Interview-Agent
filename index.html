@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
@@ -85,8 +85,8 @@ html { scroll-behavior: smooth; }
 /* ── GLOBAL TYPOGRAPHY TOKENS ── */
 :root {
   --font: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif;
-  --fs-title: 16px;   --fw-title: 500;  --lh-title: 1.5;
-  --fs-body:  14px;   --fw-body:  400;  --lh-body:  1.6;
+  --fs-title: 14px;   --fw-title: 500;  --lh-title: 1.5;
+  --fs-body:  12px;   --fw-body:  400;  --lh-body:  1.6;
 }
 
 /* Single font declaration for the whole product */
@@ -124,17 +124,17 @@ button, input, textarea, select, table, th, td {
 
 .hero { text-align: center; margin-bottom: 32px; }
 .brand {
-  font-size: 16px; font-weight: 700; letter-spacing: -0.5px;
+  font-size:14px; font-weight: 700; letter-spacing: -0.5px;
   color: var(--primary); display: block; margin-bottom: 6px;
 }
-.hero-sub { color: var(--muted); font-size: 14px; }
+.hero-sub { color: var(--muted); font-size:12px; }
 
 .ic-btn {
   width: 32px; height: 32px; border-radius: 50%;
   border: 1.5px solid var(--border); background: var(--surface);
   color: var(--text); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: all var(--tr); font-size: 16px; position: relative; flex-shrink: 0;
+  transition: all var(--tr); font-size:14px; position: relative; flex-shrink: 0;
 }
 .ic-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--plight); }
 .ic-btn:focus { outline: none; border-color: var(--primary); color: var(--primary); background: var(--plight); box-shadow: 0 0 0 3px var(--plight); }
@@ -145,20 +145,20 @@ button, input, textarea, select, table, th, td {
   border-radius: var(--r); padding: 24px; box-shadow: var(--sh); margin-bottom: 14px;
 }
 .card-lbl {
-  font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
+  font-size:12px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
   color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 7px;
 }
 .card-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--primary); flex-shrink: 0; }
 
 .fg { margin-bottom: 16px; }
 .fg:last-child { margin-bottom: 0; }
-.fl { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-.badge { font-size: 14px; font-weight: 400; padding: 1px 7px; border-radius: 8px; background: var(--plight); color: var(--primary); }
+.fl { font-size:12px; font-weight: 500; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.badge { font-size:12px; font-weight: 400; padding: 1px 7px; border-radius: 8px; background: var(--plight); color: var(--primary); }
 
 .inp {
   width: 100%; padding: 10px 13px;
   border: 1.5px solid var(--border); border-radius: var(--rsm);
-  background: var(--bg); color: var(--text); font-size: 14px;
+  background: var(--bg); color: var(--text); font-size:12px;
   font-family: inherit; outline: none;
   transition: border-color var(--tr), box-shadow var(--tr);
 }
@@ -173,11 +173,11 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   accent-color: var(--primary); cursor: pointer;
 }
 .nq-count {
-  font-size: 14px; font-weight: 500; color: var(--primary);
+  font-size:12px; font-weight: 500; color: var(--primary);
   background: var(--plight); border-radius: 5px;
   padding: 2px 8px; margin-inline-start: auto; flex-shrink: 0;
 }
-.range-ends { display: flex; justify-content: space-between; font-size: 14px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.range-ends { display: flex; justify-content: space-between; font-size:12px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 
 .key-wrap { position: relative; }
 .key-wrap .inp { padding-inline-end: 42px; }
@@ -189,17 +189,17 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .key-eye:hover { color: var(--primary); }
 .key-ok {
   display: none; align-items: center; gap: 5px; margin-top: 7px;
-  font-size: 14px; padding: 7px 10px; border-radius: var(--rxs);
+  font-size:12px; padding: 7px 10px; border-radius: var(--rxs);
   background: #d1fae5; color: #065f46; font-weight: 400;
 }
 [data-theme="dark"] .key-ok { background: #064e3b; color: #6ee7b7; }
 .key-acts { display: flex; gap: 8px; margin-top: 10px; }
-.hint { font-size: 14px; font-weight: 400; color: var(--muted); margin-top: 5px; }
-.errtxt { font-size: 14px; font-weight: 400; color: var(--danger); margin-top: 5px; display: none; }
+.hint { font-size:12px; font-weight: 400; color: var(--muted); margin-top: 5px; }
+.errtxt { font-size:12px; font-weight: 400; color: var(--danger); margin-top: 5px; display: none; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 11px 20px; border-radius: var(--rsm); font-size: 14px; font-weight: 500;
+  padding: 11px 20px; border-radius: var(--rsm); font-size:12px; font-weight: 500;
   cursor: pointer; border: none; font-family: inherit; white-space: nowrap;
   transition: all var(--tr);
 }
@@ -209,11 +209,11 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .btn-p:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 .btn-s {
   background: var(--bg); color: var(--muted);
-  border: 1.5px solid var(--border); font-size: 14px; font-weight: 400; padding: 7px 14px;
+  border: 1.5px solid var(--border); font-size:12px; font-weight: 400; padding: 7px 14px;
 }
 .btn-s:hover { border-color: var(--primary); color: var(--primary); }
 
-.start-err { font-size: 14px; font-weight: 400; color: var(--danger); text-align: center; margin-bottom: 10px; display: none; }
+.start-err { font-size:12px; font-weight: 400; color: var(--danger); text-align: center; margin-bottom: 10px; display: none; }
 
 /* ── TOPBAR (shared) ── */
 .topbar {
@@ -227,19 +227,19 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .hdr-icons { display: flex; gap: 10px; margin-bottom: 8px; align-self: flex-end; }
 .tb-brand {
   display: block; width: 100%; text-align: center;
-  font-size: 16px; font-weight: 500; letter-spacing: -0.2px;
+  font-size:14px; font-weight: 500; letter-spacing: -0.2px;
   color: var(--primary); line-height: 1;
   position: static; transform: none; transition: none; animation: none;
 }
-.hdr-sub  { display: block; width: 100%; text-align: center; font-size: 14px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.hdr-sub  { display: block; width: 100%; text-align: center; font-size:12px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 .tb-right { display: none; }
 
 /* ── PROGRESS ── */
 .prog-row  { width: 100%; padding: 6px 0 0; }
 .prog-wrap { width: 100%; }
 .prog-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.prog-lbl  { font-size: 14px; font-weight: 400; color: var(--muted); }
-.prog-pct  { font-size: 14px; font-weight: 500; color: var(--primary); }
+.prog-lbl  { font-size:12px; font-weight: 400; color: var(--muted); }
+.prog-pct  { font-size:12px; font-weight: 500; color: var(--primary); }
 .prog-track { background: var(--border); border-radius: 20px; height: 3px; overflow: hidden; }
 .prog-fill {
   height: 100%; border-radius: 20px;
@@ -259,16 +259,16 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .msg.usr { align-self: flex-end; flex-direction: row-reverse; }
 .av {
   width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; font-size:12px;
 }
 .msg.ai  .av { background: var(--plight); color: var(--primary); }
 .msg.usr .av { background: var(--border); color: var(--muted); }
 .msg-inner { display: flex; flex-direction: column; gap: 3px; }
-.bbl { padding: 9px 13px; border-radius: 16px; line-height: 1.6; font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
-.msg.ai  .bbl { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 3px; font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
-.msg.usr .bbl { background: rgba(11,94,87,0.13); color: var(--text); border-top-right-radius: 3px; font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+.bbl { padding: 9px 13px; border-radius: 16px; line-height: 1.6; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+.msg.ai  .bbl { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 3px; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+.msg.usr .bbl { background: rgba(11,94,87,0.13); color: var(--text); border-top-right-radius: 3px; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
 [data-theme="dark"] .msg.usr .bbl { background: rgba(15,118,110,0.22); color: var(--text); }
-.msg-t { font-size: 14px; font-weight: 400; color: var(--muted); padding: 0 2px; }
+.msg-t { font-size:12px; font-weight: 400; color: var(--muted); padding: 0 2px; }
 .msg.usr .msg-t { text-align: right; }
 
 /* Typing */
@@ -276,7 +276,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .typing-av {
   width: 32px; height: 32px; border-radius: 50%;
   background: var(--plight); color: var(--primary);
-  display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size:12px; flex-shrink: 0;
 }
 .typing-bbl {
   background: var(--surface); border: 1px solid var(--border);
@@ -301,7 +301,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .chat-ta {
   width: 100%; padding: 10px 68px 10px 14px; border: 1.5px solid var(--border);
   border-radius: var(--rsm); background: var(--bg); color: var(--text);
-  font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; resize: none; outline: none; box-sizing: border-box;
+  font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; resize: none; outline: none; box-sizing: border-box;
   min-height: 44px; max-height: 140px; line-height: 1.5; transition: border-color var(--tr);
 }
 [dir="rtl"] .chat-ta { direction: rtl; text-align: right; padding-inline-start: 14px; padding-inline-end: 68px; }
@@ -438,20 +438,20 @@ a:focus-visible,
 .ra-quote { border-inline-start: 3px solid var(--primary); }
 [dir="rtl"] .ra-quote { border-radius: var(--rxs) 0 0 var(--rxs); }
 
-.res-ttl { font-size: 16px; font-weight: 500; letter-spacing: -0.2px; margin-bottom: 4px; }
-.res-sub { font-size: 14px; font-weight: 400; color: var(--muted); margin-bottom: 28px; }
+.res-ttl { font-size:14px; font-weight: 500; letter-spacing: -0.2px; margin-bottom: 4px; }
+.res-sub { font-size:12px; font-weight: 400; color: var(--muted); margin-bottom: 28px; }
 .grid2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
 .rc      { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; box-shadow: var(--sh); }
 .rc-hd   { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
-.rc-ico  { width: 34px; height: 34px; border-radius: var(--rxs); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-.rc-ttl  { font-size: 16px; font-weight: 500; }
+.rc-ico  { width: 34px; height: 34px; border-radius: var(--rxs); display: flex; align-items: center; justify-content: center; font-size:14px; flex-shrink: 0; }
+.rc-ttl  { font-size:14px; font-weight: 500; }
 .rc-items { display: flex; flex-direction: column; gap: 8px; }
-.ri      { display: flex; gap: 8px; font-size: 14px; font-weight: 400; line-height: 1.65; }
+.ri      { display: flex; gap: 8px; font-size:12px; font-weight: 400; line-height: 1.65; }
 .rbul    { width: 5px; height: 5px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
 .qblock  {
   border-inline-start: 3px solid var(--primary); padding: 11px 14px;
   background: var(--plight); border-radius: 0 var(--rxs) var(--rxs) 0;
-  font-size: 14px; font-weight: 400; font-style: italic; line-height: 1.6; margin-bottom: 9px;
+  font-size:12px; font-weight: 400; font-style: italic; line-height: 1.6; margin-bottom: 9px;
 }
 [dir="rtl"] .qblock { border-radius: var(--rxs) 0 0 var(--rxs); }
 .full {
@@ -459,7 +459,7 @@ a:focus-visible,
   border-radius: var(--r); padding: 22px; box-shadow: var(--sh);
   margin-bottom: 16px; grid-column: 1/-1;
 }
-.ins-txt { font-size: 14px; line-height: 1.75; }
+.ins-txt { font-size:12px; line-height: 1.75; }
 .res-nav-row { display: flex; justify-content: center; gap: 10px; margin-top: 32px; padding-bottom: 8px; }
 #res-content .rc { margin-bottom: 20px; }
 #res-content .grid2 { margin-bottom: 20px; }
@@ -480,8 +480,8 @@ a:focus-visible,
 .ov-card { background: var(--surface); border-radius: var(--r); padding: 36px 32px; text-align: center; max-width: 280px; width: 90%; box-shadow: var(--shlg); }
 .spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 18px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.ov-ttl { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
-.ov-sub { font-size: 14px; font-weight: 400; color: var(--muted); }
+.ov-ttl { font-size:14px; font-weight: 500; margin-bottom: 4px; }
+.ov-sub { font-size:12px; font-weight: 400; color: var(--muted); }
 
 /* ═══════════════════════════════════════════════════════════════
    CENTRALIZED RTL/LTR DIRECTION CONTROL
@@ -524,7 +524,7 @@ a:focus-visible,
 }
 .done-wrap { max-width: 420px; width: 100%; text-align: center; }
 .done-title {
-  font-size: 16px; font-weight: 500; letter-spacing: -0.1px;
+  font-size:14px; font-weight: 500; letter-spacing: -0.1px;
   color: var(--text); margin-bottom: 12px;
 }
 .done-body {
@@ -588,12 +588,12 @@ a:focus-visible,
   cursor: pointer; gap: 8px; transition: color var(--tr);
 }
 .ra-sec-hd:hover .ra-sec-ttl { color: var(--primary); }
-.ra-sec-ttl { font-size: 16px; font-weight: 500; color: var(--text); }
+.ra-sec-ttl { font-size:14px; font-weight: 500; color: var(--text); }
 .ra-sec-chev { color: var(--muted); display: flex; align-items: center; flex-shrink: 0; transition: color var(--tr); }
 .ra-sec-hd:hover .ra-sec-chev { color: var(--primary); }
 
 /* rc-ttl override for analysis cards */
-#res-inner .rc-ttl { font-size: 16px; font-weight: 500; }
+#res-inner .rc-ttl { font-size:14px; font-weight: 500; }
 
 /* Section detail overlay */
 .sec-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 180; align-items: center; justify-content: center; padding: 16px; }
@@ -612,32 +612,32 @@ a:focus-visible,
 [dir="rtl"] .ri > div { text-align: start; }
 
 /* Summary */
-.ra-sum-lbl { font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
-.ra-sum-txt  { font-size: 14px; font-weight: 400; line-height: 1.85; color: var(--text); }
+.ra-sum-lbl { font-size:12px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+.ra-sum-txt  { font-size:12px; font-weight: 400; line-height: 1.85; color: var(--text); }
 
 /* Bullet items (replaces numbered badges) */
-.ra-num-item { display: flex; gap: 11px; align-items: flex-start; font-size: 14px; line-height: 1.65; margin-bottom: 10px; }
+.ra-num-item { display: flex; gap: 11px; align-items: flex-start; font-size:12px; line-height: 1.65; margin-bottom: 10px; }
 .ra-num-item:last-child { margin-bottom: 0; }
 .ra-badge { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); flex-shrink: 0; margin-top: 8px; font-size: 0; }
 .ra-badge-b, .ra-badge-g { background: var(--primary); }
 
 /* Quotes */
 .ra-quotes { display: flex; flex-direction: column; gap: 10px; }
-.ra-quote { font-size: 14px; font-style: italic; line-height: 1.75; color: var(--text); border-inline-start: 3px solid var(--primary); padding: 11px 15px; background: var(--bg); border-radius: 0 var(--rxs) var(--rxs) 0; }
+.ra-quote { font-size:12px; font-style: italic; line-height: 1.75; color: var(--text); border-inline-start: 3px solid var(--primary); padding: 11px 15px; background: var(--bg); border-radius: 0 var(--rxs) var(--rxs) 0; }
 [dir="rtl"] .ra-quote { border-radius: var(--rxs) 0 0 var(--rxs); }
 
 /* Persona cards */
 .persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px; }
 .persona-card { border: 1px solid var(--border); border-radius: var(--r); padding: 18px; background: var(--bg); }
-.persona-name { font-size: 14px; font-weight: 500; color: var(--primary); margin-bottom: 10px; }
-.persona-row  { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 3px; }
+.persona-name { font-size:12px; font-weight: 500; color: var(--primary); margin-bottom: 10px; }
+.persona-row  { font-size:12px; color: var(--muted); line-height: 1.7; margin-bottom: 3px; }
 .persona-row span { color: var(--text); font-weight: 400; }
 
 /* Empathy map */
 .empathy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .empathy-cell { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rsm); padding: 15px 16px; }
-.empathy-lbl  { font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
-.empathy-items { font-size: 14px; line-height: 1.75; color: var(--text); }
+.empathy-lbl  { font-size:12px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+.empathy-items { font-size:12px; line-height: 1.75; color: var(--text); }
 
 /* Journey map */
 .journey-steps { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
@@ -646,25 +646,25 @@ a:focus-visible,
   padding: 16px 14px 14px; background: var(--bg);
   border: 1px solid var(--primary); border-radius: var(--rsm); text-align: center;
 }
-.journey-phase  { font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
-.journey-action { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
-.journey-emotion { font-size: 14px; font-weight: 400; color: var(--muted); line-height: 1.55; }
-.journey-sentiment { display: inline-block; margin-top: 9px; font-size: 14px; font-weight: 400; padding: 3px 10px; border-radius: 8px; }
+.journey-phase  { font-size:12px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
+.journey-action { font-size:12px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
+.journey-emotion { font-size:12px; font-weight: 400; color: var(--muted); line-height: 1.55; }
+.journey-sentiment { display: inline-block; margin-top: 9px; font-size:12px; font-weight: 400; padding: 3px 10px; border-radius: 8px; }
 .js-pos { background:#dcfce7; color:#15803d; } [data-theme="dark"] .js-pos { background:#14532d; color:#86efac; }
 .js-neu { background:#fef3c7; color:#b45309; } [data-theme="dark"] .js-neu { background:#451a03; color:#fde68a; }
 .js-neg { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .js-neg { background:#450a0a; color:#fca5a5; }
 
 /* Impact vs Effort */
-.ie-table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: inherit; }
+.ie-table { width: 100%; border-collapse: collapse; font-size:12px; font-family: inherit; }
 .ie-table th {
-  text-align: start; padding: 10px 14px; font-size: 14px; font-weight: 500;
+  text-align: start; padding: 10px 14px; font-size:12px; font-weight: 500;
   letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted);
   border-bottom: 1.5px solid var(--primary);
 }
 [dir="rtl"] .ie-table th { text-transform: none; letter-spacing: 0; }
 .ie-table td { padding: 12px 14px; border-bottom: 1px solid var(--primary); line-height: 1.55; vertical-align: middle; }
 .ie-table tr:last-child td { border-bottom: none; }
-.ie-chip { display: inline-block; font-size: 14px; font-weight: 400; padding: 3px 10px; border-radius: 8px; white-space: nowrap; font-family: inherit; }
+.ie-chip { display: inline-block; font-size:12px; font-weight: 400; padding: 3px 10px; border-radius: 8px; white-space: nowrap; font-family: inherit; }
 .ie-hi { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .ie-hi { background:#450a0a; color:#fca5a5; }
 .ie-md { background:#fef3c7; color:#b45309; } [data-theme="dark"] .ie-md { background:#451a03; color:#fde68a; }
 .ie-lo { background:#dcfce7; color:#15803d; } [data-theme="dark"] .ie-lo { background:#14532d; color:#86efac; }
@@ -674,12 +674,12 @@ a:focus-visible,
 .flow-row { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 20px; }
 .flow-row:last-child { padding-bottom: 0; }
 .flow-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-.flow-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; flex-shrink: 0; }
+.flow-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size:12px; font-weight: 500; flex-shrink: 0; }
 .flow-line { width: 2px; flex: 1; background: var(--border); min-height: 18px; margin-top: 4px; }
 .flow-row:last-child .flow-line { display: none; }
 .flow-content { padding-top: 5px; }
-.flow-step-ttl  { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
-.flow-step-desc { font-size: 14px; font-weight: 400; color: var(--muted); line-height: 1.6; }
+.flow-step-ttl  { font-size:12px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.flow-step-desc { font-size:12px; font-weight: 400; color: var(--muted); line-height: 1.6; }
 
 /* ── INTERVIEW HISTORY / RESEARCH NOTES ── */
 /* Styles migrated to Tailwind utility classes in JS render functions */
@@ -699,13 +699,13 @@ a:focus-visible,
   margin-inline: auto;
 }
 .prestart-title {
-  font-size: 16px; font-weight: 500; color: var(--text);
+  font-size:14px; font-weight: 500; color: var(--text);
   margin-bottom: 6px; line-height: 1.45; text-align: center;
   width: 100%;
 }
 [dir="rtl"] .prestart-title { line-height: 1.7; }
 .prestart-sub {
-  font-size: 14px; color: var(--muted); margin-bottom: 28px;
+  font-size:12px; color: var(--muted); margin-bottom: 28px;
   text-align: center; width: 100%; line-height: 1.6;
 }
 [dir="rtl"] .prestart-sub { line-height: 1.8; }
@@ -724,14 +724,14 @@ a:focus-visible,
   flex-shrink: 0;
 }
 .prestart-row-txt {
-  font-size: 14px; color: var(--text); line-height: 1.6;
+  font-size:12px; color: var(--text); line-height: 1.6;
   padding-top: 8px;
 }
-.prestart-bul { color: var(--primary); font-size: 16px; line-height: 1; padding-top: 6px; flex-shrink: 0; width: 38px; text-align: center; }
+.prestart-bul { color: var(--primary); font-size:14px; line-height: 1; padding-top: 6px; flex-shrink: 0; width: 38px; text-align: center; }
 [dir="rtl"] .prestart-row-txt { line-height: 1.8; }
 .prestart-back {
   display: block; text-align: center; margin-top: 14px;
-  font-size: 14px; font-weight: 400; color: var(--muted); cursor: pointer;
+  font-size:12px; font-weight: 400; color: var(--muted); cursor: pointer;
   transition: color var(--tr); background: none; border: none;
   font-family: inherit; width: 100%; padding: 4px 0;
 }
@@ -753,11 +753,11 @@ a:focus-visible,
 <!-- RESEARCHER PASSCODE MODAL -->
 <div class="ov" id="researcher-ov" onclick="if(event.target===this)closeResearcherModal()">
   <div class="ov-card" style="max-width:300px;text-align:left;">
-    <div style="font-size:16px;font-weight:500;margin-bottom:16px;color:var(--text);">Access</div>
+    <div style="font-size:14px;font-weight:500;margin-bottom:16px;color:var(--text);">Access</div>
     <input type="password" class="inp" id="researcher-pin" placeholder="Passcode"
       autocomplete="off" style="margin-bottom:6px;"
       onkeydown="if(event.key==='Enter')submitResearcherPin()">
-    <div id="researcher-err" style="display:none;font-size:14px;font-weight:400;color:var(--danger);margin-bottom:8px;">Incorrect passcode</div>
+    <div id="researcher-err" style="display:none;font-size:12px;font-weight:400;color:var(--danger);margin-bottom:8px;">Incorrect passcode</div>
     <div style="display:flex;gap:8px;margin-top:10px;">
       <button class="btn btn-s" style="flex:1;" onclick="closeResearcherModal()">Cancel</button>
       <button class="btn btn-p" style="flex:1;padding:10px 0;" onclick="submitResearcherPin()">Enter</button>
@@ -854,8 +854,8 @@ a:focus-visible,
       <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API</span></div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span id="api-status-dot" style="width:8px;height:8px;border-radius:50%;background:#16a34a;flex-shrink:0;"></span>
-        <span id="api-status-lbl" style="font-size:14px;font-weight:500;color:var(--text);">Connected</span>
-        <span id="api-status-sub" style="font-size:14px;font-weight:400;color:var(--muted);margin-inline-start:auto;">Powered by OpenAI GPT-4o</span>
+        <span id="api-status-lbl" style="font-size:12px;font-weight:500;color:var(--text);">Connected</span>
+        <span id="api-status-sub" style="font-size:12px;font-weight:400;color:var(--muted);margin-inline-start:auto;">Powered by OpenAI GPT-4o</span>
       </div>
     </div>
 
@@ -947,7 +947,7 @@ a:focus-visible,
         <!-- Avatar -->
         <div class="flex flex-col items-center gap-2 px-4 pt-5 pb-3 shrink-0">
           <div class="relative">
-            <div class="w-[56px] h-[56px] rounded-full bg-plight flex items-center justify-center text-[16px] font-bold text-primary" id="spp-avatar">U</div>
+            <div class="w-[56px] h-[56px] rounded-full bg-plight flex items-center justify-center text-[14px] font-bold text-primary" id="spp-avatar">U</div>
             <button onclick="editAvatarLetter()" class="absolute bottom-0 end-0 w-[20px] h-[20px] rounded-full bg-primary flex items-center justify-center border-2 border-surface" title="Edit">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
@@ -1037,7 +1037,7 @@ a:focus-visible,
       <div class="px-4 pt-4 pb-2 shrink-0">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-[16px] font-bold text-primary" id="sb-brand-name-el">Skoon</div>
+            <div class="text-[14px] font-bold text-primary" id="sb-brand-name-el">Skoon</div>
             <div class="text-[12px] text-muted font-medium" id="sb-tag">Research Dashboard</div>
           </div>
           <!-- Small lang + theme icons -->
@@ -1101,35 +1101,35 @@ a:focus-visible,
 
         <!-- TAB: OVERVIEW -->
         <div class="db-pane active" id="db-pane-overview">
-          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:16px;font-weight:500;" id="db-ttl-overview">Dashboard</h1>
-          <p class="text-muted mb-4 leading-[1.6]" style="font-size:14px;font-weight:400;" id="db-sub-overview">Your research at a glance</p>
+          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:14px;font-weight:500;" id="db-ttl-overview">Dashboard</h1>
+          <p class="text-muted mb-4 leading-[1.6]" style="font-size:12px;font-weight:400;" id="db-sub-overview">Your research at a glance</p>
           <div class="grid grid-cols-4 gap-2.5 mb-4" id="db-stats"></div>
           <div id="db-latest"></div>
         </div>
 
         <!-- TAB: INTERVIEWS -->
         <div class="db-pane" id="db-pane-interviews">
-          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:16px;font-weight:500;" id="db-ttl-interviews">Interviews</h1>
-          <p class="text-muted mb-4 leading-[1.6]" style="font-size:14px;font-weight:400;" id="db-sub-interviews">All recorded sessions</p>
+          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:14px;font-weight:500;" id="db-ttl-interviews">Interviews</h1>
+          <p class="text-muted mb-4 leading-[1.6]" style="font-size:12px;font-weight:400;" id="db-sub-interviews">All recorded sessions</p>
           <div id="db-iv-list"></div>
         </div>
 
         <!-- TAB: ANALYSIS -->
         <div class="db-pane" id="db-pane-analysis">
-          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:16px;font-weight:500;" id="db-ttl-analysis">Analysis</h1>
-          <p class="text-muted mb-4 leading-[1.6]" style="font-size:14px;font-weight:400;" id="db-sub-analysis">AI-generated insights per session</p>
+          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:14px;font-weight:500;" id="db-ttl-analysis">Analysis</h1>
+          <p class="text-muted mb-4 leading-[1.6]" style="font-size:12px;font-weight:400;" id="db-sub-analysis">AI-generated insights per session</p>
           <div id="res-content"></div>
         </div>
 
         <!-- TAB: INSIGHTS -->
         <div class="db-pane" id="db-pane-insights">
-          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:16px;font-weight:500;" id="db-ttl-insights">Cross Analysis</h1>
-          <p class="text-muted mb-4 leading-[1.6]" style="font-size:14px;font-weight:400;" id="db-sub-insights">Select interviews to analyze together</p>
+          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:14px;font-weight:500;" id="db-ttl-insights">Cross Analysis</h1>
+          <p class="text-muted mb-4 leading-[1.6]" style="font-size:12px;font-weight:400;" id="db-sub-insights">Select interviews to analyze together</p>
           <div class="flex flex-col gap-2 px-4 py-3.5 bg-surface border border-[var(--border)] rounded mb-4">
             <button class="btn btn-p w-full" id="ca-all-btn" onclick="runAllAnalysis()" style="display:none;"></button>
           </div>
           <div class="flex flex-col gap-2 px-4 py-3 bg-surface border border-[var(--border)] rounded mb-5" style="opacity:0.85;">
-            <div class="text-muted" style="font-size:14px;font-weight:400;" id="ca-count">Select interviews below to run cross analysis</div>
+            <div class="text-muted" style="font-size:12px;font-weight:400;" id="ca-count">Select interviews below to run cross analysis</div>
             <button class="btn btn-s w-full" id="ca-run-btn" onclick="runCrossAnalysis()" disabled>Analyze Selected</button>
           </div>
           <div id="db-ca-list"></div>
@@ -1157,7 +1157,7 @@ a:focus-visible,
       <button onclick="closeSecDetail()" class="ic-btn shrink-0" style="width:28px;height:28px;border-radius:var(--rxs);" title="Back">
         <svg class="rtl-flip" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <span style="font-size:14px;font-weight:500;color:var(--text);flex:1;" id="sec-det-ttl"></span>
+      <span style="font-size:12px;font-weight:500;color:var(--text);flex:1;" id="sec-det-ttl"></span>
     </div>
     <div class="sec-panel-body" id="sec-det-body"></div>
   </div>
@@ -2297,11 +2297,11 @@ function renderSbRecent() {
   if (!el) return;
   const all = getAllInterviews().slice().reverse().slice(0, 5);
   const fmtDate = iso => new Date(iso).toLocaleDateString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { month:'short', day:'numeric' });
-  const lbl = `<span class="block text-muted px-2 pt-2 pb-1" style="font-size:14px;font-weight:400;">${t('dbRecent')}</span>`;
+  const lbl = `<span class="block text-muted px-2 pt-2 pb-1" style="font-size:12px;font-weight:400;">${t('dbRecent')}</span>`;
   if (!all.length) { el.innerHTML = lbl; return; }
   el.innerHTML = lbl + all.map(iv => `
     <div class="sb-rc-item px-2.5 py-1.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
-      <div class="text-app-text leading-tight" style="font-size:14px;font-weight:500;">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
+      <div class="text-app-text leading-tight" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
     </div>`).join('');
 }
 
@@ -2313,16 +2313,16 @@ function renderOverview() {
   const statsEl = document.getElementById('db-stats');
   const sc = 'iv-card-row bg-surface border border-[var(--border)] rounded p-4 text-center flex flex-col items-center justify-center gap-0.5';
   if (statsEl) statsEl.innerHTML = `
-    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:16px;font-weight:500;">${all.length}</div><div class="text-muted" style="font-size:14px;font-weight:400;">${t('dbTotal')}</div></div>
-    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:16px;font-weight:500;">${done}</div><div class="text-muted" style="font-size:14px;font-weight:400;">${t('dbCompleted')}</div></div>
-    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:16px;font-weight:500;">${inc}</div><div class="text-muted" style="font-size:14px;font-weight:400;">${t('dbIncomplete')}</div></div>
-    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:16px;font-weight:500;">${rate}%</div><div class="text-muted" style="font-size:14px;font-weight:400;">${t('dbRate')}</div></div>`;
+    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:14px;font-weight:500;">${all.length}</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbTotal')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:14px;font-weight:500;">${done}</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbCompleted')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:14px;font-weight:500;">${inc}</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbIncomplete')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:14px;font-weight:500;">${rate}%</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbRate')}</div></div>`;
 
   const fmtDT  = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
   const latest = all.slice().reverse().slice(0, 5);
   const latestEl = document.getElementById('db-latest');
   if (latestEl) latestEl.innerHTML = all.length ? `
-    <div class="text-app-text mb-2" style="font-size:16px;font-weight:500;">${t('dbLatest')}</div>
+    <div class="text-app-text mb-2" style="font-size:14px;font-weight:500;">${t('dbLatest')}</div>
     <div class="flex flex-col gap-1.5">${latest.map(iv => {
       const num   = iv.num || getInterviewNumber(iv.id);
       const r     = iv.lastQuestionSeen || 0;
@@ -2330,8 +2330,8 @@ function renderOverview() {
       const badge = ivStatusBadge(r, tot);
       return `<div class="iv-card-row flex items-center gap-2 bg-surface border border-[var(--border)] rounded px-3 py-2.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')" onfocus="this.classList.add('active')" onblur="this.classList.remove('active')">
         <div class="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
-          <span class="text-app-text" style="font-size:14px;font-weight:500;">${t('dbInterviewLabel')} ${num}</span>
-          <span class="text-muted" style="font-size:14px;font-weight:400;">${fmtDT(iv.date)}</span>
+          <span class="text-app-text" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${num}</span>
+          <span class="text-muted" style="font-size:12px;font-weight:400;">${fmtDT(iv.date)}</span>
         </div>
         ${badge}
       </div>`;
@@ -2345,7 +2345,7 @@ function renderInterviewsTab() {
   if (!el) return;
   el.innerHTML = all.length
     ? `<div class="flex flex-col">${all.map(iv => ivRowHtml(iv, fmt, true)).join('')}</div>`
-    : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoData')}</div>`;
+    : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoData')}</div>`;
 }
 
 function ivStatusBadge(reached, total) {
@@ -2373,26 +2373,26 @@ function ivRowHtml(iv, fmt, expandable) {
   const quotes   = iv.analysis && Array.isArray(iv.analysis.quotes)   ? iv.analysis.quotes.filter(Boolean)   : [];
   const uxIssues = iv.analysis && Array.isArray(iv.analysis.patterns) ? iv.analysis.patterns.filter(Boolean) : [];
 
-  const notesHtml    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:14px;font-weight:400;">${esc(qa.a)}</div>`).join('') : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('rnNoNotes')}</div>`;
-  const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div class="text-app-text leading-relaxed" style="font-size:14px;font-weight:400;">${esc(iv.analysis.summary)}</div>` : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
-  const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:14px;font-weight:400;">${esc(i)}</div>`).join('') : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
-  const quotesHtml   = quotes.length    ? quotes.map(q => `<div class="iv-quote text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary" style="font-size:14px;font-weight:400;">"${esc(q)}"</div>`).join('') : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('rnNoQuotes')}</div>`;
-  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:14px;font-weight:400;">${esc(u)}</div>`).join('')  : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
+  const notesHtml    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(qa.a)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoNotes')}</div>`;
+  const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div class="text-app-text leading-relaxed" style="font-size:12px;font-weight:400;">${esc(iv.analysis.summary)}</div>` : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
+  const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(i)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
+  const quotesHtml   = quotes.length    ? quotes.map(q => `<div class="iv-quote text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary" style="font-size:12px;font-weight:400;">"${esc(q)}"</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoQuotes')}</div>`;
+  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(u)}</div>`).join('')  : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
 
   const bodyHtml = expandable ? `
     <div class="border-t border-[var(--border)]" id="iv-body-${iv.id}" style="display:none;">
       <div class="flex border-b border-[var(--border)] bg-app-bg" id="iv-tabs-${iv.id}">
-        <button class="iv-tab active px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','notes')">${t('dbNotes')}</button>
-        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','summary')">${t('dbSummary')}</button>
-        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','insights')">${t('dbInsightsTab')}</button>
-        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','quotes')">${t('dbQuotes')}</button>
-        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','ux')">${t('dbUxIssues')}</button>
+        <button class="iv-tab active px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:12px;font-weight:400;" onclick="ivTab(this,'${iv.id}','notes')">${t('dbNotes')}</button>
+        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:12px;font-weight:400;" onclick="ivTab(this,'${iv.id}','summary')">${t('dbSummary')}</button>
+        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:12px;font-weight:400;" onclick="ivTab(this,'${iv.id}','insights')">${t('dbInsightsTab')}</button>
+        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:12px;font-weight:400;" onclick="ivTab(this,'${iv.id}','quotes')">${t('dbQuotes')}</button>
+        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:12px;font-weight:400;" onclick="ivTab(this,'${iv.id}','ux')">${t('dbUxIssues')}</button>
       </div>
-      <div class="iv-tab-pane active p-4" id="ivp-${iv.id}-notes"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbNotes')}</div>${notesHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-summary"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbSummary')}</div>${summaryHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-insights"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbInsightsTab')}</div>${insightsHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-quotes"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbQuotes')}</div>${quotesHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-ux"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbUxIssues')}</div>${uxHtml}</div>
+      <div class="iv-tab-pane active p-4" id="ivp-${iv.id}-notes"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbNotes')}</div>${notesHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-summary"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbSummary')}</div>${summaryHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-insights"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbInsightsTab')}</div>${insightsHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-quotes"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbQuotes')}</div>${quotesHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-ux"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbUxIssues')}</div>${uxHtml}</div>
     </div>` : '';
 
   return `<div class="bg-surface border border-[var(--border)] rounded overflow-hidden mb-3" id="ivc-${iv.id}">
@@ -2401,8 +2401,8 @@ function ivRowHtml(iv, fmt, expandable) {
       <div class="flex-1 min-w-0">
         <!-- Title row: name + date/time on one side, badge on the other -->
         <div class="flex items-center gap-2">
-          <span class="text-app-text shrink-0" style="font-size:14px;font-weight:500;">${t('dbInterviewLabel')} ${num}</span>
-          <span class="text-muted truncate" style="font-size:14px;font-weight:400;">${fmt(iv.date)}</span>
+          <span class="text-app-text shrink-0" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${num}</span>
+          <span class="text-muted truncate" style="font-size:12px;font-weight:400;">${fmt(iv.date)}</span>
           <span class="ms-auto shrink-0">${badge}</span>
         </div>
         ${total > 0 ? `
@@ -2410,7 +2410,7 @@ function ivRowHtml(iv, fmt, expandable) {
           <div class="flex-1 h-[3px] bg-[var(--border)] rounded-full overflow-hidden">
             <div class="h-full bg-primary rounded-full opacity-75" style="width:${pct}%"></div>
           </div>
-          <span class="text-muted whitespace-nowrap shrink-0" style="font-size:14px;font-weight:400;min-width:30px;text-align:end;">${pct}%</span>
+          <span class="text-muted whitespace-nowrap shrink-0" style="font-size:12px;font-weight:400;min-width:30px;text-align:end;">${pct}%</span>
         </div>` : ''}
       </div>
     </div>
@@ -2442,7 +2442,7 @@ function renderCrossTab() {
   if (!el) return;
   el.innerHTML = all.length
     ? `<div class="flex flex-col">${all.map(iv => ivRowHtml(iv, fmt, true)).join('')}</div>`
-    : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoData')}</div>`;
+    : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoData')}</div>`;
   // Add "Analyze All" shortcut button if 2+ completed
   const allBtn = document.getElementById('ca-all-btn');
   if (allBtn) allBtn.style.display = all.length >= 2 ? '' : 'none';
@@ -2477,7 +2477,7 @@ async function runCrossAnalysis() {
 async function _doCrossAnalysis(selected) {
 
   const outEl = document.getElementById('db-ca-out');
-  if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:14px;font-weight:400;">${t('dbCrossRunning')}</div>`;
+  if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:12px;font-weight:400;">${t('dbCrossRunning')}</div>`;
 
   const convo = selected.map((iv, i) => {
     const qa = (iv.answers || []).map(a => `Q: ${a.q}\nA: ${a.a}`).join('\n');
@@ -2499,7 +2499,7 @@ async function _doCrossAnalysis(selected) {
     renderCrossOutput(data);
   } catch(e) {
     hideOv();
-    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:14px;font-weight:400;">${t('errAnalysis')}</div>`;
+    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:12px;font-weight:400;">${t('errAnalysis')}</div>`;
   }
 }
 
@@ -2507,7 +2507,7 @@ function renderCrossOutput(d) {
   const el = document.getElementById('db-ca-out');
   if (!el) return;
   if (!d || Object.keys(d).length === 0) {
-    el.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:14px;font-weight:400;">${t('dbCrossEmpty')}</div>`;
+    el.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:12px;font-weight:400;">${t('dbCrossEmpty')}</div>`;
     return;
   }
   // Reuse renderAnalysis rendering, targeting db-ca-out
@@ -2638,11 +2638,11 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
     const pct     = total > 0 ? Math.round((reached / total) * 100) : 0;
     if (total > 0) {
       html += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);">
-        <span style="font-size:14px;font-weight:400;color:var(--muted);white-space:nowrap;">${TR[S.lang].progLbl(reached, total)}</span>
+        <span style="font-size:12px;font-weight:400;color:var(--muted);white-space:nowrap;">${TR[S.lang].progLbl(reached, total)}</span>
         <div style="flex:1;height:3px;background:var(--border);border-radius:99px;overflow:hidden;">
           <div style="width:${pct}%;height:100%;background:var(--primary);border-radius:99px;"></div>
         </div>
-        <span style="font-size:14px;font-weight:500;color:var(--primary);white-space:nowrap;min-width:34px;text-align:end;">${pct}%</span>
+        <span style="font-size:12px;font-weight:500;color:var(--primary);white-space:nowrap;min-width:34px;text-align:end;">${pct}%</span>
       </div>`;
     }
   }
@@ -2652,19 +2652,19 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
     const _totalAns = _allIvs.reduce((sum, x) => sum + (Array.isArray(x.answers) ? x.answers.length : 0), 0);
     html += `<div style="display:flex;gap:12px;margin-bottom:16px;">
       <div style="flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-align:center;">
-        <div style="font-size:16px;font-weight:500;color:var(--text);">${_allIvs.length}</div>
-        <div style="font-size:14px;font-weight:400;color:var(--muted);">${t('anTotalIvs')}</div>
+        <div style="font-size:14px;font-weight:500;color:var(--text);">${_allIvs.length}</div>
+        <div style="font-size:12px;font-weight:400;color:var(--muted);">${t('anTotalIvs')}</div>
       </div>
       <div style="flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-align:center;">
-        <div style="font-size:16px;font-weight:500;color:var(--text);">${_totalAns}</div>
-        <div style="font-size:14px;font-weight:400;color:var(--muted);">${t('anTotalAns')}</div>
+        <div style="font-size:14px;font-weight:500;color:var(--text);">${_totalAns}</div>
+        <div style="font-size:12px;font-weight:400;color:var(--muted);">${t('anTotalAns')}</div>
       </div>
     </div>`;
   }
   // Re-analyze button — shown when viewing a specific interview that has answers
   if (S.isResearcher && hasAnswers && ivId) {
     html += `<div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
-      <button class="btn btn-s" onclick="analyzeStoredInterview('${ivId}')" style="font-size:14px;font-weight:500;padding:5px 14px;gap:5px;display:inline-flex;align-items:center;" title="${t('reanalyzeTip')}">
+      <button class="btn btn-s" onclick="analyzeStoredInterview('${ivId}')" style="font-size:12px;font-weight:500;padding:5px 14px;gap:5px;display:inline-flex;align-items:center;" title="${t('reanalyzeTip')}">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         ${t('reanalyze')}
       </button>
@@ -2681,10 +2681,10 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
         <div>
-          <div style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px;">${t('noAnalysisYet')}</div>
-          <div style="font-size:14px;font-weight:400;color:var(--muted);">${t('noAnalysisDesc')}</div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px;">${t('noAnalysisYet')}</div>
+          <div style="font-size:12px;font-weight:400;color:var(--muted);">${t('noAnalysisDesc')}</div>
         </div>
-        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:14px;font-weight:500;padding:9px 22px;">${t('analyzeNow')}</button>` : ''}
+        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:12px;font-weight:500;padding:9px 22px;">${t('analyzeNow')}</button>` : ''}
       </div>`;
     return;
   }
@@ -2729,7 +2729,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
 
   // ── RESEARCHER-ONLY SECTIONS ─────────────────────────────
   if (S.isResearcher) {
-    const ph = `<span style="color:var(--muted);font-size:14px;font-weight:400;font-style:italic;">—</span>`;
+    const ph = `<span style="color:var(--muted);font-size:12px;font-weight:400;font-style:italic;">—</span>`;
 
     // 6 — Personas
     const personas = (d.personas || []).filter(Boolean);
@@ -2749,7 +2749,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
     const empBody = `<div class="empathy-grid">${['thinks','feels','says','does'].map(k => `
       <div class="empathy-cell">
         <div class="empathy-lbl">${empLabel[k]}</div>
-        <div class="empathy-items">${(emp[k]||[]).length ? emp[k].map(x=>`• ${esc(x)}`).join('<br>') : `<span style="color:var(--muted);font-size:14px;font-weight:400;font-style:italic;">—</span>`}</div>
+        <div class="empathy-items">${(emp[k]||[]).length ? emp[k].map(x=>`• ${esc(x)}`).join('<br>') : `<span style="color:var(--muted);font-size:12px;font-weight:400;font-style:italic;">—</span>`}</div>
       </div>`).join('')}</div>`;
     html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('empathy'), 'empathy', empBody)}${empBody}</div>`;
 
