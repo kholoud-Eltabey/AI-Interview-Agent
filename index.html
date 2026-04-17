@@ -894,8 +894,9 @@ a:focus-visible,
     </div>
   </div>
 
-  <div class="chat-scroll">
+  <div class="chat-scroll" id="chat-scroll">
     <div class="msgs" id="msgs"></div>
+    <div id="chat-btm"></div>
   </div>
 
   <div class="input-bar">
@@ -1659,10 +1660,10 @@ function showTyping() {
 }
 function rmTyping()  { const e = document.getElementById('typing-ind'); if (e) e.remove(); scrollBtm(); }
 function scrollBtm() {
-  // rAF → setTimeout(0) guarantees execution after browser has painted new content
+  // rAF + setTimeout ensures DOM is painted before we measure scrollHeight
   requestAnimationFrame(() => setTimeout(() => {
-    const anchor = document.getElementById('chat-btm');
-    if (anchor) anchor.scrollIntoView({ behavior: 'instant', block: 'end' });
+    const c = document.getElementById('chat-scroll');
+    if (c) c.scrollTop = c.scrollHeight;
   }, 0));
 }
 
