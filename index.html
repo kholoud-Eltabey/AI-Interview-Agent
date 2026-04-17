@@ -551,31 +551,31 @@ a:focus-visible,
 }
 
 /* ── ADVANCED ANALYSIS ── */
-#res-inner, #res-inner * { font-family: inherit; }
+#res-inner, #res-inner * { font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
 
-/* Analysis weight hierarchy */
+/* Titles: 16px medium */
 .ra-sec-ttl,
-#res-inner .rc-ttl,
-#res-inner .res-ttl,
-.persona-name,
-.journey-phase,
-.empathy-lbl,
-.ra-sum-lbl,
-.ie-table th          { font-weight: 500; }
+#res-inner .rc-ttl    { font-size: 16px; font-weight: 500; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
 
-.ra-num-item > div,
-.journey-action,
-.flow-step-ttl,
-.persona-row span,
-.ie-table td strong   { font-weight: 600; }
-
+/* Body / description: 14px regular */
 .ra-sum-txt,
 .ra-quote,
+.ra-num-item,
 .empathy-items,
+.journey-action,
 .journey-emotion,
-.flow-step-desc,
+.persona-name,
 .persona-row,
-.ie-table td          { font-weight: 400; }
+.flow-step-ttl,
+.flow-step-desc,
+.ie-table td          { font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+
+/* Exceptions — keep bold/medium where it's needed for hierarchy */
+.ra-num-item > div,
+.persona-row span,
+.ie-table td strong   { font-weight: 600; }
+.flow-step-ttl        { font-weight: 500; }
+.persona-name         { font-weight: 500; color: var(--primary); }
 
 .card-lbl, .rc-hd .rc-ttl,
 .prog-lbl, .hdr-sub,
@@ -629,8 +629,8 @@ a:focus-visible,
 /* Persona cards */
 .persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px; }
 .persona-card { border: 1px solid var(--border); border-radius: var(--r); padding: 18px; background: var(--bg); }
-.persona-name { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
-.persona-row  { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 3px; }
+.persona-name { font-size: 14px; font-weight: 500; color: var(--primary); margin-bottom: 10px; }
+.persona-row  { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 3px; }
 .persona-row span { color: var(--text); font-weight: 600; }
 
 /* Empathy map */
@@ -647,8 +647,8 @@ a:focus-visible,
   border: 1px solid var(--primary); border-radius: var(--rsm); text-align: center;
 }
 .journey-phase  { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
-.journey-action { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
-.journey-emotion { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.journey-action { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
+.journey-emotion { font-size: 14px; font-weight: 400; color: var(--muted); line-height: 1.55; }
 .journey-sentiment { display: inline-block; margin-top: 9px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 8px; }
 .js-pos { background:#dcfce7; color:#15803d; } [data-theme="dark"] .js-pos { background:#14532d; color:#86efac; }
 .js-neu { background:#fef3c7; color:#b45309; } [data-theme="dark"] .js-neu { background:#451a03; color:#fde68a; }
@@ -678,8 +678,8 @@ a:focus-visible,
 .flow-line { width: 2px; flex: 1; background: var(--border); min-height: 18px; margin-top: 4px; }
 .flow-row:last-child .flow-line { display: none; }
 .flow-content { padding-top: 5px; }
-.flow-step-ttl  { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-.flow-step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.flow-step-ttl  { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.flow-step-desc { font-size: 14px; font-weight: 400; color: var(--muted); line-height: 1.6; }
 
 /* ── INTERVIEW HISTORY / RESEARCH NOTES ── */
 /* Styles migrated to Tailwind utility classes in JS render functions */
