@@ -1634,16 +1634,6 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
   return data.choices[0].message.content.trim();
 }
 
-// ─── LANGUAGE DETECTION ────────────────────────────────────
-// Detect dominant language from participant answers — NOT from UI lang.
-// Arabic interview → Arabic analysis. English interview → English analysis.
-function detectInterviewLang(answers) {
-  const text = (answers || []).map(a => a.a || '').join(' ');
-  const arChars = (text.match(/[\u0600-\u06FF]/g) || []).length;
-  const enChars = (text.match(/[a-zA-Z]/g) || []).length;
-  return arChars >= enChars ? 'ar' : 'en';
-}
-
 // ─── ANALYSIS TRANSLATION HELPER ──────────────────────────
 // Always analyze in English (GPT's strongest language), then translate
 // to Gulf Arabic as a separate focused call when the interview is Arabic.
@@ -1973,7 +1963,7 @@ function saveInterview(analysis) {
     num:              all.length + 1,   // sequential number, 1-based
     date:             new Date().toISOString(),
     lang:             S.lang,
-    contentLang:      detectInterviewLang(extractQA().map(qa => ({a: qa.a}))), // detected from answers
+
     completed:        S.mainAsked >= S.numQ,
     goal:             S.goal || '',
     audience:         S.audience || '',
@@ -2028,9 +2018,8 @@ async function analyzeStoredInterview(id) {
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch(_) { data = {}; }
-    // Step 2: Translate to Gulf Arabic if interview is Arabic (detected from answers)
-    const ivLang = detectInterviewLang(iv.answers);
-    if (ivLang === 'ar' && data && Object.keys(data).length > 0) {
+    // Step 2: Translate to Gulf Arabic if UI language is Arabic
+    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
       data = await _translateToArabic(data);
     }
 
@@ -2508,10 +2497,8 @@ async function _doCrossAnalysis(selected) {
     hideOv();
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch(_) { data = {}; }
-    // Step 2: Detect dominant language across all selected interviews, translate if Arabic
-    const allAnswers = selected.flatMap(iv => (iv.answers || []).map(a => ({a: a.a || ''})));
-    const crossLang = detectInterviewLang(allAnswers);
-    if (crossLang === 'ar' && data && Object.keys(data).length > 0) {
+    // Step 2: Translate to Gulf Arabic if UI language is Arabic
+    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
       showOv(t('olAnalyze'), t('olSub'));
       data = await _translateToArabic(data);
       hideOv();
@@ -2579,9 +2566,8 @@ async function analyze() {
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch (_) { data = { summary: raw, insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: {}, journey: [], impactEffort: [], userFlow: [] }; }
 
-    // Step 2: Translate to Gulf Arabic if interview language is Arabic (detected from answers)
-    const ivLang2 = detectInterviewLang(extractQA().map(qa => ({a: qa.a})));
-    if (ivLang2 === 'ar' && data && Object.keys(data).length > 0) {
+    // Step 2: Translate to Gulf Arabic if UI language is Arabic
+    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
       data = await _translateToArabic(data);
     }
 
