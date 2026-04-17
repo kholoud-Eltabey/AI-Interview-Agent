@@ -352,7 +352,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   border-color: #0B5E57 !important;
 }
 .sb-nav-item.active {
-  background: rgba(11, 94, 87, 0.1) !important; color: #0B5E57 !important; font-weight: 600;
+  background: rgba(11, 94, 87, 0.1) !important; color: #0B5E57 !important; font-weight: 500;
   border-color: transparent !important;
 }
 [data-theme="dark"] .sb-nav-item:hover,
@@ -367,11 +367,11 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 }
 
 /* IV tab active */
-.iv-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.iv-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
 .iv-tab:focus-visible { outline: none; color: var(--primary); }
 
 /* DB tab active */
-.db-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.db-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
 .db-tab:focus-visible { outline: none; color: var(--primary); }
 
 /* Focus: any interactive element → very light primary bg + primary outline */
@@ -405,7 +405,7 @@ a:focus-visible,
 .sb-rc-item { border-radius: var(--rxs); cursor: pointer; transition: background var(--tr), color var(--tr), border-color var(--tr); border: 1.5px solid transparent; }
 .sb-rc-item:hover,
 .sb-rc-item:focus-visible { outline: none; background: #fff; color: #0B5E57; border-color: #0B5E57; }
-.sb-rc-item.active { background: rgba(11, 94, 87, 0.1); color: #0B5E57; font-weight: 600; border-color: transparent; }
+.sb-rc-item.active { background: rgba(11, 94, 87, 0.1); color: #0B5E57; font-weight: 500; border-color: transparent; }
 [data-theme="dark"] .sb-rc-item:hover,
 [data-theme="dark"] .sb-rc-item:focus-visible { background: var(--surface); color: var(--primary); border-color: var(--primary); }
 [data-theme="dark"] .sb-rc-item.active { background: rgba(15, 118, 110, 0.12); color: var(--primary); border-color: transparent; }
@@ -574,7 +574,7 @@ a:focus-visible,
 /* Exceptions — deliberate weight bumps */
 .ra-num-item > div,
 .persona-row span,
-.ie-table td strong   { font-weight: 600; }
+.ie-table td strong   { font-weight: 500; }
 .flow-step-ttl        { font-weight: 500; }
 .persona-name         { font-weight: 500; color: var(--primary); }
 
@@ -631,7 +631,7 @@ a:focus-visible,
 .persona-card { border: 1px solid var(--border); border-radius: var(--r); padding: 18px; background: var(--bg); }
 .persona-name { font-size: 14px; font-weight: 500; color: var(--primary); margin-bottom: 10px; }
 .persona-row  { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 3px; }
-.persona-row span { color: var(--text); font-weight: 600; }
+.persona-row span { color: var(--text); font-weight: 400; }
 
 /* Empathy map */
 .empathy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -1101,35 +1101,35 @@ a:focus-visible,
 
         <!-- TAB: OVERVIEW -->
         <div class="db-pane active" id="db-pane-overview">
-          <h1 class="text-[20px] font-semibold text-app-text mb-0.5 leading-[1.6]" id="db-ttl-overview">Dashboard</h1>
-          <p class="text-[14px] text-muted mb-4 leading-[1.6]" id="db-sub-overview">Your research at a glance</p>
+          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:16px;font-weight:500;" id="db-ttl-overview">Dashboard</h1>
+          <p class="text-muted mb-4 leading-[1.6]" style="font-size:14px;font-weight:400;" id="db-sub-overview">Your research at a glance</p>
           <div class="grid grid-cols-4 gap-2.5 mb-4" id="db-stats"></div>
           <div id="db-latest"></div>
         </div>
 
         <!-- TAB: INTERVIEWS -->
         <div class="db-pane" id="db-pane-interviews">
-          <h1 class="text-[20px] font-semibold text-app-text mb-0.5 leading-[1.6]" id="db-ttl-interviews">Interviews</h1>
-          <p class="text-[14px] text-muted mb-4 leading-[1.6]" id="db-sub-interviews">All recorded sessions</p>
+          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:16px;font-weight:500;" id="db-ttl-interviews">Interviews</h1>
+          <p class="text-muted mb-4 leading-[1.6]" style="font-size:14px;font-weight:400;" id="db-sub-interviews">All recorded sessions</p>
           <div id="db-iv-list"></div>
         </div>
 
         <!-- TAB: ANALYSIS -->
         <div class="db-pane" id="db-pane-analysis">
-          <h1 class="text-[20px] font-semibold text-app-text mb-0.5 leading-[1.6]" id="db-ttl-analysis">Analysis</h1>
-          <p class="text-[14px] text-muted mb-4 leading-[1.6]" id="db-sub-analysis">AI-generated insights per session</p>
+          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:16px;font-weight:500;" id="db-ttl-analysis">Analysis</h1>
+          <p class="text-muted mb-4 leading-[1.6]" style="font-size:14px;font-weight:400;" id="db-sub-analysis">AI-generated insights per session</p>
           <div id="res-content"></div>
         </div>
 
         <!-- TAB: INSIGHTS -->
         <div class="db-pane" id="db-pane-insights">
-          <h1 class="text-[20px] font-semibold text-app-text mb-0.5 leading-[1.6]" id="db-ttl-insights">Cross Analysis</h1>
-          <p class="text-[14px] text-muted mb-4 leading-[1.6]" id="db-sub-insights">Select interviews to analyze together</p>
+          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:16px;font-weight:500;" id="db-ttl-insights">Cross Analysis</h1>
+          <p class="text-muted mb-4 leading-[1.6]" style="font-size:14px;font-weight:400;" id="db-sub-insights">Select interviews to analyze together</p>
           <div class="flex flex-col gap-2 px-4 py-3.5 bg-surface border border-[var(--border)] rounded mb-4">
             <button class="btn btn-p w-full" id="ca-all-btn" onclick="runAllAnalysis()" style="display:none;"></button>
           </div>
           <div class="flex flex-col gap-2 px-4 py-3 bg-surface border border-[var(--border)] rounded mb-5" style="opacity:0.85;">
-            <div class="text-[14px] text-muted" id="ca-count">Select interviews below to run cross analysis</div>
+            <div class="text-muted" style="font-size:14px;font-weight:400;" id="ca-count">Select interviews below to run cross analysis</div>
             <button class="btn btn-s w-full" id="ca-run-btn" onclick="runCrossAnalysis()" disabled>Analyze Selected</button>
           </div>
           <div id="db-ca-list"></div>
@@ -2297,11 +2297,11 @@ function renderSbRecent() {
   if (!el) return;
   const all = getAllInterviews().slice().reverse().slice(0, 5);
   const fmtDate = iso => new Date(iso).toLocaleDateString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { month:'short', day:'numeric' });
-  const lbl = `<span class="block text-[9.5px] font-bold uppercase tracking-widest text-muted px-2 pt-2 pb-1">${t('dbRecent')}</span>`;
+  const lbl = `<span class="block text-muted px-2 pt-2 pb-1" style="font-size:14px;font-weight:400;">${t('dbRecent')}</span>`;
   if (!all.length) { el.innerHTML = lbl; return; }
   el.innerHTML = lbl + all.map(iv => `
     <div class="sb-rc-item px-2.5 py-1.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
-      <div class="text-[11.5px] font-semibold text-app-text leading-tight">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
+      <div class="text-app-text leading-tight" style="font-size:14px;font-weight:500;">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
     </div>`).join('');
 }
 
@@ -2313,16 +2313,16 @@ function renderOverview() {
   const statsEl = document.getElementById('db-stats');
   const sc = 'iv-card-row bg-surface border border-[var(--border)] rounded p-4 text-center flex flex-col items-center justify-center gap-0.5';
   if (statsEl) statsEl.innerHTML = `
-    <div class="${sc}" tabindex="0"><div class="text-[18px] font-semibold text-app-text leading-none">${all.length}</div><div class="text-[10px] font-medium text-muted uppercase tracking-wide">${t('dbTotal')}</div></div>
-    <div class="${sc}" tabindex="0"><div class="text-[18px] font-semibold text-app-text leading-none">${done}</div><div class="text-[10px] font-medium text-muted uppercase tracking-wide">${t('dbCompleted')}</div></div>
-    <div class="${sc}" tabindex="0"><div class="text-[18px] font-semibold text-app-text leading-none">${inc}</div><div class="text-[10px] font-medium text-muted uppercase tracking-wide">${t('dbIncomplete')}</div></div>
-    <div class="${sc}" tabindex="0"><div class="text-[18px] font-semibold text-app-text leading-none">${rate}%</div><div class="text-[10px] font-medium text-muted uppercase tracking-wide">${t('dbRate')}</div></div>`;
+    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:16px;font-weight:500;">${all.length}</div><div class="text-muted" style="font-size:14px;font-weight:400;">${t('dbTotal')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:16px;font-weight:500;">${done}</div><div class="text-muted" style="font-size:14px;font-weight:400;">${t('dbCompleted')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:16px;font-weight:500;">${inc}</div><div class="text-muted" style="font-size:14px;font-weight:400;">${t('dbIncomplete')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:16px;font-weight:500;">${rate}%</div><div class="text-muted" style="font-size:14px;font-weight:400;">${t('dbRate')}</div></div>`;
 
   const fmtDT  = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
   const latest = all.slice().reverse().slice(0, 5);
   const latestEl = document.getElementById('db-latest');
   if (latestEl) latestEl.innerHTML = all.length ? `
-    <div class="text-[11px] font-semibold text-app-text mb-2">${t('dbLatest')}</div>
+    <div class="text-app-text mb-2" style="font-size:16px;font-weight:500;">${t('dbLatest')}</div>
     <div class="flex flex-col gap-1.5">${latest.map(iv => {
       const num   = iv.num || getInterviewNumber(iv.id);
       const r     = iv.lastQuestionSeen || 0;
@@ -2330,8 +2330,8 @@ function renderOverview() {
       const badge = ivStatusBadge(r, tot);
       return `<div class="iv-card-row flex items-center gap-2 bg-surface border border-[var(--border)] rounded px-3 py-2.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')" onfocus="this.classList.add('active')" onblur="this.classList.remove('active')">
         <div class="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
-          <span class="text-[12px] font-semibold text-app-text">${t('dbInterviewLabel')} ${num}</span>
-          <span class="text-[11px] text-muted">${fmtDT(iv.date)}</span>
+          <span class="text-app-text" style="font-size:14px;font-weight:500;">${t('dbInterviewLabel')} ${num}</span>
+          <span class="text-muted" style="font-size:14px;font-weight:400;">${fmtDT(iv.date)}</span>
         </div>
         ${badge}
       </div>`;
@@ -2345,7 +2345,7 @@ function renderInterviewsTab() {
   if (!el) return;
   el.innerHTML = all.length
     ? `<div class="flex flex-col">${all.map(iv => ivRowHtml(iv, fmt, true)).join('')}</div>`
-    : `<div class="text-[13px] text-muted italic">${t('dbNoData')}</div>`;
+    : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoData')}</div>`;
 }
 
 function ivStatusBadge(reached, total) {
@@ -2373,26 +2373,26 @@ function ivRowHtml(iv, fmt, expandable) {
   const quotes   = iv.analysis && Array.isArray(iv.analysis.quotes)   ? iv.analysis.quotes.filter(Boolean)   : [];
   const uxIssues = iv.analysis && Array.isArray(iv.analysis.patterns) ? iv.analysis.patterns.filter(Boolean) : [];
 
-  const notesHtml    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-[12px] text-app-text leading-relaxed mb-1.5">${esc(qa.a)}</div>`).join('') : `<div class="text-[12px] text-muted italic">${t('rnNoNotes')}</div>`;
-  const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div class="text-[12px] text-app-text leading-relaxed">${esc(iv.analysis.summary)}</div>` : `<div class="text-[12px] text-muted italic">${t('dbNoAnalysis')}</div>`;
-  const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet text-[12px] text-app-text leading-relaxed mb-1.5">${esc(i)}</div>`).join('') : `<div class="text-[12px] text-muted italic">${t('dbNoAnalysis')}</div>`;
-  const quotesHtml   = quotes.length    ? quotes.map(q => `<div class="iv-quote text-[12px] text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary">"${esc(q)}"</div>`).join('') : `<div class="text-[12px] text-muted italic">${t('rnNoQuotes')}</div>`;
-  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet text-[12px] text-app-text leading-relaxed mb-1.5">${esc(u)}</div>`).join('')  : `<div class="text-[12px] text-muted italic">${t('dbNoAnalysis')}</div>`;
+  const notesHtml    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:14px;font-weight:400;">${esc(qa.a)}</div>`).join('') : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('rnNoNotes')}</div>`;
+  const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div class="text-app-text leading-relaxed" style="font-size:14px;font-weight:400;">${esc(iv.analysis.summary)}</div>` : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
+  const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:14px;font-weight:400;">${esc(i)}</div>`).join('') : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
+  const quotesHtml   = quotes.length    ? quotes.map(q => `<div class="iv-quote text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary" style="font-size:14px;font-weight:400;">"${esc(q)}"</div>`).join('') : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('rnNoQuotes')}</div>`;
+  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:14px;font-weight:400;">${esc(u)}</div>`).join('')  : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
 
   const bodyHtml = expandable ? `
     <div class="border-t border-[var(--border)]" id="iv-body-${iv.id}" style="display:none;">
       <div class="flex border-b border-[var(--border)] bg-app-bg" id="iv-tabs-${iv.id}">
-        <button class="iv-tab active px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','notes')">${t('dbNotes')}</button>
-        <button class="iv-tab px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','summary')">${t('dbSummary')}</button>
-        <button class="iv-tab px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','insights')">${t('dbInsightsTab')}</button>
-        <button class="iv-tab px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','quotes')">${t('dbQuotes')}</button>
-        <button class="iv-tab px-4 py-2 text-[12px] font-medium cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" onclick="ivTab(this,'${iv.id}','ux')">${t('dbUxIssues')}</button>
+        <button class="iv-tab active px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','notes')">${t('dbNotes')}</button>
+        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','summary')">${t('dbSummary')}</button>
+        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','insights')">${t('dbInsightsTab')}</button>
+        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','quotes')">${t('dbQuotes')}</button>
+        <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:14px;font-weight:400;" onclick="ivTab(this,'${iv.id}','ux')">${t('dbUxIssues')}</button>
       </div>
-      <div class="iv-tab-pane active p-4" id="ivp-${iv.id}-notes"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbNotes')}</div>${notesHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-summary"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbSummary')}</div>${summaryHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-insights"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbInsightsTab')}</div>${insightsHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-quotes"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbQuotes')}</div>${quotesHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-ux"><div class="text-[10px] font-bold uppercase tracking-widest text-muted mb-2.5">${t('dbUxIssues')}</div>${uxHtml}</div>
+      <div class="iv-tab-pane active p-4" id="ivp-${iv.id}-notes"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbNotes')}</div>${notesHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-summary"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbSummary')}</div>${summaryHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-insights"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbInsightsTab')}</div>${insightsHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-quotes"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbQuotes')}</div>${quotesHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-ux"><div class="text-muted mb-2.5" style="font-size:14px;font-weight:400;">${t('dbUxIssues')}</div>${uxHtml}</div>
     </div>` : '';
 
   return `<div class="bg-surface border border-[var(--border)] rounded overflow-hidden mb-3" id="ivc-${iv.id}">
@@ -2401,8 +2401,8 @@ function ivRowHtml(iv, fmt, expandable) {
       <div class="flex-1 min-w-0">
         <!-- Title row: name + date/time on one side, badge on the other -->
         <div class="flex items-center gap-2">
-          <span class="text-[12px] font-semibold text-app-text shrink-0">${t('dbInterviewLabel')} ${num}</span>
-          <span class="text-[11px] text-muted truncate">${fmt(iv.date)}</span>
+          <span class="text-app-text shrink-0" style="font-size:14px;font-weight:500;">${t('dbInterviewLabel')} ${num}</span>
+          <span class="text-muted truncate" style="font-size:14px;font-weight:400;">${fmt(iv.date)}</span>
           <span class="ms-auto shrink-0">${badge}</span>
         </div>
         ${total > 0 ? `
@@ -2410,7 +2410,7 @@ function ivRowHtml(iv, fmt, expandable) {
           <div class="flex-1 h-[3px] bg-[var(--border)] rounded-full overflow-hidden">
             <div class="h-full bg-primary rounded-full opacity-75" style="width:${pct}%"></div>
           </div>
-          <span class="text-[11px] text-muted whitespace-nowrap shrink-0" style="min-width:30px;text-align:end;">${pct}%</span>
+          <span class="text-muted whitespace-nowrap shrink-0" style="font-size:14px;font-weight:400;min-width:30px;text-align:end;">${pct}%</span>
         </div>` : ''}
       </div>
     </div>
@@ -2442,7 +2442,7 @@ function renderCrossTab() {
   if (!el) return;
   el.innerHTML = all.length
     ? `<div class="flex flex-col">${all.map(iv => ivRowHtml(iv, fmt, true)).join('')}</div>`
-    : `<div class="text-[13px] text-muted italic">${t('dbNoData')}</div>`;
+    : `<div class="text-muted italic" style="font-size:14px;font-weight:400;">${t('dbNoData')}</div>`;
   // Add "Analyze All" shortcut button if 2+ completed
   const allBtn = document.getElementById('ca-all-btn');
   if (allBtn) allBtn.style.display = all.length >= 2 ? '' : 'none';
