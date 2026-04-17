@@ -145,15 +145,15 @@ button, input, textarea, select, table, th, td {
   border-radius: var(--r); padding: 24px; box-shadow: var(--sh); margin-bottom: 14px;
 }
 .card-lbl {
-  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
   color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 7px;
 }
 .card-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--primary); flex-shrink: 0; }
 
 .fg { margin-bottom: 16px; }
 .fg:last-child { margin-bottom: 0; }
-.fl { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-.badge { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 8px; background: var(--plight); color: var(--primary); }
+.fl { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.badge { font-size: 14px; font-weight: 400; padding: 1px 7px; border-radius: 8px; background: var(--plight); color: var(--primary); }
 
 .inp {
   width: 100%; padding: 10px 13px;
@@ -173,11 +173,11 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   accent-color: var(--primary); cursor: pointer;
 }
 .nq-count {
-  font-size: 12px; font-weight: 700; color: var(--primary);
+  font-size: 14px; font-weight: 500; color: var(--primary);
   background: var(--plight); border-radius: 5px;
   padding: 2px 8px; margin-inline-start: auto; flex-shrink: 0;
 }
-.range-ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 3px; }
+.range-ends { display: flex; justify-content: space-between; font-size: 14px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 
 .key-wrap { position: relative; }
 .key-wrap .inp { padding-inline-end: 42px; }
@@ -189,17 +189,17 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .key-eye:hover { color: var(--primary); }
 .key-ok {
   display: none; align-items: center; gap: 5px; margin-top: 7px;
-  font-size: 12px; padding: 7px 10px; border-radius: var(--rxs);
-  background: #d1fae5; color: #065f46; font-weight: 600;
+  font-size: 14px; padding: 7px 10px; border-radius: var(--rxs);
+  background: #d1fae5; color: #065f46; font-weight: 400;
 }
 [data-theme="dark"] .key-ok { background: #064e3b; color: #6ee7b7; }
 .key-acts { display: flex; gap: 8px; margin-top: 10px; }
-.hint { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
-.errtxt { font-size: 12px; color: var(--danger); margin-top: 5px; display: none; }
+.hint { font-size: 14px; font-weight: 400; color: var(--muted); margin-top: 5px; }
+.errtxt { font-size: 14px; font-weight: 400; color: var(--danger); margin-top: 5px; display: none; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 11px 20px; border-radius: var(--rsm); font-size: 14px; font-weight: 600;
+  padding: 11px 20px; border-radius: var(--rsm); font-size: 14px; font-weight: 500;
   cursor: pointer; border: none; font-family: inherit; white-space: nowrap;
   transition: all var(--tr);
 }
@@ -209,11 +209,11 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .btn-p:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 .btn-s {
   background: var(--bg); color: var(--muted);
-  border: 1.5px solid var(--border); font-size: 12.5px; padding: 7px 14px;
+  border: 1.5px solid var(--border); font-size: 14px; font-weight: 400; padding: 7px 14px;
 }
 .btn-s:hover { border-color: var(--primary); color: var(--primary); }
 
-.start-err { font-size: 13px; color: var(--danger); text-align: center; margin-bottom: 10px; display: none; }
+.start-err { font-size: 14px; font-weight: 400; color: var(--danger); text-align: center; margin-bottom: 10px; display: none; }
 
 /* ── TOPBAR (shared) ── */
 .topbar {
@@ -227,19 +227,19 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .hdr-icons { display: flex; gap: 10px; margin-bottom: 8px; align-self: flex-end; }
 .tb-brand {
   display: block; width: 100%; text-align: center;
-  font-size: 18px; font-weight: 600; letter-spacing: -0.3px;
+  font-size: 16px; font-weight: 500; letter-spacing: -0.2px;
   color: var(--primary); line-height: 1;
   position: static; transform: none; transition: none; animation: none;
 }
-.hdr-sub  { display: block; width: 100%; text-align: center; font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: 0.1px; }
+.hdr-sub  { display: block; width: 100%; text-align: center; font-size: 14px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 .tb-right { display: none; }
 
 /* ── PROGRESS ── */
 .prog-row  { width: 100%; padding: 6px 0 0; }
 .prog-wrap { width: 100%; }
 .prog-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.prog-lbl  { font-size: 11px; font-weight: 500; color: var(--muted); }
-.prog-pct  { font-size: 11px; font-weight: 500; color: var(--muted); }
+.prog-lbl  { font-size: 14px; font-weight: 400; color: var(--muted); }
+.prog-pct  { font-size: 14px; font-weight: 500; color: var(--primary); }
 .prog-track { background: var(--border); border-radius: 20px; height: 3px; overflow: hidden; }
 .prog-fill {
   height: 100%; border-radius: 20px;
@@ -268,7 +268,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .msg.ai  .bbl { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 3px; font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
 .msg.usr .bbl { background: rgba(11,94,87,0.13); color: var(--text); border-top-right-radius: 3px; font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
 [data-theme="dark"] .msg.usr .bbl { background: rgba(15,118,110,0.22); color: var(--text); }
-.msg-t { font-size: 10px; color: var(--muted); padding: 0 2px; }
+.msg-t { font-size: 14px; font-weight: 400; color: var(--muted); padding: 0 2px; }
 .msg.usr .msg-t { text-align: right; }
 
 /* Typing */
@@ -438,24 +438,20 @@ a:focus-visible,
 .ra-quote { border-inline-start: 3px solid var(--primary); }
 [dir="rtl"] .ra-quote { border-radius: var(--rxs) 0 0 var(--rxs); }
 
-.res-ttl { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 4px; }
-.res-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
-.grid2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
-.rc      { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; box-shadow: var(--sh); }
-.res-ttl { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 4px; }
-.res-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+.res-ttl { font-size: 16px; font-weight: 500; letter-spacing: -0.2px; margin-bottom: 4px; }
+.res-sub { font-size: 14px; font-weight: 400; color: var(--muted); margin-bottom: 28px; }
 .grid2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
 .rc      { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; box-shadow: var(--sh); }
 .rc-hd   { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
 .rc-ico  { width: 34px; height: 34px; border-radius: var(--rxs); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-.rc-ttl  { font-size: 13px; font-weight: 700; }
+.rc-ttl  { font-size: 16px; font-weight: 500; }
 .rc-items { display: flex; flex-direction: column; gap: 8px; }
-.ri      { display: flex; gap: 8px; font-size: 14px; line-height: 1.65; }
+.ri      { display: flex; gap: 8px; font-size: 14px; font-weight: 400; line-height: 1.65; }
 .rbul    { width: 5px; height: 5px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
 .qblock  {
   border-inline-start: 3px solid var(--primary); padding: 11px 14px;
   background: var(--plight); border-radius: 0 var(--rxs) var(--rxs) 0;
-  font-size: 13px; font-style: italic; line-height: 1.6; margin-bottom: 9px;
+  font-size: 14px; font-weight: 400; font-style: italic; line-height: 1.6; margin-bottom: 9px;
 }
 [dir="rtl"] .qblock { border-radius: var(--rxs) 0 0 var(--rxs); }
 .full {
@@ -484,8 +480,8 @@ a:focus-visible,
 .ov-card { background: var(--surface); border-radius: var(--r); padding: 36px 32px; text-align: center; max-width: 280px; width: 90%; box-shadow: var(--shlg); }
 .spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 18px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.ov-ttl { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.ov-sub { font-size: 12px; color: var(--muted); }
+.ov-ttl { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+.ov-sub { font-size: 14px; font-weight: 400; color: var(--muted); }
 
 /* ═══════════════════════════════════════════════════════════════
    CENTRALIZED RTL/LTR DIRECTION CONTROL
@@ -528,7 +524,7 @@ a:focus-visible,
 }
 .done-wrap { max-width: 420px; width: 100%; text-align: center; }
 .done-title {
-  font-size: 18px; font-weight: 600; letter-spacing: -0.2px;
+  font-size: 16px; font-weight: 500; letter-spacing: -0.1px;
   color: var(--text); margin-bottom: 12px;
 }
 .done-body {
@@ -617,7 +613,7 @@ a:focus-visible,
 [dir="rtl"] .ri > div { text-align: start; }
 
 /* Summary */
-.ra-sum-lbl { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+.ra-sum-lbl { font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
 .ra-sum-txt  { font-size: 14px; font-weight: 400; line-height: 1.85; color: var(--text); }
 
 /* Bullet items (replaces numbered badges) */
@@ -641,7 +637,7 @@ a:focus-visible,
 /* Empathy map */
 .empathy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .empathy-cell { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rsm); padding: 15px 16px; }
-.empathy-lbl  { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+.empathy-lbl  { font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
 .empathy-items { font-size: 14px; line-height: 1.75; color: var(--text); }
 
 /* Journey map */
@@ -651,10 +647,10 @@ a:focus-visible,
   padding: 16px 14px 14px; background: var(--bg);
   border: 1px solid var(--primary); border-radius: var(--rsm); text-align: center;
 }
-.journey-phase  { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
+.journey-phase  { font-size: 14px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
 .journey-action { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
 .journey-emotion { font-size: 14px; font-weight: 400; color: var(--muted); line-height: 1.55; }
-.journey-sentiment { display: inline-block; margin-top: 9px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 8px; }
+.journey-sentiment { display: inline-block; margin-top: 9px; font-size: 14px; font-weight: 400; padding: 3px 10px; border-radius: 8px; }
 .js-pos { background:#dcfce7; color:#15803d; } [data-theme="dark"] .js-pos { background:#14532d; color:#86efac; }
 .js-neu { background:#fef3c7; color:#b45309; } [data-theme="dark"] .js-neu { background:#451a03; color:#fde68a; }
 .js-neg { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .js-neg { background:#450a0a; color:#fca5a5; }
@@ -662,14 +658,14 @@ a:focus-visible,
 /* Impact vs Effort */
 .ie-table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: inherit; }
 .ie-table th {
-  text-align: start; padding: 10px 14px; font-size: 11px; font-weight: 700;
-  letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted);
+  text-align: start; padding: 10px 14px; font-size: 14px; font-weight: 500;
+  letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted);
   border-bottom: 1.5px solid var(--primary);
 }
 [dir="rtl"] .ie-table th { text-transform: none; letter-spacing: 0; }
 .ie-table td { padding: 12px 14px; border-bottom: 1px solid var(--primary); line-height: 1.55; vertical-align: middle; }
 .ie-table tr:last-child td { border-bottom: none; }
-.ie-chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 8px; white-space: nowrap; font-family: inherit; }
+.ie-chip { display: inline-block; font-size: 14px; font-weight: 400; padding: 3px 10px; border-radius: 8px; white-space: nowrap; font-family: inherit; }
 .ie-hi { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .ie-hi { background:#450a0a; color:#fca5a5; }
 .ie-md { background:#fef3c7; color:#b45309; } [data-theme="dark"] .ie-md { background:#451a03; color:#fde68a; }
 .ie-lo { background:#dcfce7; color:#15803d; } [data-theme="dark"] .ie-lo { background:#14532d; color:#86efac; }
@@ -679,7 +675,7 @@ a:focus-visible,
 .flow-row { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 20px; }
 .flow-row:last-child { padding-bottom: 0; }
 .flow-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-.flow-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.flow-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; flex-shrink: 0; }
 .flow-line { width: 2px; flex: 1; background: var(--border); min-height: 18px; margin-top: 4px; }
 .flow-row:last-child .flow-line { display: none; }
 .flow-content { padding-top: 5px; }
@@ -704,7 +700,7 @@ a:focus-visible,
   margin-inline: auto;
 }
 .prestart-title {
-  font-size: 20px; font-weight: 600; color: var(--text);
+  font-size: 16px; font-weight: 500; color: var(--text);
   margin-bottom: 6px; line-height: 1.45; text-align: center;
   width: 100%;
 }
@@ -736,7 +732,7 @@ a:focus-visible,
 [dir="rtl"] .prestart-row-txt { line-height: 1.8; }
 .prestart-back {
   display: block; text-align: center; margin-top: 14px;
-  font-size: 12px; color: var(--muted); cursor: pointer;
+  font-size: 14px; font-weight: 400; color: var(--muted); cursor: pointer;
   transition: color var(--tr); background: none; border: none;
   font-family: inherit; width: 100%; padding: 4px 0;
 }
@@ -758,14 +754,14 @@ a:focus-visible,
 <!-- RESEARCHER PASSCODE MODAL -->
 <div class="ov" id="researcher-ov" onclick="if(event.target===this)closeResearcherModal()">
   <div class="ov-card" style="max-width:300px;text-align:left;">
-    <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:var(--text);">Access</div>
+    <div style="font-size:16px;font-weight:500;margin-bottom:16px;color:var(--text);">Access</div>
     <input type="password" class="inp" id="researcher-pin" placeholder="Passcode"
       autocomplete="off" style="margin-bottom:6px;"
       onkeydown="if(event.key==='Enter')submitResearcherPin()">
-    <div id="researcher-err" style="display:none;font-size:11px;color:var(--danger);margin-bottom:8px;">Incorrect passcode</div>
+    <div id="researcher-err" style="display:none;font-size:14px;font-weight:400;color:var(--danger);margin-bottom:8px;">Incorrect passcode</div>
     <div style="display:flex;gap:8px;margin-top:10px;">
       <button class="btn btn-s" style="flex:1;" onclick="closeResearcherModal()">Cancel</button>
-      <button class="btn btn-p" style="flex:1;font-size:13px;padding:10px 0;" onclick="submitResearcherPin()">Enter</button>
+      <button class="btn btn-p" style="flex:1;padding:10px 0;" onclick="submitResearcherPin()">Enter</button>
     </div>
   </div>
 </div>
@@ -860,7 +856,7 @@ a:focus-visible,
       <div style="display:flex;align-items:center;gap:10px;">
         <span id="api-status-dot" style="width:8px;height:8px;border-radius:50%;background:#16a34a;flex-shrink:0;"></span>
         <span id="api-status-lbl" style="font-size:14px;font-weight:500;color:var(--text);">Connected</span>
-        <span id="api-status-sub" style="font-size:12px;color:var(--muted);margin-inline-start:auto;">Powered by OpenAI GPT-4o</span>
+        <span id="api-status-sub" style="font-size:14px;font-weight:400;color:var(--muted);margin-inline-start:auto;">Powered by OpenAI GPT-4o</span>
       </div>
     </div>
 
@@ -1131,11 +1127,11 @@ a:focus-visible,
           <h1 class="text-[20px] font-semibold text-app-text mb-0.5 leading-[1.6]" id="db-ttl-insights">Cross Analysis</h1>
           <p class="text-[14px] text-muted mb-4 leading-[1.6]" id="db-sub-insights">Select interviews to analyze together</p>
           <div class="flex flex-col gap-2 px-4 py-3.5 bg-surface border border-[var(--border)] rounded mb-4">
-            <button class="btn btn-p w-full" id="ca-all-btn" onclick="runAllAnalysis()" style="display:none;font-size:12px;font-weight:500;"></button>
+            <button class="btn btn-p w-full" id="ca-all-btn" onclick="runAllAnalysis()" style="display:none;"></button>
           </div>
           <div class="flex flex-col gap-2 px-4 py-3 bg-surface border border-[var(--border)] rounded mb-5" style="opacity:0.85;">
-            <div class="text-[11.5px] text-muted" id="ca-count">Select interviews below to run cross analysis</div>
-            <button class="btn btn-s w-full" id="ca-run-btn" onclick="runCrossAnalysis()" disabled style="font-size:11.5px;font-weight:500;">Analyze Selected</button>
+            <div class="text-[14px] text-muted" id="ca-count">Select interviews below to run cross analysis</div>
+            <button class="btn btn-s w-full" id="ca-run-btn" onclick="runCrossAnalysis()" disabled>Analyze Selected</button>
           </div>
           <div id="db-ca-list"></div>
           <div id="db-ca-out"></div>
@@ -1146,8 +1142,8 @@ a:focus-visible,
         <div id="res-notes"   style="display:none;"></div>
 
         <div class="flex justify-center gap-2.5 mt-8 pb-2" id="db-bottom-btns">
-          <button class="btn btn-s" onclick="restart()" id="s-new-btn" style="font-size:11px;font-weight:500;">New Interview</button>
-          <button class="btn btn-s" onclick="goHome()" id="s-home-btn" style="font-size:11px;font-weight:500;">Home</button>
+          <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
+          <button class="btn btn-s" onclick="goHome()" id="s-home-btn">Home</button>
         </div>
       </div>
     </div>
@@ -2468,7 +2464,7 @@ async function runCrossAnalysis() {
 async function _doCrossAnalysis(selected) {
 
   const outEl = document.getElementById('db-ca-out');
-  if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:13px;">${t('dbCrossRunning')}</div>`;
+  if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:14px;font-weight:400;">${t('dbCrossRunning')}</div>`;
 
   const convo = selected.map((iv, i) => {
     const qa = (iv.answers || []).map(a => `Q: ${a.q}\nA: ${a.a}`).join('\n');
@@ -2506,7 +2502,7 @@ async function _doCrossAnalysis(selected) {
     renderCrossOutput(data);
   } catch(e) {
     hideOv();
-    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:13px;">${t('errAnalysis')}</div>`;
+    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:14px;font-weight:400;">${t('errAnalysis')}</div>`;
   }
 }
 
@@ -2514,7 +2510,7 @@ function renderCrossOutput(d) {
   const el = document.getElementById('db-ca-out');
   if (!el) return;
   if (!d || Object.keys(d).length === 0) {
-    el.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:13px;">${t('dbCrossEmpty')}</div>`;
+    el.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:14px;font-weight:400;">${t('dbCrossEmpty')}</div>`;
     return;
   }
   // Reuse renderAnalysis rendering, targeting db-ca-out
@@ -2660,11 +2656,11 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
     const pct     = total > 0 ? Math.round((reached / total) * 100) : 0;
     if (total > 0) {
       html += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);">
-        <span style="font-size:12px;color:var(--muted);white-space:nowrap;">${TR[S.lang].progLbl(reached, total)}</span>
+        <span style="font-size:14px;font-weight:400;color:var(--muted);white-space:nowrap;">${TR[S.lang].progLbl(reached, total)}</span>
         <div style="flex:1;height:3px;background:var(--border);border-radius:99px;overflow:hidden;">
           <div style="width:${pct}%;height:100%;background:var(--primary);border-radius:99px;"></div>
         </div>
-        <span style="font-size:12px;font-weight:500;color:var(--primary);white-space:nowrap;min-width:34px;text-align:end;">${pct}%</span>
+        <span style="font-size:14px;font-weight:500;color:var(--primary);white-space:nowrap;min-width:34px;text-align:end;">${pct}%</span>
       </div>`;
     }
   }
@@ -2674,11 +2670,11 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
     const _totalAns = _allIvs.reduce((sum, x) => sum + (Array.isArray(x.answers) ? x.answers.length : 0), 0);
     html += `<div style="display:flex;gap:12px;margin-bottom:16px;">
       <div style="flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-align:center;">
-        <div style="font-size:18px;font-weight:500;color:var(--text);">${_allIvs.length}</div>
+        <div style="font-size:16px;font-weight:500;color:var(--text);">${_allIvs.length}</div>
         <div style="font-size:14px;font-weight:400;color:var(--muted);">${t('anTotalIvs')}</div>
       </div>
       <div style="flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-align:center;">
-        <div style="font-size:18px;font-weight:500;color:var(--text);">${_totalAns}</div>
+        <div style="font-size:16px;font-weight:500;color:var(--text);">${_totalAns}</div>
         <div style="font-size:14px;font-weight:400;color:var(--muted);">${t('anTotalAns')}</div>
       </div>
     </div>`;
@@ -2686,7 +2682,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
   // Re-analyze button — shown when viewing a specific interview that has answers
   if (S.isResearcher && hasAnswers && ivId) {
     html += `<div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
-      <button class="btn btn-s" onclick="analyzeStoredInterview('${ivId}')" style="font-size:10.5px;font-weight:500;padding:5px 14px;gap:5px;display:inline-flex;align-items:center;" title="${t('reanalyzeTip')}">
+      <button class="btn btn-s" onclick="analyzeStoredInterview('${ivId}')" style="font-size:14px;font-weight:500;padding:5px 14px;gap:5px;display:inline-flex;align-items:center;" title="${t('reanalyzeTip')}">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         ${t('reanalyze')}
       </button>
@@ -2703,10 +2699,10 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
         <div>
-          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;">${t('noAnalysisYet')}</div>
-          <div style="font-size:12px;color:var(--muted);">${t('noAnalysisDesc')}</div>
+          <div style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px;">${t('noAnalysisYet')}</div>
+          <div style="font-size:14px;font-weight:400;color:var(--muted);">${t('noAnalysisDesc')}</div>
         </div>
-        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:12px;font-weight:500;padding:9px 22px;">${t('analyzeNow')}</button>` : ''}
+        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:14px;font-weight:500;padding:9px 22px;">${t('analyzeNow')}</button>` : ''}
       </div>`;
     return;
   }
@@ -2751,7 +2747,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
 
   // ── RESEARCHER-ONLY SECTIONS ─────────────────────────────
   if (S.isResearcher) {
-    const ph = `<span style="color:var(--muted);font-size:12px;font-style:italic;">—</span>`;
+    const ph = `<span style="color:var(--muted);font-size:14px;font-weight:400;font-style:italic;">—</span>`;
 
     // 6 — Personas
     const personas = (d.personas || []).filter(Boolean);
@@ -2771,7 +2767,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
     const empBody = `<div class="empathy-grid">${['thinks','feels','says','does'].map(k => `
       <div class="empathy-cell">
         <div class="empathy-lbl">${empLabel[k]}</div>
-        <div class="empathy-items">${(emp[k]||[]).length ? emp[k].map(x=>`• ${esc(x)}`).join('<br>') : `<span style="color:var(--muted);font-size:12px;font-style:italic;">—</span>`}</div>
+        <div class="empathy-items">${(emp[k]||[]).length ? emp[k].map(x=>`• ${esc(x)}`).join('<br>') : `<span style="color:var(--muted);font-size:14px;font-weight:400;font-style:italic;">—</span>`}</div>
       </div>`).join('')}</div>`;
     html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('empathy'), 'empathy', empBody)}${empBody}</div>`;
 
