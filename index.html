@@ -81,22 +81,30 @@ tailwind.config = {
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
+
+/* ── GLOBAL TYPOGRAPHY TOKENS ── */
+:root {
+  --font: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif;
+  --fs-title: 16px;   --fw-title: 500;  --lh-title: 1.5;
+  --fs-body:  14px;   --fw-body:  400;  --lh-body:  1.6;
+}
+
+/* Single font declaration for the whole product */
+*, *::before, *::after { font-family: var(--font); }
 body {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font);
+  font-size: var(--fs-body); font-weight: var(--fw-body); line-height: var(--lh-body);
   background: var(--bg); color: var(--text);
-  min-height: 100vh; line-height: 1.6;
+  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  font-weight: 400;
   transition: background var(--tr), color var(--tr);
 }
+[dir="rtl"] body { text-align: right; }
+
 /* Smooth color transitions on all themed elements */
 .card, .rc, .full, .input-bar, .ov-card,
 .bbl, .typing-bbl, .chat-ta, .inp, .ic-btn, .end-btn, .btn-s {
   transition: background var(--tr), border-color var(--tr), color var(--tr);
-}
-[dir="rtl"] body {
-  font-family: 'IBM Plex Sans Arabic', sans-serif;
-  text-align: right;
 }
 /* Ensure all interactive elements inherit IBM Plex */
 button, input, textarea, select, table, th, td {
@@ -520,14 +528,11 @@ a:focus-visible,
 }
 .done-wrap { max-width: 420px; width: 100%; text-align: center; }
 .done-title {
-  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 18px; font-weight: 600; letter-spacing: -0.2px;
   color: var(--text); margin-bottom: 12px;
 }
-[dir="rtl"] .done-title { font-family: 'IBM Plex Sans Arabic', sans-serif; }
 .done-body {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 14px; font-weight: 400; line-height: 1.75; color: var(--muted);
+  font-size: var(--fs-body); font-weight: var(--fw-body); line-height: 1.75; color: var(--muted);
   white-space: pre-line; margin-bottom: 32px;
 }
 [dir="rtl"] .done-body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
@@ -551,13 +556,13 @@ a:focus-visible,
 }
 
 /* ── ADVANCED ANALYSIS ── */
-#res-inner, #res-inner * { font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+/* Font already inherited from * rule — no per-element declaration needed */
 
-/* Titles: 16px medium */
+/* Titles: 16px/500 */
 .ra-sec-ttl,
-#res-inner .rc-ttl    { font-size: 16px; font-weight: 500; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+#res-inner .rc-ttl    { font-size: var(--fs-title); font-weight: var(--fw-title); }
 
-/* Body / description: 14px regular */
+/* Body / description: 14px/400 */
 .ra-sum-txt,
 .ra-quote,
 .ra-num-item,
@@ -568,9 +573,9 @@ a:focus-visible,
 .persona-row,
 .flow-step-ttl,
 .flow-step-desc,
-.ie-table td          { font-size: 14px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+.ie-table td          { font-size: var(--fs-body); font-weight: var(--fw-body); }
 
-/* Exceptions — keep bold/medium where it's needed for hierarchy */
+/* Exceptions — deliberate weight bumps */
 .ra-num-item > div,
 .persona-row span,
 .ie-table td strong   { font-weight: 600; }
@@ -1629,9 +1634,19 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
   return data.choices[0].message.content.trim();
 }
 
+// ─── LANGUAGE DETECTION ────────────────────────────────────
+// Detect dominant language from participant answers — NOT from UI lang.
+// Arabic interview → Arabic analysis. English interview → English analysis.
+function detectInterviewLang(answers) {
+  const text = (answers || []).map(a => a.a || '').join(' ');
+  const arChars = (text.match(/[\u0600-\u06FF]/g) || []).length;
+  const enChars = (text.match(/[a-zA-Z]/g) || []).length;
+  return arChars >= enChars ? 'ar' : 'en';
+}
+
 // ─── ANALYSIS TRANSLATION HELPER ──────────────────────────
 // Always analyze in English (GPT's strongest language), then translate
-// to Gulf Arabic as a separate focused call when Arabic UI is active.
+// to Gulf Arabic as a separate focused call when the interview is Arabic.
 async function _translateToArabic(data) {
   const KEEP_KEYS = new Set(['sentiment','impact','effort','priority']);
   const sysMsg = 'أنت مترجم متخصص في أبحاث UX. مهمتك ترجمة قيم JSON من الإنجليزية إلى العربية الخليجية الطبيعية. قواعد صارمة: (1) ترجم كل قيمة نصية بالكامل إلى العربية الخليجية. (2) لا تغيّر هيكل JSON أبداً — نفس المفاتيح بنفس الترتيب. (3) لا تترجم: اسم "Skoon"، وقيم sentiment (positive/neutral/negative)، impact/effort (High/Medium/Low)، priority (Do First/Schedule/Delegate/Drop). (4) أنتج JSON فقط — ممنوع أي نص خارجه.';
@@ -1958,6 +1973,7 @@ function saveInterview(analysis) {
     num:              all.length + 1,   // sequential number, 1-based
     date:             new Date().toISOString(),
     lang:             S.lang,
+    contentLang:      detectInterviewLang(extractQA().map(qa => ({a: qa.a}))), // detected from answers
     completed:        S.mainAsked >= S.numQ,
     goal:             S.goal || '',
     audience:         S.audience || '',
@@ -2012,8 +2028,9 @@ async function analyzeStoredInterview(id) {
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch(_) { data = {}; }
-    // Step 2: If Arabic UI, translate the English JSON to Gulf Arabic
-    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
+    // Step 2: Translate to Gulf Arabic if interview is Arabic (detected from answers)
+    const ivLang = detectInterviewLang(iv.answers);
+    if (ivLang === 'ar' && data && Object.keys(data).length > 0) {
       data = await _translateToArabic(data);
     }
 
@@ -2491,8 +2508,10 @@ async function _doCrossAnalysis(selected) {
     hideOv();
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch(_) { data = {}; }
-    // Step 2: Translate to Gulf Arabic if Arabic UI
-    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
+    // Step 2: Detect dominant language across all selected interviews, translate if Arabic
+    const allAnswers = selected.flatMap(iv => (iv.answers || []).map(a => ({a: a.a || ''})));
+    const crossLang = detectInterviewLang(allAnswers);
+    if (crossLang === 'ar' && data && Object.keys(data).length > 0) {
       showOv(t('olAnalyze'), t('olSub'));
       data = await _translateToArabic(data);
       hideOv();
@@ -2560,8 +2579,9 @@ async function analyze() {
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch (_) { data = { summary: raw, insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: {}, journey: [], impactEffort: [], userFlow: [] }; }
 
-    // Step 2: Translate to Gulf Arabic if Arabic UI
-    if (S.lang === 'ar' && data && Object.keys(data).length > 0) {
+    // Step 2: Translate to Gulf Arabic if interview language is Arabic (detected from answers)
+    const ivLang2 = detectInterviewLang(extractQA().map(qa => ({a: qa.a})));
+    if (ivLang2 === 'ar' && data && Object.keys(data).length > 0) {
       data = await _translateToArabic(data);
     }
 
