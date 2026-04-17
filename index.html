@@ -907,7 +907,7 @@ a:focus-visible,
           onkeydown="onKey(event)"
           oninput="growTa(this)"></textarea>
         <button class="mic-btn" id="mic-btn" onclick="toggleMic()" title="Voice input" type="button">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M7 4a3 3 0 0 1 6 0v6a3 3 0 1 1-6 0V4Z"/>
             <path d="M5.5 9.643a.75.75 0 0 0-1.5 0V10a6 6 0 0 0 5.25 5.955V17.5h-1.5a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5h-1.5v-1.545A6 6 0 0 0 16 10v-.357a.75.75 0 0 0-1.5 0V10a4.5 4.5 0 0 1-9 0v-.357Z"/>
           </svg>
@@ -1660,11 +1660,13 @@ function showTyping() {
 }
 function rmTyping()  { const e = document.getElementById('typing-ind'); if (e) e.remove(); scrollBtm(); }
 function scrollBtm() {
-  // rAF + setTimeout ensures DOM is painted before we measure scrollHeight
-  requestAnimationFrame(() => setTimeout(() => {
+  const _scroll = () => {
     const c = document.getElementById('chat-scroll');
     if (c) c.scrollTop = c.scrollHeight;
-  }, 0));
+  };
+  _scroll();                          // immediate
+  requestAnimationFrame(_scroll);     // after next paint
+  setTimeout(_scroll, 120);           // after animations settle
 }
 
 // Failsafe: MutationObserver fires scrollBtm on every DOM change inside #msgs
@@ -1672,7 +1674,7 @@ function scrollBtm() {
   const init = () => {
     const msgs = document.getElementById('msgs');
     if (!msgs) { setTimeout(init, 200); return; }
-    new MutationObserver(scrollBtm).observe(msgs, { childList: true });
+    new MutationObserver(scrollBtm).observe(msgs, { childList: true, subtree: true });
   };
   document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', init)
