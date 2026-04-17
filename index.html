@@ -1668,6 +1668,43 @@ function _buildAnalysisSchema() {
   });
 }
 
+// ─── ANALYSIS LANGUAGE ENFORCEMENT ───────────────────────
+// Detect whether a data object's text is Arabic or English.
+function _detectDataLang(data) {
+  const sample = [
+    data.summary,
+    ...(Array.isArray(data.insights) ? data.insights : []),
+    ...(Array.isArray(data.patterns) ? data.patterns : [])
+  ].filter(Boolean).join(' ');
+  return /[\u0600-\u06FF]/.test(sample) ? 'ar' : 'en';
+}
+
+// Translate analysis JSON to the current dashboard language (S.lang).
+// Called before rendering any stored or merged analysis to ensure the
+// displayed language always matches the UI language — regardless of
+// what language the interview was conducted or analyzed in.
+async function _translateAnalysis(data) {
+  if (!data || !data.summary) return data;
+  if (_detectDataLang(data) === S.lang) return data; // already correct lang
+
+  const sysAr = 'أنت مترجم متخصص في أبحاث UX. ترجم كل قيمة نصية في هذا الـ JSON إلى العربية الخليجية الطبيعية. قواعد صارمة: (1) لا تغيّر هيكل JSON أبداً. (2) لا تترجم: اسم "Skoon"، وقيم sentiment (positive/neutral/negative)، وقيم impact/effort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop). (3) أنتج JSON فقط — ممنوع أي نص خارجه.';
+  const sysEn = 'You are a UX research translator. Translate every text value in this JSON to natural professional English. Rules: (1) Never alter the JSON structure. (2) Do not translate: "Skoon", sentiment (positive/neutral/negative), impact/effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). (3) Output JSON only — no text outside the object.';
+  const promptAr = `ترجم قيم هذا JSON إلى العربية الخليجية:\n${JSON.stringify(data)}`;
+  const promptEn = `Translate all text values in this JSON to English:\n${JSON.stringify(data)}`;
+
+  showOv(t('olAnalyze'), t('olSub'));
+  try {
+    const raw = await callAI(
+      [{ role: 'system', content: S.lang === 'ar' ? sysAr : sysEn },
+       { role: 'user',   content: S.lang === 'ar' ? promptAr : promptEn }],
+      0, 4000
+    );
+    hideOv();
+    const m = raw.match(/\{[\s\S]*\}/);
+    return m ? JSON.parse(m[0]) : data;
+  } catch(_) { hideOv(); return data; }
+}
+
 // ─── CHAT HELPERS ─────────────────────────────────────────
 function addMsg(role, content) {
   const wrap  = document.getElementById('msgs');
@@ -2003,7 +2040,7 @@ function saveInterview(analysis) {
 function renderHistory() {}
 function renderNotes()   {}
 
-function loadInterviewById(id) {
+async function loadInterviewById(id) {
   const all = getAllInterviews();
   const iv  = all.find(x => x.id === id);
   if (!iv) return;
@@ -2011,7 +2048,9 @@ function loadInterviewById(id) {
   // Force analysis tab open (don't toggle off if already active)
   _dbTab = null;
   dbTab('analysis');
-  renderAnalysis(iv.analysis || {}, iv, 'res-content', iv);
+  // Enforce dashboard language — translate stored analysis if language doesn't match
+  const analysis = await _translateAnalysis(iv.analysis || {});
+  renderAnalysis(analysis, iv, 'res-content', iv);
 }
 
 async function analyzeStoredInterview(id) {
@@ -2259,17 +2298,16 @@ function renderPanel() {
   renderOverview();
   renderInterviewsTab();
   renderCrossTab();
-  // Re-render analysis tab
+  // Re-render analysis tab — use async path so language enforcement runs
   if (_currentAnalysisId) {
-    const iv = getAllInterviews().find(x => x.id === _currentAnalysisId);
-    if (iv) renderAnalysis(iv.analysis || {}, iv, 'res-content', iv);
+    loadInterviewById(_currentAnalysisId); // async, updates DOM when done
   } else {
-    renderAllAnalysis();
+    renderAllAnalysis(); // async, updates DOM when done
   }
 }
 
 // No interview selected → merge ALL interviews that have analysis
-function renderAllAnalysis() {
+async function renderAllAnalysis() {
   const allIvs = getAllInterviews().slice().reverse();
   const allAnalyzed = allIvs.filter(iv => iv.analysis && iv.analysis.summary);
   if (allAnalyzed.length > 0) {
@@ -2284,7 +2322,9 @@ function renderAllAnalysis() {
       if (a.impactEffort) merged.impactEffort.push(...a.impactEffort);
       if (a.userFlow) merged.userFlow.push(...a.userFlow);
     });
-    renderAnalysis(merged, null, 'res-content', null);
+    // Enforce dashboard language on merged analysis before rendering
+    const translated = await _translateAnalysis(merged);
+    renderAnalysis(translated, null, 'res-content', null);
   } else if (allIvs.length) {
     renderAnalysis({}, allIvs[0], 'res-content', allIvs[0]);
   } else {
