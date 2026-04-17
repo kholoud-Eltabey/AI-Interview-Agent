@@ -2577,7 +2577,8 @@ async function renderResults(d) {
   const hasRealData = !!(d && (d.summary || (d.insights && d.insights.length)));
   if (hasRealData) {
     const curIv = { lastQuestionSeen: S.mainAsked, totalQuestions: S.numQ };
-    renderAnalysis(d, curIv, 'res-content', null);
+    const curRawIv = { answers: extractQA() };
+    renderAnalysis(d, curIv, 'res-content', curRawIv);
     dbTab('analysis');
   } else {
     // Show aggregated analysis from all interviews that have been analyzed
@@ -2631,7 +2632,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
   const ivId = rawIv && rawIv.id;
   const hasAnswers = rawIv && rawIv.answers && rawIv.answers.length > 0;
   if (S.isResearcher && iv) {
-    const reached = iv.lastQuestionSeen || 0;
+    const reached = (rawIv && rawIv.answers) ? rawIv.answers.length : (iv.lastQuestionSeen || 0);
     const total   = iv.totalQuestions   || S.numQ || 0;
     const pct     = total > 0 ? Math.round((reached / total) * 100) : 0;
     if (total > 0) {
