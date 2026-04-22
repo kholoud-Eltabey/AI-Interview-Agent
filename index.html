@@ -408,7 +408,12 @@ a:focus-visible,
 }
 
 /* Sidebar recent items */
-.sb-rc-item { border-radius: var(--rxs); cursor: pointer; transition: background var(--tr), color var(--tr), border-color var(--tr); border: 1.5px solid transparent; }
+.sb-rc-item { border-radius: var(--rxs); cursor: pointer; transition: background var(--tr), color var(--tr), border-color var(--tr); border: 1.5px solid transparent; position: relative; }
+.iv-del-btn { opacity: 0; pointer-events: none; transition: opacity 0.15s; background: transparent; border: none; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--muted); flex-shrink: 0; }
+.iv-del-btn:hover { color: var(--danger) !important; background: rgba(157,121,130,0.12); }
+.sb-rc-item:hover .iv-del-btn,
+.iv-card-row:hover .iv-del-btn { opacity: 1; pointer-events: auto; }
+[data-theme="dark"] .iv-del-btn:hover { background: rgba(200,170,175,0.12); }
 .sb-rc-item:hover,
 .sb-rc-item:focus-visible { outline: none; background: #fff; color: #0B5E57; border-color: #0B5E57; }
 .sb-rc-item.active { background: rgba(11, 94, 87, 0.1); color: #0B5E57; font-weight: 500; border-color: transparent; }
@@ -1410,7 +1415,7 @@ const TR = {
     dbGlance: 'Here\'s a summary of your research', dbAllSessions: 'All recorded sessions',
     dbAiInsights: 'AI-generated insights per session', dbCrossDesc: 'Select interviews to analyze together',
     dbTotal: 'Total', dbCompleted: 'Completed', dbIncomplete: 'Incomplete', dbRate: 'Completion Rate',
-    dbLatest: 'Latest Interviews', dbRecent: 'Recent',
+    dbLatest: 'Latest Interviews', dbRecent: 'Recent', dbDeleteConfirm: 'Delete this interview? This cannot be undone.',
     dbNotes: 'Notes', dbSummary: 'Summary', dbInsightsTab: 'Insights', dbQuotes: 'Quotes', dbUxIssues: 'UX Issues',
     dbNoData: 'No interviews yet', dbNoAnalysis: 'No analysis — interview not yet analyzed',
     dbSelectHint: 'Select interviews below to run cross analysis',
@@ -1533,7 +1538,7 @@ const TR = {
     dbGlance: 'إليك ملخص أبحاثك', dbAllSessions: 'كل الجلسات المسجلة',
     dbAiInsights: 'استنتاجات مولّدة بالذكاء الاصطناعي', dbCrossDesc: 'اختر مقابلات لتحليلها معاً',
     dbTotal: 'المجموع', dbCompleted: 'مكتملة', dbIncomplete: 'غير مكتملة', dbRate: 'نسبة الإكمال',
-    dbLatest: 'آخر المقابلات', dbRecent: 'الأخيرة',
+    dbLatest: 'آخر المقابلات', dbRecent: 'الأخيرة', dbDeleteConfirm: 'حذف هذه المقابلة؟ لا يمكن التراجع عن هذا.',
     dbNotes: 'ملاحظات', dbSummary: 'ملخص', dbInsightsTab: 'استنتاجات', dbQuotes: 'اقتباسات', dbUxIssues: 'مشاكل UX',
     dbNoData: 'لا توجد مقابلات بعد', dbNoAnalysis: 'لا يوجد تحليل — المقابلة لم تُحلَّل بعد',
     dbSelectHint: 'اختر مقابلات أدناه لتشغيل التحليل المقارن',
@@ -2627,6 +2632,20 @@ function saveInterview(analysis) {
   _postIvToAPI(record); // sync to KV (fire and forget)
 }
 
+function deleteInterview(id, e) {
+  if (e) e.stopPropagation();
+  if (!confirm(t('dbDeleteConfirm'))) return;
+  const idx = _ivCache.findIndex(x => x.id === id);
+  if (idx === -1) return;
+  _ivCache.splice(idx, 1);
+  localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
+  // refresh all visible areas
+  renderSbRecent();
+  renderOverview();
+  renderInterviewsTab();
+  renderCrossTab();
+}
+
 // kept as no-op for backward compat (renderResults calls it)
 function renderHistory() {}
 function renderNotes()   {}
@@ -2989,8 +3008,13 @@ function renderSbRecent() {
   const lbl = `<span class="block text-muted px-2 pt-2 pb-1" style="font-size:12px;font-weight:400;">${t('dbRecent')}</span>`;
   if (!all.length) { el.innerHTML = lbl; return; }
   el.innerHTML = lbl + all.map(iv => `
-    <div class="sb-rc-item px-2.5 py-1.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
-      <div class="text-app-text leading-tight" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
+    <div class="sb-rc-item px-2.5 py-1.5 flex items-center gap-1" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
+      <div class="flex-1 text-app-text leading-tight" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
+      <button class="iv-del-btn" onclick="deleteInterview('${iv.id}',event)" title="${t('dbDeleteConfirm').split('?')[0]}">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="2,4 14,4"/><path d="M5,4V2h6v2"/><path d="M3,4l1,10h8l1-10"/>
+        </svg>
+      </button>
     </div>`).join('');
 }
 
@@ -3023,6 +3047,11 @@ function renderOverview() {
           <span class="text-muted" style="font-size:12px;font-weight:400;">${fmtDT(iv.date)}</span>
         </div>
         ${badge}
+        <button class="iv-del-btn" onclick="deleteInterview('${iv.id}',event)" title="${t('dbDeleteConfirm').split('?')[0]}">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="2,4 14,4"/><path d="M5,4V2h6v2"/><path d="M3,4l1,10h8l1-10"/>
+          </svg>
+        </button>
       </div>`;
     }).join('')}</div>` : '';
 }
