@@ -3006,13 +3006,8 @@ function renderSbRecent() {
   const lbl = `<span class="block text-muted px-2 pt-2 pb-1" style="font-size:12px;font-weight:400;">${t('dbRecent')}</span>`;
   if (!all.length) { el.innerHTML = lbl; return; }
   el.innerHTML = lbl + all.map(iv => `
-    <div class="sb-rc-item px-2.5 py-1.5 flex items-center gap-1" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
-      <div class="flex-1 text-app-text leading-tight" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
-      <button class="iv-del-btn" onclick="deleteInterview('${iv.id}',event)" title="${t('dbDeleteConfirm').split('?')[0]}">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="2,4 14,4"/><path d="M5,4V2h6v2"/><path d="M3,4l1,10h8l1-10"/>
-        </svg>
-      </button>
+    <div class="sb-rc-item px-2.5 py-1.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
+      <div class="text-app-text leading-tight" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
     </div>`).join('');
 }
 
