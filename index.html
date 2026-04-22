@@ -3129,6 +3129,11 @@ function ivRowHtml(iv, fmt, expandable) {
           <span class="text-muted whitespace-nowrap shrink-0" style="font-size:12px;font-weight:400;min-width:30px;text-align:end;">${pct}%</span>
         </div>` : ''}
       </div>
+      <button class="iv-del-btn" onclick="deleteInterview('${iv.id}',event)" title="${t('dbDeleteConfirm').split('?')[0]}">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="2,4 14,4"/><path d="M5,4V2h6v2"/><path d="M3,4l1,10h8l1-10"/>
+        </svg>
+      </button>
     </div>
     ${bodyHtml}
   </div>`;
