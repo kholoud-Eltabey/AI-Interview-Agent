@@ -31,6 +31,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | **Languages** | Gulf Arabic / English — switchable at any time |
 | **Run** | Open `index.html` directly in a browser, or `npx serve .` |
 
+**Other files:**
+- `_headers` — Cloudflare Pages cache-control headers (no-cache for `/` and `/index.html`)
+
 ---
 
 ## 1. Four-Page Flow
@@ -92,10 +95,42 @@ const S = {
 | `researcher_pw` | Legacy password field (mirrors `researcher_pin`) |
 | `skoon_session` | In-progress interview JSON — cleared on completion |
 | `skoon_interviews` | Append-only array of all interviews — never deleted |
+| `interview.businessName` | Business name for GPT prompts (overrides default `Skoon`) |
+| `interview.goal` | Interview goal — read by `getCtx('goal')` |
+| `interview.audience` | Target audience — read by `getCtx('audience')` |
+| `interview.prompt` | Custom analysis instructions appended to `_buildAnalysisSys()` |
+
+**Legacy keys still supported via `getCtx()` fallback:**
+- `skoon_goal` → falls back to `interview.goal`
+- `skoon_audience` → falls back to `interview.audience`
+- `custom_analysis_prompt` → falls back to `interview.prompt`
 
 ---
 
-## 5. Interview Persistence
+## 5. Context Helper — `getCtx()` / `_CTX_DEFS`
+
+```js
+// Default values when no localStorage entry exists
+const _CTX_DEFS = {
+  businessName: 'Skoon',
+  goal: '',
+  audience: '',
+  prompt: '',
+};
+
+// Read context with fallback chain:
+// interview.<field>  →  legacy key  →  _CTX_DEFS default
+function getCtx(field) { ... }
+```
+
+`getCtx()` is the single source of truth for all dynamic interview context:
+- `startInterview()` calls `getCtx('goal')`, `getCtx('audience')`, `getCtx('businessName')`
+- `_buildAnalysisSys(lang)` appends `getCtx('prompt')` when set
+- Setup prefill fields read from `getCtx()` on page load
+
+---
+
+## 6. Interview Persistence
 
 ```js
 // Shape of each saved record
@@ -104,6 +139,7 @@ const S = {
   num,                   // sequential 1-based number
   date,                  // ISO date string
   lang,
+  analysisLang,          // lang in which analysis was generated/last translated
   completed,             // true when fully saved
   goal, audience,
   lastQuestionSeen,      // S.mainAsked at save time
@@ -118,10 +154,11 @@ const S = {
 - `saveInterview(analysis)` checks `S._iid` to prevent duplicates
 - `analyzeStoredInterview(id)` — re-runs GPT analysis on any stored interview and saves the result back
 - `getInterviewNumber(id)` — returns sequential 1-based number (oldest = #1)
+- `_ivCache` — in-memory mirror of `skoon_interviews`; synced to localStorage on every write
 
 ---
 
-## 6. Researcher Access
+## 7. Researcher Access
 
 **Hidden from regular users — completely absent from DOM.**
 
@@ -137,13 +174,13 @@ const S = {
 
 ---
 
-## 7. Researcher Dashboard — 4 Tabs
+## 8. Researcher Dashboard — 4 Tabs
 
 | Tab | ID | Content |
 |-----|----|---------|
 | Overview | `db-pane-overview` | Greeting, stat cards (total/done/incomplete/rate), latest 5 interviews |
 | Interviews | `db-pane-interviews` | All interviews as expandable cards with tabs (Notes, Summary, Insights, Quotes, UX Issues) |
-| Analysis | `db-pane-analysis` | Full GPT analysis for selected interview (see §8) |
+| Analysis | `db-pane-analysis` | Full GPT analysis for selected interview (see §9) |
 | Cross Analysis | `db-pane-insights` | Analyze multiple/all completed interviews together |
 
 **Sidebar UI:**
@@ -158,7 +195,7 @@ const S = {
 
 ---
 
-## 8. Analysis Pipeline
+## 9. Analysis Pipeline
 
 ```
 concludeInterview()
@@ -183,7 +220,7 @@ analyzeStoredInterview(id)        (researcher triggers manually from dashboard)
 
 ---
 
-## 9. Analysis Sections
+## 10. Analysis Sections
 
 All 10 fields always requested from GPT-4o:
 
@@ -198,18 +235,41 @@ All 10 fields always requested from GPT-4o:
 | `empathy` | Researcher only |
 | `journey` | Researcher only |
 | `impactEffort` | Researcher only |
-| `userFlow` | Researcher only |
+| `uxIssues` | Researcher only |
 
 **Fixed enum values — always English even in Arabic mode:**
 - `sentiment`: `positive` / `neutral` / `negative`
 - `impact` / `effort`: `High` / `Medium` / `Low`
 - `priority`: `Do First` / `Schedule` / `Delegate` / `Drop`
+- `severity` / `frequency` / `criticality` / `costToFix`: `High` / `Medium` / `Low`
 
 **Empathy Map labels:** plain text only — no emoji (Thinks / Feels / Says / Does)
 
 ---
 
-## 10. Cross Analysis
+## 11. UX Issues Table
+
+Rendered inside `renderAnalysis()`. Structure: 5 columns — Issue, Frequency, Severity, Criticality, Cost to Fix.
+
+**No legend cards at top.** No description text under issue title. No recommendation column.
+
+**Formula block below the table** (compact, two cards side by side):
+- Left card: scale definitions (Frequency 1–5, Severity 1–5, Criticality formula)
+- Right card: `Criticality = (Severity + Frequency) ÷ 2` highlighted + strategy note
+
+**Chip classes:**
+```css
+.ie-hi { background:#F5D7CD; color:#7a3a42; }  /* High */
+.ie-md { background:#FAF4E6; color:#8a6820; }  /* Medium */
+.ie-lo { background:#DDE8E4; color:#1a5a52; }  /* Low */
+```
+Dark mode chips follow deep palette-family backgrounds.
+
+**Data field:** `iv.analysis.uxIssues` (array of objects). Each object uses `u.issue` for the title text (not `u.description`, not `u.title`).
+
+---
+
+## 12. Cross Analysis
 
 **Tab: "التحليل المقارن" / "Cross Analysis"**
 
@@ -221,19 +281,52 @@ All 10 fields always requested from GPT-4o:
 
 ---
 
-## 11. CSS Variables & Design Tokens
+## 13. CSS Variables & Design Tokens
 
 ```css
 --primary: #0B5E57        /* teal */
 --phover:  #094D47
 --plight:  rgba(11,94,87,0.08)   /* active/selected bg */
 --phlight: rgba(11,94,87,0.04)   /* hover bg (lighter) */
---bg, --surface, --border, --text, --muted, --danger, --accent
+--bg, --surface, --border, --text, --muted, --accent
+
+--danger: #9D7982   /* light mode — dusty rose (replaces red) */
+--danger: #c8aaaf   /* dark mode */
 ```
 
 Dark mode overrides via `[data-theme="dark"]`.
 
-**Progress bars** — uniform `3px` height everywhere:
+### Beach Palette (chips, badges, row labels)
+
+Used for all semantic chips and status indicators — **no yellow, no blue, no red anywhere**:
+
+| Token | Hex | Use |
+|-------|-----|-----|
+| Mint | `#EAF3EE` | Completed badge, journey row labels, `.badge-completed` |
+| Cream | `#FAF4E6` | Medium chip, neutral sentiment, `.ie-md`, `.js-neu` |
+| Blush | `#F5D7CD` | Partial badge, high/danger chip, `.badge-partial`, `.ie-hi`, `.js-neg` |
+| Lavender | `#C6C5CA` | (reserved / muted) |
+| Sage | `#DDE8E4` | Low chip, `.ie-lo` |
+| Pale mint | `#F9FAEA` | Early badge, `.badge-early` |
+
+### Botanical Palette (Journey Map phase headers only)
+
+5-colour palette for `.jm-head-cell` phase title cells:
+
+| Col | Light bg | Dark bg |
+|-----|----------|---------|
+| 0 | `#E3DBD3` / text `#3a2e28` | `#322e2a` / text `#ede8e2` |
+| 1 | `#9CB2A5` / text `#1a3228` | `#1e2e26` / text `#c8ddd6` |
+| 2 | `#8BA4B3` / text `#162535` | `#1a2530` / text `#b8d0de` |
+| 3 | `#C8B7C9` / text `#3a1f42` | `#2a2030` / text `#dccee0` |
+| 4 | `#9D7982` / text `#fff`    | `#2e2028` / text `#e0c8cc` |
+| 5+ | repeats col 0 pattern | |
+
+**Journey note cards** (`.jm-note`): always `background: var(--surface)`, `border: 1px solid var(--border)` — no column colour.
+
+**Row labels** (`.jm-row-label`) and base head cells (`.jm-head-cell`): `background: #EAF3EE` (light mint). Dark: `rgba(26, 48, 40, 0.55)`.
+
+### Progress bars — uniform `3px` height everywhere
 - Chat: `.prog-track { height: 3px }`
 - Interview cards: `h-[3px]`
 - Analysis tracker: `height:3px` inline
@@ -252,7 +345,42 @@ Dark mode overrides via `[data-theme="dark"]`.
 
 ---
 
-## 12. RTL / Bilingual Layout
+## 14. Interview Card Status Badges
+
+`ivStatusBadge(reached, total)` — returns colored badge using CSS classes (no inline color values):
+
+| Condition | Badge | Class |
+|-----------|-------|-------|
+| `reached >= total` | مكتملة / Completed | `.badge-completed` (mint `#EAF3EE`) |
+| `reached >= ceil(total/2)` | منتصف / Partial | `.badge-partial` (blush `#F5D7CD`) |
+| `reached > 0` | بداية / Early | `.badge-early` (pale mint `#F9FAEA`) |
+| `reached === 0` | لم تكتمل / Incomplete | `bg-[var(--bg)]` + border |
+
+**Badge typography:** `font-family: IBM Plex Sans / IBM Plex Sans Arabic`, `font-size: 12px`, `font-weight: 400`, `color: var(--text)` — **no colored text, charcoal in light / gray in dark only**.
+
+All badges: `min-width: 52px`, uniform size.
+
+---
+
+## 15. Interview Card Tabs — Language Enforcement
+
+Cards in the Interviews tab have 4 content panes: Summary, Insights, Quotes, UX Issues.
+
+Each pane has two IDs:
+- Outer: `ivp-{id}-{tab}` — the tab pane container
+- Inner: `ivp-{id}-{tab}-body` — the content div (updated by `_updateCardContent`)
+
+**`toggleIvCard(ivId)`** is **async**. On expand, if `iv.analysisLang !== S.lang`:
+1. Shows "Translating…" placeholder in all 4 body divs
+2. Calls `_enforceAnalysisLang(iv.analysis, S.lang, true)` silently
+3. Saves translated analysis back to `_ivCache` + localStorage with `analysisLang` set
+4. Calls `_updateCardContent(ivId, analysis)` to replace placeholders
+
+**`_updateCardContent(ivId, analysis)`** — updates all 4 body divs from an analysis object without re-rendering the entire card.
+
+---
+
+## 16. RTL / Bilingual Layout
 
 - `[dir="rtl"]` on `<html>` — set by `cycleLang()`
 - **Always CSS logical properties**: `margin-inline-start`, `padding-inline-end`, `border-inline-start`
@@ -263,7 +391,7 @@ Dark mode overrides via `[data-theme="dark"]`.
 
 ---
 
-## 13. Chat Input Area
+## 17. Chat Input Area
 
 **Layout:**
 ```html
@@ -293,7 +421,7 @@ Dark mode overrides via `[data-theme="dark"]`.
 
 ---
 
-## 14. Profile Panel (`sb-profile-panel`)
+## 18. Profile Panel (`sb-profile-panel`)
 
 Absolute overlay inside `#res-panel` sidebar nav.
 
@@ -309,22 +437,7 @@ Absolute overlay inside `#res-panel` sidebar nav.
 
 ---
 
-## 15. Interview Card Status Badges
-
-`ivStatusBadge(reached, total)` — returns colored badge:
-
-| Condition | Badge | Color |
-|-----------|-------|-------|
-| `reached >= total` | مكتملة / Completed | Green |
-| `reached >= ceil(total/2)` | منتصف / Partial | Amber |
-| `reached > 0` | بداية / Early | Blue |
-| `reached === 0` | لم تكتمل / Incomplete | Gray |
-
-All badges: `min-width: 52px`, uniform size.
-
----
-
-## 16. Language Enforcement in System Prompts
+## 19. Language Enforcement in System Prompts
 
 All GPT-4o system prompts enforce strict language consistency. **Never weaken these rules.**
 
@@ -332,18 +445,26 @@ All GPT-4o system prompts enforce strict language consistency. **Never weaken th
 - **Arabic:** Opens with an explicit block: *"استجب بالعربية الخليجية فقط في كل رسالة بدون استثناء. ممنوع أي كلمة إنجليزية عدا اسم 'Skoon'. إذا رد المستخدم بالإنجليزية، واصل بالعربية الخليجية."*
 - **English:** Opens with: *"Respond in English ONLY in every single message. Never switch to Arabic or any other language, even if the participant writes in Arabic."*
 
-### Analysis prompts — `analyze()`, `analyzeStoredInterview()`, `_doCrossAnalysis()`
-All three share the same sysMsg pattern:
-- **Arabic:** *"قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي."*
-- **English:** *"Language rule is absolute: every text value in the JSON must be in English only, with zero Arabic words or code-switching."*
+### Analysis prompts — `_buildAnalysisSys(lang)`
 
-**Allowed English exceptions in Arabic mode:** `"Skoon"`, `sentiment`, `impact`, `effort`, `priority` enum values only.
+All analysis calls (`analyze()`, `analyzeStoredInterview()`, `_doCrossAnalysis()`) use `_buildAnalysisSys(lang)`:
+
+- **Arabic:** Opens with: *"استجب باللغة العربية الخليجية فقط في كل كلمة. ممنوع استخدام أي كلمة إنجليزية في القيم النصية — هذا شرط مطلق."*
+- **English:** Opens with: *"Respond ONLY in English. Do not use any Arabic words in text values — this is absolute and non-negotiable."*
+- If `getCtx('prompt')` is set, it is **appended** at the end as additional researcher instructions.
+
+### Post-generation translation — `_enforceAnalysisLang(data, targetLang, quiet)`
+- Called when a stored interview's `analysisLang` does not match `S.lang`
+- Silently re-translates the analysis JSON via GPT
+- `quiet = true` suppresses UI spinners (used by `toggleIvCard`)
+
+**Allowed English exceptions in Arabic mode:** `"Skoon"`, `sentiment`, `impact`, `effort`, `priority` enum values, `severity`, `frequency`, `criticality`, `costToFix` values only.
 
 **Tone:** Arabic = natural Gulf Arabic UX research. English = professional, concise, evidence-based.
 
 ---
 
-## 17. Key Functions Reference
+## 20. Key Functions Reference
 
 | Function | Purpose |
 |----------|---------|
@@ -366,10 +487,15 @@ All three share the same sysMsg pattern:
 | `openProfilePanel()` | Open profile overlay panel |
 | `saveProfile()` | Save profile + passcode changes |
 | `getResearcherPin()` | Read pin from localStorage (default `1589`) |
-| `ivStatusBadge(reached, total)` | Status badge HTML |
+| `ivStatusBadge(reached, total)` | Status badge HTML (palette CSS classes) |
 | `ivRowHtml(iv, fmt, expandable)` | Interview card HTML |
+| `toggleIvCard(ivId)` | **async** — expand/collapse card, lazy-translate on open |
+| `_updateCardContent(ivId, analysis)` | Update card body divs after translation |
 | `getAllInterviews()` | Read + number all interviews from localStorage |
 | `getInterviewNumber(id)` | Sequential 1-based number for an interview |
+| `getCtx(field)` | Read context with fallback chain (see §5) |
+| `_buildAnalysisSys(lang)` | Build analysis system prompt with language header + custom instructions |
+| `_enforceAnalysisLang(data, lang, quiet)` | Post-generate translation of analysis JSON |
 | `scrollBtm()` | Scroll chat to bottom |
 | `toggleMic()` | Start/stop speech-to-text |
 | `buildSys()` | Build interview system prompt (AR/EN) |

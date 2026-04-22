@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Skoon — AI Interview Agent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,7 +59,7 @@ tailwind.config = {
   --plight:  rgba(11,94,87,0.08);
   --phlight: rgba(11,94,87,0.04);
   --accent:  #7C3AED;
-  --danger:  #DC2626;
+  --danger:  #9D7982;
   --sh:  0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04);
   --shlg: 0 12px 48px rgba(0,0,0,0.10);
   --r:   14px;
@@ -75,6 +78,7 @@ tailwind.config = {
   --plight:  rgba(15,118,110,0.12);
   --phlight: rgba(15,118,110,0.06);
   --accent:  #BC8CFF;
+  --danger:  #c8aaaf;
   --sh:  0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3);
   --shlg: 0 12px 48px rgba(0,0,0,0.6);
 }
@@ -226,12 +230,14 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .tb-center { text-align: center; }
 .hdr-icons { display: flex; gap: 10px; margin-bottom: 8px; align-self: flex-end; }
 .tb-brand {
-  display: block; width: 100%; text-align: center;
-  font-size:14px; font-weight: 500; letter-spacing: -0.2px;
+  display: inline-block; text-align: center;
+  font-size: 18px; font-weight: 600; letter-spacing: -0.3px;
   color: var(--primary); line-height: 1;
-  position: static; transform: none; transition: none; animation: none;
+  position: static; transform: none; transition: color var(--tr);
+  cursor: pointer; user-select: none; padding: 6px 4px;
 }
-.hdr-sub  { display: block; width: 100%; text-align: center; font-size:12px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.tb-brand:hover { color: var(--phover); }
+.hdr-sub  { display: block; width: 100%; text-align: center; font-size:13px; font-weight: 400; color: var(--muted); margin-top: 6px; }
 .tb-right { display: none; }
 
 /* ── PROGRESS ── */
@@ -436,7 +442,6 @@ a:focus-visible,
 
 /* Accent-colored quotes border — border-inline-start auto-flips to right in RTL */
 .ra-quote { border-inline-start: 3px solid var(--primary); }
-[dir="rtl"] .ra-quote { border-radius: var(--rxs) 0 0 var(--rxs); }
 
 .res-ttl { font-size:14px; font-weight: 500; letter-spacing: -0.2px; margin-bottom: 4px; }
 .res-sub { font-size:12px; font-weight: 400; color: var(--muted); margin-bottom: 28px; }
@@ -464,15 +469,15 @@ a:focus-visible,
 #res-content .rc { margin-bottom: 20px; }
 #res-content .grid2 { margin-bottom: 20px; }
 
-/* Result colour chips */
-.ci-r { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .ci-r { background:#450a0a; color:#fca5a5; }
-.ci-b { background:#dbeafe; color:#1d4ed8; } [data-theme="dark"] .ci-b { background:#0d2149; color:#93c5fd; }
-.ci-o { background:#ffedd5; color:#c2410c; } [data-theme="dark"] .ci-o { background:#431407; color:#fdba74; }
-.ci-g { background:#dcfce7; color:#15803d; } [data-theme="dark"] .ci-g { background:#14532d; color:#86efac; }
-.ci-p { background:#ede9fe; color:#6d28d9; } [data-theme="dark"] .ci-p { background:#2e1065; color:#c4b5fd; }
-.ci-y { background:#fef3c7; color:#b45309; } [data-theme="dark"] .ci-y { background:#451a03; color:#fde68a; }
-.cb-r { background:#dc2626; } .cb-b { background:#0B5E57; }
-.cb-o { background:#ea580c; } .cb-g { background:#16a34a; } .cb-p { background:#7c3aed; }
+/* Result colour chips — palette */
+.ci-r { background:#F5D7CD; color:#7a3a42; } [data-theme="dark"] .ci-r { background:#3d1e22; color:#f0c0c4; }
+.ci-b { background:#DDE8E4; color:#1a5a52; } [data-theme="dark"] .ci-b { background:#1a2e2a; color:#9ad0c4; }
+.ci-o { background:#FAF4E6; color:#8a6820; } [data-theme="dark"] .ci-o { background:#2e2a1a; color:#e4d4a0; }
+.ci-g { background:#EAF3EE; color:#0B5E57; } [data-theme="dark"] .ci-g { background:#1a3028; color:#7dccba; }
+.ci-p { background:#F9FAEA; color:#5a5a6a; } [data-theme="dark"] .ci-p { background:#2a2a32; color:#c8c8d8; }
+.ci-y { background:#FAF4E6; color:#8a6820; } [data-theme="dark"] .ci-y { background:#2e2a1a; color:#e4d4a0; }
+.cb-r { background:#9D7982; } .cb-b { background:#0B5E57; }
+.cb-o { background:#C8B7C9; } .cb-g { background:#9CB2A5; } .cb-p { background:#C6C5CA; }
 
 /* Overlay */
 .ov { position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; }
@@ -623,8 +628,7 @@ a:focus-visible,
 
 /* Quotes */
 .ra-quotes { display: flex; flex-direction: column; gap: 10px; }
-.ra-quote { font-size:12px; font-style: italic; line-height: 1.75; color: var(--text); border-inline-start: 3px solid var(--primary); padding: 11px 15px; background: var(--bg); border-radius: 0 var(--rxs) var(--rxs) 0; }
-[dir="rtl"] .ra-quote { border-radius: var(--rxs) 0 0 var(--rxs); }
+.ra-quote { font-size:12px; font-style: normal; line-height: 1.75; color: var(--text); border-inline-start: 3px solid var(--primary); padding: 11px 15px; background: var(--bg); border-radius: var(--rxs); }
 
 /* Persona cards */
 .persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px; }
@@ -639,7 +643,84 @@ a:focus-visible,
 .empathy-lbl  { font-size:12px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
 .empathy-items { font-size:12px; line-height: 1.75; color: var(--text); }
 
-/* Journey map */
+/* Journey map — matrix layout */
+.jm-wrap { overflow-x: auto; padding: 4px 0 8px; }
+.jm-grid {
+  display: grid;
+  min-width: 760px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.jm-head-cell {
+  padding: 12px 10px;
+  background: #EAF3EE;
+  border-inline-end: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px; font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+[data-theme="dark"] .jm-head-cell { background: rgba(26, 48, 40, 0.55); }
+.jm-head-cell:last-child { border-inline-end: none; }
+.jm-row-label {
+  padding: 14px 12px;
+  background: #EAF3EE;
+  border-inline-end: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  min-height: 92px;
+}
+[data-theme="dark"] .jm-row-label { background: rgba(26, 48, 40, 0.55); }
+.jm-row-title {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  margin-bottom: 6px;
+}
+.jm-row-desc {
+  font-size: 11px; font-weight: 400; color: var(--muted);
+  line-height: 1.5; font-style: italic;
+}
+.jm-cell {
+  padding: 10px;
+  border-inline-end: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 6px;
+  min-height: 92px;
+}
+.jm-cell:last-child { border-inline-end: none; }
+.jm-grid > .jm-cell:nth-last-child(-n+6),
+.jm-grid > .jm-row-label:last-of-type { border-bottom: none; }
+.jm-note {
+  font-size: 11px; font-weight: 400;
+  line-height: 1.45;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  word-break: break-word;
+}
+/* Phase title head cells — palette colours (العنوان only) */
+.jm-col-0.jm-head-cell { background: #E3DBD3; color: #3a2e28; }
+.jm-col-1.jm-head-cell { background: #9CB2A5; color: #1a3228; }
+.jm-col-2.jm-head-cell { background: #8BA4B3; color: #162535; }
+.jm-col-3.jm-head-cell { background: #C8B7C9; color: #3a1f42; }
+.jm-col-4.jm-head-cell { background: #9D7982; color: #fff;    }
+.jm-col-5.jm-head-cell { background: #E3DBD3; color: #3a2e28; }
+/* Dark mode — head cell reflections */
+[data-theme="dark"] .jm-col-0.jm-head-cell { background: #322e2a; color: #ede8e2; }
+[data-theme="dark"] .jm-col-1.jm-head-cell { background: #243028; color: #c0d1c8; }
+[data-theme="dark"] .jm-col-2.jm-head-cell { background: #202c36; color: #b2c5d1; }
+[data-theme="dark"] .jm-col-3.jm-head-cell { background: #2e2632; color: #dcc5de; }
+[data-theme="dark"] .jm-col-4.jm-head-cell { background: #2c2024; color: #c8aaaf; }
+[data-theme="dark"] .jm-col-5.jm-head-cell { background: #322e2a; color: #ede8e2; }
+/* Feeling note variants keep column color but add emoji */
+.jm-feel { display: flex; align-items: flex-start; gap: 6px; }
+.jm-feel-emo { font-size: 14px; line-height: 1.2; }
+.jm-empty { font-size: 11px; color: var(--muted); font-style: italic; }
+
 .journey-steps { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
 .journey-step {
   flex: 1; min-width: 145px;
@@ -650,9 +731,9 @@ a:focus-visible,
 .journey-action { font-size:12px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
 .journey-emotion { font-size:12px; font-weight: 400; color: var(--muted); line-height: 1.55; }
 .journey-sentiment { display: inline-block; margin-top: 9px; font-size:12px; font-weight: 400; padding: 3px 10px; border-radius: 8px; }
-.js-pos { background:#dcfce7; color:#15803d; } [data-theme="dark"] .js-pos { background:#14532d; color:#86efac; }
-.js-neu { background:#fef3c7; color:#b45309; } [data-theme="dark"] .js-neu { background:#451a03; color:#fde68a; }
-.js-neg { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .js-neg { background:#450a0a; color:#fca5a5; }
+.js-pos { background:#EAF3EE; color:#0B5E57; } [data-theme="dark"] .js-pos { background:#1a3028; color:#7dccba; }
+.js-neu { background:#FAF4E6; color:#8a6820; } [data-theme="dark"] .js-neu { background:#2e2a1a; color:#e4d4a0; }
+.js-neg { background:#F5D7CD; color:#7a3a42; } [data-theme="dark"] .js-neg { background:#3d1e22; color:#f0c0c4; }
 
 /* Impact vs Effort */
 .ie-table { width: 100%; border-collapse: collapse; font-size:12px; font-family: inherit; }
@@ -665,9 +746,23 @@ a:focus-visible,
 .ie-table td { padding: 12px 14px; border-bottom: 1px solid var(--primary); line-height: 1.55; vertical-align: middle; }
 .ie-table tr:last-child td { border-bottom: none; }
 .ie-chip { display: inline-block; font-size:12px; font-weight: 400; padding: 3px 10px; border-radius: 8px; white-space: nowrap; font-family: inherit; }
-.ie-hi { background:#fee2e2; color:#b91c1c; } [data-theme="dark"] .ie-hi { background:#450a0a; color:#fca5a5; }
-.ie-md { background:#fef3c7; color:#b45309; } [data-theme="dark"] .ie-md { background:#451a03; color:#fde68a; }
-.ie-lo { background:#dcfce7; color:#15803d; } [data-theme="dark"] .ie-lo { background:#14532d; color:#86efac; }
+.ie-hi { background:#F5D7CD; color:#7a3a42; } [data-theme="dark"] .ie-hi { background:#3d1e22; color:#f0c0c4; }
+.ie-md { background:#FAF4E6; color:#8a6820; } [data-theme="dark"] .ie-md { background:#2e2a1a; color:#e4d4a0; }
+.ie-lo { background:#DDE8E4; color:#1a5a52; } [data-theme="dark"] .ie-lo { background:#1a2e2a; color:#9ad0c4; }
+/* Status badges — soft background, dashboard text colour */
+.badge-completed,
+.badge-partial,
+.badge-early {
+  font-family: 'IBM Plex Sans','IBM Plex Sans Arabic',sans-serif;
+  font-size: 12px; font-weight: 400;
+  color: var(--text);
+}
+.badge-completed { background:#EAF3EE; }
+.badge-partial   { background:#F5D7CD; }
+.badge-early     { background:#F9FAEA; }
+[data-theme="dark"] .badge-completed { background:#1a3028; }
+[data-theme="dark"] .badge-partial   { background:#3d1e22; }
+[data-theme="dark"] .badge-early     { background:#2a2a32; }
 
 /* User Flow */
 .flow-steps { display: flex; flex-direction: column; gap: 0; }
@@ -765,6 +860,39 @@ a:focus-visible,
   </div>
 </div>
 
+<!-- EDIT CONTEXT MODAL -->
+<div class="ov" id="context-editor-ov" onclick="if(event.target===this)closeContextEditor()">
+  <div class="ov-card" style="max-width:540px;width:95%;text-align:start;padding:24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <span style="font-size:14px;font-weight:500;color:var(--text);" id="cxe-title">Edit Context</span>
+      <button onclick="closeContextEditor()" class="ic-btn" style="width:28px;height:28px;border-radius:var(--rxs);" title="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-biz">Business Name</div>
+      <input class="inp" id="cxe-biz" type="text" style="font-size:13px;font-weight:400;">
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-goal">Interview Goal</div>
+      <textarea class="inp" id="cxe-goal" rows="3" style="font-size:13px;font-weight:400;resize:vertical;min-height:66px;"></textarea>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-aud">Target Audience</div>
+      <textarea class="inp" id="cxe-aud" rows="3" style="font-size:13px;font-weight:400;resize:vertical;min-height:66px;"></textarea>
+    </div>
+    <div style="margin-bottom:18px;">
+      <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-prompt">Analysis Prompt</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.5;" id="cxe-desc">Optional custom instructions appended to the AI analysis system prompt.</div>
+      <textarea class="inp" id="cxe-prompt" rows="4" style="font-size:12px;font-weight:400;resize:vertical;min-height:80px;font-family:inherit;"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-s" style="flex:1;" onclick="resetContext()" id="cxe-reset-btn">Reset to Default</button>
+      <button class="btn btn-p" style="flex:1;padding:10px 0;" onclick="saveContext()" id="cxe-save-btn">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════ PAGE 0 — INTRO ═══════ -->
 <!-- ═══════ PAGE 0b — PRE-START ═══════ -->
 <div class="page" id="page-prestart">
@@ -816,10 +944,10 @@ a:focus-visible,
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
         </svg>
       </button>
-      <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-setup"></span></button>
+      <button class="ic-btn" onclick="toggleTheme()" title="Toggle theme"><span id="theme-icon-setup"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button>
     </div>
     <div class="tb-center">
-      <div class="tb-brand" onclick="onBrandClick()" style="cursor:default;user-select:none;">Skoon</div>
+      <div class="tb-brand" onclick="onBrandClick()" title="Skoon">Skoon</div>
       <div class="hdr-sub tagline-lbl">AI-Powered User Interview</div>
     </div>
   </div>
@@ -878,7 +1006,7 @@ a:focus-visible,
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
         </svg>
       </button>
-      <button class="ic-btn" onclick="toggleTheme()"><span id="theme-icon-chat"></span></button>
+      <button class="ic-btn" onclick="toggleTheme()" title="Toggle theme"><span id="theme-icon-chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button>
     </div>
     <div class="tb-center">
       <div class="tb-brand">Skoon</div>
@@ -1037,7 +1165,7 @@ a:focus-visible,
       <div class="px-4 pt-4 pb-2 shrink-0">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-[14px] font-bold text-primary" id="sb-brand-name-el">Skoon</div>
+            <div class="text-primary" style="font-size:18px;font-weight:600;letter-spacing:-0.3px;" id="sb-brand-name-el">Skoon</div>
             <div class="text-[12px] text-muted font-medium" id="sb-tag">Research Dashboard</div>
           </div>
           <!-- Small lang + theme icons -->
@@ -1070,7 +1198,7 @@ a:focus-visible,
         <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" id="sb-nav-interviews" onclick="dbTab('interviews')">
           <span class="w-4 text-center shrink-0 text-[12px]">◫</span><span id="sb-lbl-interviews">Interviews</span>
         </button>
-        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" id="sb-nav-analysis" onclick="dbTab('analysis')">
+        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" id="sb-nav-analysis" onclick="dbTab('analysis')" style="display:none">
           <span class="w-4 text-center shrink-0 text-[12px]">◎</span><span id="sb-lbl-analysis">Analysis</span>
         </button>
         <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" id="sb-nav-insights" onclick="dbTab('insights')">
@@ -1116,7 +1244,13 @@ a:focus-visible,
 
         <!-- TAB: ANALYSIS -->
         <div class="db-pane" id="db-pane-analysis">
-          <h1 class="text-app-text mb-0.5 leading-[1.6]" style="font-size:14px;font-weight:500;" id="db-ttl-analysis">Analysis</h1>
+          <div class="flex items-center justify-between mb-0.5 flex-wrap gap-2">
+            <h1 class="text-app-text leading-[1.6]" style="font-size:14px;font-weight:500;" id="db-ttl-analysis">Analysis</h1>
+            <button class="btn btn-s" onclick="openContextEditor()" id="edit-ctx-btn-analysis" style="font-size:12px;font-weight:400;padding:5px 12px;gap:5px;display:inline-flex;align-items:center;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span id="edit-ctx-analysis-lbl">Edit Context</span>
+            </button>
+          </div>
           <p class="text-muted mb-4 leading-[1.6]" style="font-size:12px;font-weight:400;" id="db-sub-analysis">AI-generated insights per session</p>
           <div id="res-content"></div>
         </div>
@@ -1142,6 +1276,7 @@ a:focus-visible,
 
         <div class="flex justify-center gap-2.5 mt-8 pb-2" id="db-bottom-btns">
           <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
+          <button class="btn btn-s" onclick="openContextEditor()" id="edit-ctx-btn"><span id="edit-ctx-btn-lbl">Edit Context</span></button>
           <button class="btn btn-s" onclick="goHome()" id="s-home-btn">Home</button>
         </div>
       </div>
@@ -1218,11 +1353,43 @@ const TR = {
     personas:  'User Personas',
     empathy:   'Empathy Map',
     journey:   'User Journey Map',
+    jmSteps:      'User steps',       jmStepsDesc:    'What is each step of the user journey?',
+    jmActions:    'User actions',     jmActionsDesc:  'What action does the user take during each step?',
+    jmGoals:      'Goals & experiences', jmGoalsDesc: 'What is the user trying to accomplish?',
+    jmFeelings:   'Feelings and thoughts', jmFeelingsDesc: 'How does the user feel during this step?',
+    jmPains:      'Pain points',      jmPainsDesc:    'What is not working well? What causes friction?',
+    jmOpps:       'Opportunities',    jmOppsDesc:     'How might we address these pain points?',
     impactEff: 'Impact vs Effort',
-    userFlow:  'User Flow',
+    uxIssues:      'UX Issues & Cost to Fix',
+    uxIssue:       'Issue',
+    uxDesc:        'Description',
+    uxFreq:        'Frequency',
+    uxSev:         'Severity',
+    uxSevCategory: 'Severity Category',
+    uxCrit:        'Criticality',
+    uxCost:        'Cost to Fix',
+    uxRecommendation: 'Recommendation',
+    uxLegendFreq:      'Frequency: each issue is given a score based on how often it was observed.',
+    uxLegendSev:       'Severity: each issue is scored based on how disruptive it is for the user.',
+    uxLegendCost:      'Cost to Fix: estimated effort required to resolve the issue.',
+    uxLegendCrit:      'Criticality: average of severity and frequency — drives prioritisation.',
+    uxLegendTitle:     'How Scores Work',
+    uxLegendFreqShort: 'how often the issue appeared in the interview',
+    uxLegendSevShort:  'how much it disrupts the user experience',
+    uxLegendCritShort: 'average of frequency & severity — sets priority order',
+    uxFormulaTitle:    'Formula & Priority',
+    uxStrategy:        'Fix issues by criticality: 5 → 4 → 3 → 1–2. Within the same band, prioritise low-cost fixes first, then medium, then high.',
+    uxSevCat5: 'Usability Catastrophe',
+    uxSevCat4: 'Major Problem',
+    uxSevCat3: 'Minor Problem',
+    uxSevCat2: 'Cosmetic Problem',
+    uxSevCat1: 'Observation',
     emThinks:  'Thinks', emFeels: 'Feels', emSays: 'Says', emDoes: 'Does',
     sentPos:   'Positive', sentNeu: 'Neutral', sentNeg: 'Negative',
     pAge:      'Age', pGoal: 'Goal', pPain: 'Pain', pMotivation: 'Motivation',
+    pCity:     'City', pJob: 'Job', pEmotion: 'Emotional State', pRentalPref: 'Rental Preference',
+    pGender:   'Gender', pMale: 'Male', pFemale: 'Female',
+    pStaleHint: 'Personas in this analysis use generic role labels. Re-analyze to generate real named personas.',
     ieAction:  'Action', ieImpact: 'Impact', ieEffort: 'Effort', iePriority: 'Priority',
     ieHigh: 'High', ieMedium: 'Medium', ieLow: 'Low',
     ieDoFirst: 'Do First', ieSchedule: 'Schedule', ieDelegate: 'Delegate', ieDrop: 'Drop',
@@ -1239,7 +1406,7 @@ const TR = {
     rpUserView: 'User View', rpResView: 'Researcher View',
     rpOverview: 'Overview', rpInterviews: 'Interviews', rpInsights: 'Insights',
     dbTag: 'Research Dashboard', dbResearcher: 'Researcher', dbResRole: 'Research Mode',
-    dbDashboard: 'Dashboard', dbInterviews: 'Interviews', dbAnalysis: 'Analysis', dbInsights: 'Cross Analysis',
+    dbDashboard: 'Dashboard', dbInterviews: 'Interviews', dbAnalysis: 'Analysis', dbInsights: 'Analysis',
     dbGlance: 'Here\'s a summary of your research', dbAllSessions: 'All recorded sessions',
     dbAiInsights: 'AI-generated insights per session', dbCrossDesc: 'Select interviews to analyze together',
     dbTotal: 'Total', dbCompleted: 'Completed', dbIncomplete: 'Incomplete', dbRate: 'Completion Rate',
@@ -1272,6 +1439,8 @@ const TR = {
     prestartP4: 'You can stop at any time',
     prestartBtn: 'Start Interview',
     prestartBack: '← Back',
+    editCtxBtn:   'Edit Context',
+    editPromptBtn:   'Edit Context',
   },
   ar: {
     tagline:   'مقابلة مستخدم مدعومة بالذكاء الاصطناعي',
@@ -1307,11 +1476,43 @@ const TR = {
     personas:  'شخصيات المستخدمين',
     empathy:   'خريطة التعاطف',
     journey:   'رحلة المستخدم',
+    jmSteps:      'مراحل الرحلة',      jmStepsDesc:    'ما هي خطوات رحلة المستخدم؟',
+    jmActions:    'تصرفات المستخدم',   jmActionsDesc:  'ما الإجراء الذي يقوم به المستخدم في كل مرحلة؟',
+    jmGoals:      'الأهداف والتجارب', jmGoalsDesc:    'ماذا يحاول المستخدم أن يحقق؟',
+    jmFeelings:   'المشاعر والأفكار',  jmFeelingsDesc: 'كيف يشعر المستخدم خلال هذه المرحلة؟',
+    jmPains:      'نقاط الألم',        jmPainsDesc:    'ما الذي لا يعمل بشكل جيد؟ ما الذي يسبب الاحتكاك؟',
+    jmOpps:       'الفرص',             jmOppsDesc:     'كيف يمكن معالجة نقاط الألم هذه؟',
     impactEff: 'التأثير مقابل الجهد',
-    userFlow:  'تدفق المستخدم',
+    uxIssues:      'مشاكل تجربة المستخدم وتكلفة الإصلاح',
+    uxIssue:       'المشكلة',
+    uxDesc:        'الوصف',
+    uxFreq:        'التكرار',
+    uxSev:         'الخطورة',
+    uxSevCategory: 'تصنيف الخطورة',
+    uxCrit:        'الأهمية',
+    uxCost:        'تكلفة الإصلاح',
+    uxRecommendation: 'التوصية',
+    uxLegendFreq:      'التكرار: يتم إعطاء كل مشكلة درجة تكرار بناءً على عدد مرات حدوثها.',
+    uxLegendSev:       'الخطورة: يتم منح كل مشكلة درجة خطورة بناءً على تأثيرها على المستخدم.',
+    uxLegendCost:      'تكلفة الإصلاح: يمثل هذا العامل التكلفة المقدرة لإصلاح كل مشكلة.',
+    uxLegendCrit:      'الأهمية: متوسط الخطورة والتكرار — يحدد ترتيب الأولويات.',
+    uxLegendTitle:     'كيف تُحسب الدرجات',
+    uxLegendFreqShort: 'مرات ظهور المشكلة في المقابلة',
+    uxLegendSevShort:  'مدى تأثيرها على تجربة المستخدم',
+    uxLegendCritShort: 'متوسط التكرار والخطورة — يحدد ترتيب الأولوية',
+    uxFormulaTitle:    'المعادلة والأولوية',
+    uxStrategy:        'رتّب المشاكل تنازلياً حسب الأهمية: 5 → 4 → 3 → 1–2. داخل نفس الدرجة، ابدأ بالتكلفة المنخفضة ثم المتوسطة ثم العالية.',
+    uxSevCat5: 'كارثة استخدام',
+    uxSevCat4: 'مشكلة رئيسية',
+    uxSevCat3: 'مشكلة بسيطة',
+    uxSevCat2: 'مشكلة شكلية',
+    uxSevCat1: 'ملاحظة',
     emThinks:  'يفكر', emFeels: 'يشعر', emSays: 'يقول', emDoes: 'يفعل',
     sentPos:   'إيجابي', sentNeu: 'محايد', sentNeg: 'سلبي',
     pAge:      'العمر', pGoal: 'الهدف', pPain: 'نقطة الألم', pMotivation: 'الدافع',
+    pCity:     'المدينة', pJob: 'الوظيفة', pEmotion: 'الحالة العاطفية', pRentalPref: 'تفضيل طريقة الإيجار',
+    pGender:   'النوع', pMale: 'ذكر', pFemale: 'أنثى',
+    pStaleHint: 'الشخصيات في هذا التحليل تستخدم ألقاب عامة. أعد التحليل لتوليد شخصيات بأسماء حقيقية.',
     ieAction:  'الإجراء', ieImpact: 'التأثير', ieEffort: 'الجهد', iePriority: 'الأولوية',
     ieHigh: 'عالي', ieMedium: 'متوسط', ieLow: 'منخفض',
     ieDoFirst: 'نفّذ أولاً', ieSchedule: 'جدولة', ieDelegate: 'تفويض', ieDrop: 'تجاهل',
@@ -1328,7 +1529,7 @@ const TR = {
     rpUserView: 'وضع المستخدم', rpResView: 'وضع الباحث',
     rpOverview: 'نظرة عامة', rpInterviews: 'المقابلات', rpInsights: 'الاستنتاجات',
     dbTag: 'لوحة البحث', dbResearcher: 'الباحث', dbResRole: 'وضع الباحث',
-    dbDashboard: 'الرئيسية', dbInterviews: 'المقابلات', dbAnalysis: 'التحليل', dbInsights: 'التحليل المقارن',
+    dbDashboard: 'الرئيسية', dbInterviews: 'المقابلات', dbAnalysis: 'التحليل', dbInsights: 'التحليل',
     dbGlance: 'إليك ملخص أبحاثك', dbAllSessions: 'كل الجلسات المسجلة',
     dbAiInsights: 'استنتاجات مولّدة بالذكاء الاصطناعي', dbCrossDesc: 'اختر مقابلات لتحليلها معاً',
     dbTotal: 'المجموع', dbCompleted: 'مكتملة', dbIncomplete: 'غير مكتملة', dbRate: 'نسبة الإكمال',
@@ -1361,6 +1562,8 @@ const TR = {
     prestartP4: 'تقدر توقف في أي وقت تبي',
     prestartBtn: 'ابدأ المقابلة',
     prestartBack: 'رجوع →',
+    editCtxBtn:   'تعديل السياق',
+    editPromptBtn:   'تعديل السياق',
   },
 };
 const t = (k, ...a) => { const v = TR[S.lang][k]; return typeof v === 'function' ? v(...a) : (v ?? k); };
@@ -1370,14 +1573,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   // API key lives on the server — nothing to restore
   // Restore theme
   applyTheme(localStorage.getItem('app_theme') || 'light');
-  // Restore language (triggers renderTR which sets prefills)
-  applyLang(localStorage.getItem('app_language') || 'en');
 
-  // Mark goal/aud as user-edited if they type
-  ['inp-goal', 'inp-aud'].forEach(id => {
+  // Restore persisted goal/audience BEFORE applyLang so prefill doesn't overwrite them
+  const STORE_MAP = {
+    'inp-goal': { ivKey: 'interview.goal',     legacyKey: 'skoon_goal',     ctxField: 'goal'     },
+    'inp-aud':  { ivKey: 'interview.audience',  legacyKey: 'skoon_audience', ctxField: 'audience' },
+  };
+  Object.entries(STORE_MAP).forEach(([id, keys]) => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('input', () => { el.dataset.edited = '1'; });
+    if (!el) return;
+    const saved = getCtx(keys.ctxField);
+    if (saved && saved.trim()) { el.value = saved; el.dataset.edited = '1'; }
+    el.addEventListener('input', () => {
+      el.dataset.edited = '1';
+      localStorage.setItem(keys.ivKey,     el.value);
+      localStorage.setItem(keys.legacyKey, el.value); // keep legacy key in sync
+    });
   });
+
+  // Restore language (triggers renderTR which sets prefills only if fields are empty/default)
+  applyLang(localStorage.getItem('app_language') || 'en');
 
   // Load all interviews from KV (server) so dashboard always has fresh data
   await loadInterviewsFromAPI();
@@ -1471,16 +1686,26 @@ function renderTR() {
   set('res-sub',    t('resSub'));
   ph('chat-ta',     t('taPh'));
 
-  // Prefill goal / audience — only if user hasn't typed custom content
+  // Prefill goal / audience — restore from localStorage first, then translation default
   const gEl = document.getElementById('inp-goal');
   const aEl = document.getElementById('inp-aud');
   if (gEl) {
-    const isDefault = !gEl.dataset.edited || gEl.value === TR.en.goalPre || gEl.value === TR.ar.goalPre || gEl.value === '';
-    if (isDefault) gEl.value = t('goalPre');
+    const saved = getCtx('goal');
+    if (saved && saved.trim()) {
+      gEl.value = saved; gEl.dataset.edited = '1';
+    } else {
+      const isDefault = !gEl.dataset.edited || gEl.value === TR.en.goalPre || gEl.value === TR.ar.goalPre || !gEl.value.trim();
+      if (isDefault) gEl.value = t('goalPre');
+    }
   }
   if (aEl) {
-    const isDefault = !aEl.dataset.edited || aEl.value === TR.en.audPre || aEl.value === TR.ar.audPre || aEl.value === '';
-    if (isDefault) aEl.value = t('audPre');
+    const saved = getCtx('audience');
+    if (saved && saved.trim()) {
+      aEl.value = saved; aEl.dataset.edited = '1';
+    } else {
+      const isDefault = !aEl.dataset.edited || aEl.value === TR.en.audPre || aEl.value === TR.ar.audPre || !aEl.value.trim();
+      if (isDefault) aEl.value = t('audPre');
+    }
   }
 
   if (S.mainAsked > 0) renderProg();
@@ -1507,9 +1732,9 @@ function goTo(pid) {
 async function startInterview() {
   hideE('start-err');
   S.numQ     = 10;
-  S.goal     = document.getElementById('inp-goal').value.trim() || t('goalPre');
-  S.audience = document.getElementById('inp-aud').value.trim()  || t('audPre');
-  S.biz      = 'Skoon';
+  S.goal     = document.getElementById('inp-goal').value.trim() || getCtx('goal');
+  S.audience = document.getElementById('inp-aud').value.trim()  || getCtx('audience');
+  S.biz      = getCtx('businessName') || 'Skoon';
 
   S.msgs = []; S.mainAsked = 0; S.followUps = 0;
   S.waitingForAnswer = false; S.done = false;
@@ -1607,102 +1832,467 @@ function renderProg() {
 // The API key NEVER reaches the browser.
 // All AI requests go to /api/chat — the Worker holds the key as a server secret.
 async function callAI(messages, temp = 0.85, maxTok = 700) {
+  // Client-side timeout — slightly longer than server's 45s to let the server reply first
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(() => ctrl.abort(), 50_000);
+
   let res;
   try {
     res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages, temperature: temp, max_tokens: maxTok }),
+      signal: ctrl.signal,
     });
   } catch (netErr) {
-    console.error('[callAI] network error:', netErr.message);
-    throw new Error('Network error — could not reach /api/chat');
+    clearTimeout(timeoutId);
+    const isAbort = netErr && (netErr.name === 'AbortError' || /abort/i.test(netErr.message || ''));
+    const friendly = isAbort
+      ? 'Request timed out — the server did not respond in time.'
+      : `Network error — could not reach /api/chat (${netErr.message || 'unknown'})`;
+    console.error('[callAI]', isAbort ? 'timeout' : 'network error:', netErr.message);
+    const e = new Error(friendly);
+    e.code = isAbort ? 'timeout' : 'network_error';
+    throw e;
   }
+  clearTimeout(timeoutId);
+
   if (!res.ok) {
     const errText = await res.text().catch(() => '');
-    console.error('[callAI] /api/chat responded', res.status, errText.slice(0, 400));
-    let msg = `HTTP ${res.status}`;
-    try { const j = JSON.parse(errText); msg = j.error?.message || j.error || msg; } catch(_) {}
-    throw new Error(msg);
+    console.error('[callAI] /api/chat responded', res.status, errText.slice(0, 500));
+    let msg  = `HTTP ${res.status}`;
+    let code = `http_${res.status}`;
+    try {
+      const j = JSON.parse(errText);
+      if (j && j.error) {
+        if (typeof j.error === 'string') msg = j.error;
+        else {
+          if (j.error.message) msg  = j.error.message;
+          if (j.error.code)    code = j.error.code;
+        }
+      }
+    } catch(_) { /* non-JSON body — keep defaults */ }
+    const e = new Error(msg);
+    e.code   = code;
+    e.status = res.status;
+    throw e;
   }
-  const data = await res.json();
-  return data.choices[0].message.content.trim();
+
+  let data;
+  try { data = await res.json(); }
+  catch (parseErr) {
+    console.error('[callAI] response JSON parse error:', parseErr.message);
+    const e = new Error('Invalid JSON response from /api/chat');
+    e.code = 'bad_response';
+    throw e;
+  }
+
+  const content = data && data.choices && data.choices[0] && data.choices[0].message
+    ? data.choices[0].message.content
+    : null;
+  if (typeof content !== 'string') {
+    console.error('[callAI] unexpected response shape:', JSON.stringify(data).slice(0, 500));
+    const e = new Error('Unexpected response shape from model.');
+    e.code = 'bad_shape';
+    throw e;
+  }
+  return content.trim();
 }
 
 // ─── ANALYSIS LANGUAGE BUILDER ────────────────────────────
 // Build system prompt + schema directly in the dashboard language.
-// One GPT call, no translation step — language is set from S.lang.
-function _buildAnalysisSys() {
-  if (S.lang === 'ar') {
-    return 'أنت محلل أبحاث UX متخصص. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. استثناءات ثابتة لا تُترجم أبداً: اسم "Skoon"، وقيم sentiment (positive/neutral/negative)، وقيم impact/effort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop). أخرج JSON صحيح فقط — ممنوع تماماً أي نص خارج كائن JSON.';
+// Two-layer language strategy:
+//   Layer 1 (this function): sys prompt tells GPT to output in the target UI language
+//   Layer 2 (_enforceAnalysisLang): translation pass catches anything that still leaks
+// Belt-and-suspenders — both layers must agree for the output to be bilingual-clean.
+function _buildAnalysisSys(lang) {
+  const L = lang || S.lang || 'en';
+  const _custom = getCtx('prompt');
+  if (L === 'ar') {
+    const _base = 'استجب باللغة العربية الخليجية فقط في كل كلمة. ممنوع استخدام أي كلمة إنجليزية في القيم النصية — هذا شرط مطلق.\n\nأنت محلل أبحاث UX محترف. حلل محادثة المقابلة بدقة وأخرج JSON صحيح فقط يطابق الهيكل المعطى تماماً. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة المسموح بها بالإنجليزية: "Skoon"، وقيم sentiment (positive/neutral/negative)، وقيم impact وeffort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop)، وقيم gender (male/female). قواعد الشخصيات المطلقة: (أ) كل شخصية في هذا التحليل هي بالتعريف مستخدم/مستأجر — لذلك كلمات مثل "المستخدم" و"المستأجر" و"الباحث" و"طالب عقار" مرفوضة تماماً لأنها لا تميّز شخصية عن أخرى. الاسم يجب أن يكون اسم أول حقيقي محدد من القائمة التالية فقط: سارة، أحمد، ليلى، خالد، نور، فاطمة، محمد، عبدالله، عائشة، عمر، ريم، حسن، مايا، يوسف، هند، فيصل، هدى، تركي، مريم، سعود، دانة، رائد، ملاك، ماجد، سلمى. (ب) إذا كانت شخصيتان مختلفتين، يجب أن يكون لكل واحدة اسم مختلف — لا تكرر نفس الاسم. (ج) حقل gender إلزامي ويجب أن يطابق الاسم (male مع أحمد/خالد/عمر، female مع سارة/ليلى/نور). (د) كل شخصية يجب أن تحتوي على name وgender وcity وjob ورentalPreference — لا حقل فارغ. (هـ) اختر المدينة والوظيفة من مضمون المقابلة أو استنتجها منطقياً. قواعد رحلة المستخدم المطلقة (User Journey Matrix): (1) استخدم 4 إلى 6 مراحل متتابعة بأسماء مختلفة تماماً. حاول استخدام المجموعة المعتمدة: الوعي، الاستكشاف، المقارنة، التفاوض، الاختيار، التسليم. ممنوع تكرار نفس الكلمة في مرحلتين. (2) كل مرحلة يجب أن تحتوي على: actions (2-4 إجراءات)، goals (1-3 أهداف)، feelings (1-3 مشاعر مع sentiment)، pains (0-3 نقاط ألم)، opportunities (0-3 فرص تحسين). (3) كل عنصر في actions يبدأ بفعل مختلف عن بقية الرحلة. (4) كل feeling يجب أن يكون بصياغة مختلفة. (5) opportunities اكتبها كحلول عملية لـ Skoon تعالج نقاط الألم. قواعد uxIssues المطلقة: (أ) كل مشكلة لها frequency (1-5) وseverity (1-5) كأرقام صحيحة فقط. (ب) severityCategory يجب أن يطابق severity بدقة: 5=Usability Catastrophe، 4=Major Problem، 3=Minor Problem، 2=Cosmetic Problem، 1=Observation. (ج) costToFix يجب أن تكون Low أو Medium أو High فقط. (د) قيم severityCategory وcostToFix تبقى بالإنجليزية (enum)، أما issue وdescription وrecommendation فبالعربية الخليجية. ممنوع أي شرح أو Markdown — JSON خام فقط.';
+    return _custom ? _base + '\n\nتعليمات إضافية من الباحث:\n' + _custom : _base;
   }
-  return 'You are a senior UX research analyst. Language rule is absolute: every text value in the JSON must be in English only — zero Arabic words or code-switching. Fixed enums that must never be changed: sentiment (positive/neutral/negative), impact/effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). Product name: "Skoon". Output valid JSON only — no text outside the JSON object.';
+  const _baseEn = 'Respond ONLY in English. Do not use any Arabic words in text values — this is absolute and non-negotiable.\n\nYou are a senior UX research analyst. Analyze the interview conversation thoroughly and output ONLY a valid JSON object matching the provided schema exactly. Language rule is absolute: every text value in the JSON must be in professional English only, with zero Arabic words or code-switching. ABSOLUTE persona rules: (a) Every persona in this analysis is BY DEFINITION a rental user — therefore labels like "User", "The User", "Rental User", "Rental Seeker", "Tenant", "Customer", "Participant", "Searcher" are FORBIDDEN because they do not distinguish one persona from another. `name` MUST be a specific real first name from this pool ONLY: Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, Dana, Raed, Malak, Majed, Salma. (b) If there are multiple personas, each MUST have a distinct name — never repeat. (c) `gender` is REQUIRED and MUST match the chosen name (male for Ahmed/Khalid/Omar, female for Sara/Layla/Noor, etc.). (d) Every persona MUST include name, gender, city, job, and rentalPreference — no empty field. (e) Pick city and job from interview content or infer logically. ABSOLUTE user-journey matrix rules: (1) Produce 4-6 sequential phases with DISTINCT names. Prefer the canonical set: Awareness, Explore, Compare, Negotiate, Select, Delivery. Never repeat the same key word across phases. (2) Each phase MUST include: actions (2-4 concrete actions), goals (1-3 goals/experiences), feelings (1-3 feeling objects with `text` + `sentiment`), pains (0-3 pain points), opportunities (0-3 improvement ideas for Skoon). (3) Every action starts with a different verb from every other action in the whole journey. (4) Vary feeling wording across phases. (5) Write opportunities as concrete product improvements that address the pains. ABSOLUTE uxIssues rules: (a) Each issue has integer frequency (1-5) and integer severity (1-5). (b) severityCategory MUST match severity score exactly: 5=Usability Catastrophe, 4=Major Problem, 3=Minor Problem, 2=Cosmetic Problem, 1=Observation. (c) costToFix MUST be exactly \'Low\', \'Medium\', or \'High\'. (d) severityCategory and costToFix stay in English as enum values; issue/description/recommendation are in the target content language. No explanations, no markdown — raw JSON only.';
+  return _custom ? _baseEn + '\n\nAdditional researcher instructions:\n' + _custom : _baseEn;
 }
 
 function _buildAnalysisSchema() {
-  if (S.lang === 'ar') {
-    return JSON.stringify({
-      summary: "ملخص من 2-3 جمل عن أبرز ما خرجت به المقابلة",
-      insights: ["استنتاج رئيسي 1","استنتاج رئيسي 2","استنتاج رئيسي 3"],
-      quotes: ["اقتباس حرفي من المشارك 1","اقتباس حرفي 2"],
-      patterns: ["نمط سلوكي أو فكري 1","نمط 2","نمط 3"],
-      recommendations: ["توصية قابلة للتنفيذ 1","توصية 2","توصية 3"],
-      personas: [{name:"اسم الشخصية",age:"الفئة العمرية",goal:"الهدف الرئيسي",pain:"نقطة الألم الرئيسية",motivation:"الدافع الأساسي"}],
-      empathy: {thinks:["فكرة 1"],feels:["شعور 1"],says:["ما يقوله 1"],does:["ما يفعله 1"]},
-      journey: [{phase:"المرحلة",action:"ما يفعله المستخدم",emotion:"الحالة العاطفية",sentiment:"positive|neutral|negative"}],
-      impactEffort: [{action:"الإجراء",impact:"High|Medium|Low",effort:"High|Medium|Low",priority:"Do First|Schedule|Delegate|Drop"}],
-      userFlow: [{step:"اسم الخطوة",description:"وصف مختصر"}]
-    });
-  }
+  // Always English — language is handled entirely by _enforceAnalysisLang after generation.
   return JSON.stringify({
     summary: "2-3 sentence overview of key findings",
     insights: ["key insight 1","key insight 2","key insight 3"],
     quotes: ["verbatim participant quote 1","verbatim quote 2"],
     patterns: ["recurring behaviour or attitude 1","pattern 2","pattern 3"],
     recommendations: ["concrete actionable recommendation 1","recommendation 2","recommendation 3"],
-    personas: [{name:"Persona Name",age:"age range",goal:"main goal",pain:"main pain point",motivation:"key motivation"}],
+    personas: [{name:"REQUIRED specific human first name. CONTEXT: every persona here is already a rental user — labels like 'User' or 'Rental Seeker' are redundant and forbidden. Pick a specific real first name that DIFFERENTIATES this persona from others. Use ONLY names from this pool: Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, سارة, أحمد, ليلى, خالد, نور, فاطمة, محمد, عبدالله, عائشة, عمر, ريم, حسن, مايا, يوسف, هند, فيصل, هدى, تركي, مريم, سعود. NEVER output: 'User', 'The User', 'Rental User', 'Rental Seeker', 'Tenant', 'Participant', 'Customer', 'المستخدم', 'المستأجر', 'الباحث'",gender:"REQUIRED — must be exactly 'male' OR 'female' (English lowercase, enum value) — must match the chosen first name",age:"age range like 25-32",city:"REQUIRED Saudi city of residence like Riyadh, Jeddah, Dammam, الرياض, جدة, الدمام — never empty",job:"REQUIRED specific occupation like Marketing Manager, Teacher, Software Engineer, Nurse, Accountant, مهندس, معلمة, محاسب — never empty, never a generic label like 'Employee' or 'Worker'",emotion:"emotional state expressed during the interview like frustrated, anxious, hopeful, confident, قلقة, متفائل",rentalPreference:"REQUIRED — preferred rental channel: 'online' OR 'real-estate office' OR 'both' (translate to Arabic if needed)",goal:"main goal when searching for a rental",pain:"main pain point in the rental process",motivation:"key motivation behind their behavior"}],
     empathy: {thinks:["thought 1"],feels:["feeling 1"],says:["says 1"],does:["does 1"]},
-    journey: [{phase:"Phase name",action:"what user does",emotion:"emotional state",sentiment:"positive|neutral|negative"}],
+    journey: [{phase:"Phase name — REQUIRED: each phase name MUST use a DIFFERENT key verb/noun. Use phases from this canonical set when applicable: Awareness, Explore, Compare, Negotiate, Select, Delivery (or Arabic equivalents: الوعي، الاستكشاف، المقارنة، التفاوض، الاختيار، التسليم). Never reuse the same significant word across phases.",actions:["REQUIRED 2-4 concrete actions the user takes in this phase — each action starts with a different verb, no repeated verbs across the whole journey"],goals:["REQUIRED 1-3 goals or experiences the user is trying to accomplish in this phase — vary wording across phases"],feelings:[{text:"feeling/thought in this phase — 3-8 words",sentiment:"positive|neutral|negative"}],pains:["0-3 pain points or frictions encountered in this phase — empty array if none"],opportunities:["0-3 opportunities to improve this phase — how might Skoon solve the pain points? Empty array if none."]}],
     impactEffort: [{action:"action item",impact:"High|Medium|Low",effort:"High|Medium|Low",priority:"Do First|Schedule|Delegate|Drop"}],
-    userFlow: [{step:"Step name",description:"brief description"}]
+    uxIssues: [{issue:"short UX issue title (3-6 words)",description:"REQUIRED 1-2 sentence description of the usability problem observed in the interview",frequency:"REQUIRED integer 1-5 based on how often this was observed across the interview: 5=>90% of the time, 4=70-90%, 3=41-69%, 2=11-40%, 1=<10%",severity:"REQUIRED integer 1-5 based on impact: 5=Usability Catastrophe (blocks task), 4=Major Problem (significantly slows user), 3=Minor Problem (minor slowdown), 2=Cosmetic Problem (no effect on task), 1=Observation (research required)",severityCategory:"REQUIRED one of: 'Usability Catastrophe'|'Major Problem'|'Minor Problem'|'Cosmetic Problem'|'Observation' — MUST match severity score",costToFix:"REQUIRED one of: 'Low'|'Medium'|'High'. Low=internal team can fix, Medium=maintenance/sustaining work, High=larger dev project",recommendation:"REQUIRED concrete fix suggestion for Skoon in 1-2 sentences"}]
   });
 }
 
 // ─── ANALYSIS LANGUAGE ENFORCEMENT ───────────────────────
-// Detect whether a data object's text is Arabic or English.
-function _detectDataLang(data) {
-  const sample = [
-    data.summary,
-    ...(Array.isArray(data.insights) ? data.insights : []),
-    ...(Array.isArray(data.patterns) ? data.patterns : [])
-  ].filter(Boolean).join(' ');
-  return /[\u0600-\u06FF]/.test(sample) ? 'ar' : 'en';
-}
-
-// Translate analysis JSON to the current dashboard language (S.lang).
-// Called before rendering any stored or merged analysis to ensure the
-// displayed language always matches the UI language — regardless of
-// what language the interview was conducted or analyzed in.
-async function _translateAnalysis(data) {
+// Force ALL text values in an analysis JSON to match targetLang.
+// ALWAYS runs — no detection-based skipping. This is the single source
+// of truth for language enforcement: if stored analysisLang !== S.lang,
+// call this. No heuristics, no sampling, no shortcuts.
+// _quiet: pass true when called inside an existing overlay context (avoids flicker)
+async function _enforceAnalysisLang(data, targetLang, _quiet = false) {
   if (!data || !data.summary) return data;
-  if (_detectDataLang(data) === S.lang) return data; // already correct lang
+  const lang = targetLang || S.lang;
 
-  const sysAr = 'أنت مترجم متخصص في أبحاث UX. ترجم كل قيمة نصية في هذا الـ JSON إلى العربية الخليجية الطبيعية. قواعد صارمة: (1) لا تغيّر هيكل JSON أبداً. (2) لا تترجم: اسم "Skoon"، وقيم sentiment (positive/neutral/negative)، وقيم impact/effort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop). (3) أنتج JSON فقط — ممنوع أي نص خارجه.';
-  const sysEn = 'You are a UX research translator. Translate every text value in this JSON to natural professional English. Rules: (1) Never alter the JSON structure. (2) Do not translate: "Skoon", sentiment (positive/neutral/negative), impact/effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop). (3) Output JSON only — no text outside the object.';
-  const promptAr = `ترجم قيم هذا JSON إلى العربية الخليجية:\n${JSON.stringify(data)}`;
-  const promptEn = `Translate all text values in this JSON to English:\n${JSON.stringify(data)}`;
+  const sysAr = 'أنت مترجم متخصص في أبحاث UX. مهمتك الوحيدة: ترجم كل قيمة نصية في هذا الـ JSON إلى العربية الخليجية الطبيعية تماماً — بلا أي استثناء في المحتوى. قواعد صارمة لا تُكسر: (1) لا تغيّر هيكل JSON أبداً — نفس المفاتيح، نفس الأنواع، نفس العدد. (2) هذه القيم الثابتة لا تُترجم أبداً: "Skoon"، وقيم sentiment (positive/neutral/negative)، وقيم impact وeffort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop)، وقيم gender (male/female). (3) أنتج JSON فقط — ممنوع تماماً أي نص أو تعليق أو شرح خارج كائن JSON. (4) القيم الفارغة أو null تبقى كما هي دون تغيير. (5) لا تترك أي كلمة إنجليزية في المحتوى — حتى لو كانت موجودة في المصدر، يجب ترجمتها.';
+  const sysEn = 'You are a UX research translator. Your sole task: translate every text value in this JSON to natural professional English — no exceptions in content. Strict rules that must never be broken: (1) Never alter the JSON structure — same keys, same types, same count. (2) Never translate these fixed enum values: "Skoon", sentiment (positive/neutral/negative), impact/effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop), gender (male/female). (3) Output JSON only — absolutely no text, comment, or explanation outside the JSON object. (4) Empty or null values stay as-is. (5) Leave no Arabic word in the content — if source has Arabic, translate it all.';
 
-  showOv(t('olAnalyze'), t('olSub'));
-  try {
+  const promptAr = (src) => `ترجم جميع القيم النصية في هذا JSON إلى العربية الخليجية — بلا استثناء. أخرج JSON فقط بدون أي نص خارجه:\n${JSON.stringify(src)}`;
+  const promptEn = (src) => `Translate all text values in this JSON to English — no exceptions. Output JSON only, with no text outside the object:\n${JSON.stringify(src)}`;
+
+  const runPass = async (src) => {
     const raw = await callAI(
-      [{ role: 'system', content: S.lang === 'ar' ? sysAr : sysEn },
-       { role: 'user',   content: S.lang === 'ar' ? promptAr : promptEn }],
+      [{ role: 'system', content: lang === 'ar' ? sysAr : sysEn },
+       { role: 'user',   content: lang === 'ar' ? promptAr(src) : promptEn(src) }],
       0, 4000
     );
-    hideOv();
     const m = raw.match(/\{[\s\S]*\}/);
-    return m ? JSON.parse(m[0]) : data;
-  } catch(_) { hideOv(); return data; }
+    return m ? JSON.parse(m[0]) : src;
+  };
+
+  if (!_quiet) showOv(t('olAnalyze'), t('olSub'));
+  try {
+    let out = await runPass(data);
+    // Second-pass retry if residual cross-language content is detected
+    if (_hasLangLeak(out, lang)) {
+      console.log('[_enforceAnalysisLang] leak detected — running second pass');
+      try { out = await runPass(out); } catch (_) { /* keep first-pass result */ }
+    }
+    if (!_quiet) hideOv();
+    return out;
+  } catch(_) { if (!_quiet) hideOv(); return data; }
+}
+
+// Detect residual cross-language content in analysis JSON.
+// Ignores the fixed enum whitelist (Skoon, sentiment/impact/effort/priority values)
+// and any numeric / null / very-short values. Conservative — prefers false negatives
+// over false positives to avoid infinite retry loops.
+function _hasLangLeak(data, targetLang) {
+  if (!data || typeof data !== 'object') return false;
+  const WHITELIST = new Set([
+    'skoon',
+    'positive','neutral','negative',
+    'high','medium','low',
+    'do first','schedule','delegate','drop',
+    'male','female',
+  ]);
+  // Match Arabic block and extended
+  const arabicRe = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  // Latin letters (ignore digits/punctuation)
+  const latinRe  = /[A-Za-z]/;
+
+  let leaks = 0;
+  const walk = (v) => {
+    if (leaks >= 2) return;
+    if (v == null) return;
+    if (Array.isArray(v))  { v.forEach(walk); return; }
+    if (typeof v === 'object') { Object.values(v).forEach(walk); return; }
+    if (typeof v !== 'string') return;
+    const s = v.trim();
+    if (s.length < 3) return;
+    const norm = s.toLowerCase();
+    if (WHITELIST.has(norm)) return;
+    // Strip the enum words if they appear inside a sentence (don't count them)
+    const stripped = norm.replace(/\b(skoon|positive|neutral|negative|high|medium|low|do first|schedule|delegate|drop|male|female)\b/g, '');
+    if (targetLang === 'ar') {
+      // Leak = Latin letters present in a string that should be Arabic
+      if (latinRe.test(stripped) && !arabicRe.test(stripped)) leaks++;
+    } else {
+      // Leak = Arabic letters present in a string that should be English
+      if (arabicRe.test(stripped)) leaks++;
+    }
+  };
+  walk(data);
+  return leaks >= 1;
+}
+
+// ─── PERSONA NAME VALIDATOR ──────────────────────────────
+// A persona name MUST be a real human first name. Anything else (role labels,
+// descriptive phrases, empty) is treated as fake and triggers auto-repair.
+function _isFakePersonaName(name) {
+  const raw = (name || '').trim();
+  if (!raw) return true;
+  const n = raw.toLowerCase();
+
+  // 1) Exact-match role labels
+  const roleLabels = new Set([
+    'user','the user','rental user','primary user','rental seeker','seeker',
+    'tenant','property seeker','property searcher','searcher',
+    'participant','interviewee','respondent','customer','client','renter',
+    'buyer','applicant','persona','persona name','a user','a tenant',
+    'the tenant','the renter',
+    'المستأجر','المستخدم','الباحث','مستخدم','باحث','باحثة',
+    'مشارك','مشاركة','طالب عقار','طالب إيجار','العميل','عميل',
+    'باحث عن إيجار','باحثة عن إيجار','شخصية','اسم الشخصية',
+  ]);
+  if (roleLabels.has(n)) return true;
+
+  // 2) Any name CONTAINING a role word is fake. E.g. "User seeking a rental property",
+  //    "Rental Seeker", "Property Searcher", "Tenant looking for apartment" all get caught.
+  //    Every persona is by definition a rental user — so these words never appear in a
+  //    real first name anyway. Safe substring check.
+  const enRoleWords = /\b(user|users|tenant|tenants|renter|renters|seeker|seekers|seeking|searcher|searching|search|customer|customers|client|clients|participant|participants|applicant|applicants|interviewee|respondent|respondents|buyer|buyers|lessee|occupant|persona|personas|rental|rentals|property|properties|apartment|housing|accommodation)\b/i;
+  if (enRoleWords.test(n)) return true;
+  const arRoleWords = /(مستخدم|مستأجر|مستاجر|باحث|باحثة|مشارك|مشاركة|عميل|طالب|شخصية|إيجار|ايجار|عقار|سكن|شقة|مستفيد)/;
+  if (arRoleWords.test(raw)) return true;
+
+  // 3) Real first names are 1-3 words. Anything longer is a description, not a name.
+  const wordCount = raw.split(/\s+/).filter(Boolean).length;
+  if (wordCount > 3) return true;
+
+  return false;
+}
+
+// Deterministic fallback pool — used if GPT still returns a fake name after
+// two repair attempts. Indexed by gender so the fallback matches the persona.
+const _REAL_NAMES_EN = {
+  female: ['Sara','Layla','Noor','Fatima','Aisha','Reem','Maya','Hind','Huda','Mariam','Dana','Malak','Salma'],
+  male:   ['Ahmed','Khalid','Mohammed','Abdullah','Omar','Hassan','Yousef','Faisal','Turki','Saud','Raed','Majed'],
+};
+const _REAL_NAMES_AR = {
+  female: ['سارة','ليلى','نور','فاطمة','عائشة','ريم','مايا','هند','هدى','مريم','دانة','ملاك','سلمى'],
+  male:   ['أحمد','خالد','محمد','عبدالله','عمر','حسن','يوسف','فيصل','تركي','سعود','رائد','ماجد'],
+};
+function _deterministicName(gender, lang, usedNames) {
+  const g = (gender || '').toLowerCase() === 'female' ? 'female' : 'male';
+  const pool = (lang === 'ar' ? _REAL_NAMES_AR : _REAL_NAMES_EN)[g];
+  const available = pool.filter(n => !usedNames.has(n));
+  return (available.length ? available : pool)[Math.floor(Math.random() * (available.length || pool.length))];
+}
+
+// Auto-repair: replace fake persona names with real first names.
+// Three layers: (1) GPT repair call, (2) second-pass retry if still fake,
+// (3) deterministic fallback from a hard-coded name pool. Guarantees EVERY
+// persona ends with a real first name, no exceptions.
+async function _fixPersonaNames(personas, lang) {
+  if (!Array.isArray(personas) || personas.length === 0) return personas;
+  const needsFix = personas.some(p => p && _isFakePersonaName(p && p.name));
+  if (!needsFix) return personas;
+
+  const L = lang || S.lang || 'en';
+  const namePoolEn = 'Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, Dana, Raed, Malak, Majed, Salma';
+  const namePoolAr = 'سارة، أحمد، ليلى، خالد، نور، فاطمة، محمد، عبدالله، عائشة، عمر، ريم، حسن، مايا، يوسف، هند، فيصل، هدى، تركي، مريم، سعود، دانة، رائد، ملاك، ماجد، سلمى';
+
+  const sysAr = `أنت محرر شخصيات UX. قاعدة مطلقة: كل شخصية في هذا البيانات هي بالفعل مستخدم/مستأجر — لذلك كلمات مثل "المستخدم" أو "المستأجر" أو "الباحث" أو "طالب عقار" مرفوضة تماماً كأسماء لأنها لا تميّز شخصية عن أخرى. مهمتك: استبدل كل اسم غير حقيقي بأسم أول حقيقي من هذه القائمة فقط: ${namePoolAr}. يجب أن يطابق الاسم حقل gender (ذكر مع أحمد/خالد، أنثى مع سارة/ليلى). لا تكرر نفس الاسم لشخصيتين مختلفتين. احتفظ بكل الحقول الأخرى كما هي تماماً. أخرج JSON array فقط.`;
+  const sysEn = `You are a UX persona editor. ABSOLUTE rule: every persona in this data is already a user/renter — therefore words like "User", "The User", "Rental Seeker", "Tenant", "Participant", "Customer" are FORBIDDEN as names because they do not distinguish personas. Your task: replace any fake name with a specific real first name from this pool ONLY: ${namePoolEn}. The name MUST match the gender field (male for Ahmed/Khalid, female for Sara/Layla). Never repeat the same name for two different personas. Keep every other field exactly as-is. Output a JSON array only.`;
+
+  const promptAr = `استبدل الأسماء الوهمية (مثل "المستأجر"، "المستخدم"، "Rental Seeker"، "User") بأسماء حقيقية من القائمة المحددة. احتفظ بكل الحقول الأخرى. أخرج JSON array فقط:\n${JSON.stringify(personas)}`;
+  const promptEn = `Replace fake names (like "Rental Seeker", "User", "Tenant", "المستأجر") with specific real names from the approved pool. Keep every other field. Output a JSON array only:\n${JSON.stringify(personas)}`;
+
+  const runRepair = async (src) => {
+    const raw = await callAI(
+      [{ role: 'system', content: L === 'ar' ? sysAr : sysEn },
+       { role: 'user',   content: L === 'ar' ? promptAr : promptEn }],
+      0, 2000
+    );
+    const m = raw.match(/\[[\s\S]*\]/);
+    if (!m) return src;
+    const parsed = JSON.parse(m[0]);
+    return Array.isArray(parsed) && parsed.length ? parsed : src;
+  };
+
+  let fixed;
+  try {
+    // Pass 1
+    fixed = await runRepair(personas);
+    const merged1 = personas.map((orig, i) => {
+      const f = fixed[i] || {};
+      const origBad = _isFakePersonaName(orig && orig.name);
+      const cand = (f.name || '').trim();
+      return {
+        ...orig,
+        ...f,
+        name: origBad && !_isFakePersonaName(cand) ? cand : (orig.name || cand),
+      };
+    });
+    // Pass 2 — only if any name is still fake
+    if (merged1.some(p => _isFakePersonaName(p.name))) {
+      console.warn('[_fixPersonaNames] pass 1 left fake names — running pass 2');
+      try { fixed = await runRepair(merged1); } catch (_) { fixed = merged1; }
+    } else {
+      fixed = merged1;
+    }
+  } catch (e) {
+    console.warn('[_fixPersonaNames] repair call failed, falling back to deterministic pool:', e && e.message);
+    fixed = personas;
+  }
+
+  // Final deterministic fallback — if any name is still fake, pick one from the
+  // gender-matched pool. This guarantees EVERY persona ends with a real name.
+  const usedNames = new Set();
+  const finalPersonas = (fixed || personas).map((p, i) => {
+    const orig = personas[i] || {};
+    const repaired = p || {};
+    const candidate = (repaired.name || '').trim();
+    let finalName;
+    if (candidate && !_isFakePersonaName(candidate)) {
+      finalName = candidate;
+    } else if ((orig.name || '').trim() && !_isFakePersonaName(orig.name)) {
+      finalName = orig.name;
+    } else {
+      finalName = _deterministicName(repaired.gender || orig.gender, L, usedNames);
+      console.log('[_fixPersonaNames] deterministic fallback used for persona', i, '→', finalName);
+    }
+    usedNames.add(finalName);
+    return { ...orig, ...repaired, name: finalName };
+  });
+  return finalPersonas;
+}
+
+// ─── JOURNEY WORD VARIETY ─────────────────────────────────
+// Detects if the same significant word is repeated across journey phases/actions
+// and rewrites with synonyms via GPT. Guarantees no duplicate key-word across
+// the user journey map.
+const _JOURNEY_STOPWORDS_EN = new Set([
+  'the','a','an','and','or','but','to','of','in','on','at','for','with','from','by','as','is','are','was','were','be','been','being','it','its','this','that','these','those','their','his','her','they','them','he','she','user','users','new','about','into','up','down','out','over','via','through','up'
+]);
+const _JOURNEY_STOPWORDS_AR = new Set([
+  'في','من','إلى','على','عن','مع','و','أو','ثم','إن','أن','لا','ما','هو','هي','هم','هن','هذا','هذه','ذلك','تلك','كل','بعض','بعد','قبل','عند','يقوم','يقومون','تقوم','المستخدم','المستخدمة','التي','الذي','كان','كانت'
+]);
+
+// Tokenise one journey step's combined text into significant word stems.
+// Includes phase + actions[] + legacy `action`. (We do NOT include goals/feelings/pains
+// here because natural UX-research goals legitimately repeat vocabulary like "find",
+// "understand" — only repeated PHASE labels and repeated VERBS in actions are the
+// signal the user cares about.)
+function _journeyTokens(step, lang) {
+  if (!step) return new Set();
+  const actArr = Array.isArray(step.actions) ? step.actions : [];
+  const parts = [step.phase, step.action, ...actArr];
+  const txt = parts.map(s => String(s || '')).join(' ').toLowerCase();
+  // Keep Arabic (\u0600-\u06FF) + ASCII letters, split on anything else.
+  const raw = txt.split(/[^\u0600-\u06FFa-z]+/).filter(Boolean);
+  const stops = lang === 'ar' ? _JOURNEY_STOPWORDS_AR : _JOURNEY_STOPWORDS_EN;
+  const out = new Set();
+  for (const w of raw) {
+    if (w.length < 4) continue;
+    if (stops.has(w)) continue;
+    // Strip common Arabic prefixes "ال" and English "-ing"/"-ed"/"-s"
+    let stem = w;
+    if (lang === 'ar' && stem.startsWith('ال') && stem.length > 4) stem = stem.slice(2);
+    else if (lang !== 'ar') {
+      if (stem.endsWith('ing') && stem.length > 5) stem = stem.slice(0, -3);
+      else if (stem.endsWith('ed') && stem.length > 4) stem = stem.slice(0, -2);
+      else if (stem.endsWith('s')  && stem.length > 4) stem = stem.slice(0, -1);
+    }
+    out.add(stem);
+  }
+  return out;
+}
+
+// Find any word stem that appears in >1 step.
+function _journeyRepeatedWords(journey, lang) {
+  const counts = new Map();
+  (journey || []).forEach(step => {
+    const toks = _journeyTokens(step, lang);
+    toks.forEach(t => counts.set(t, (counts.get(t) || 0) + 1));
+  });
+  const dups = [];
+  counts.forEach((c, w) => { if (c > 1) dups.push(w); });
+  return dups;
+}
+
+async function _fixJourneyVariety(journey, lang) {
+  if (!Array.isArray(journey) || journey.length < 2) return journey;
+  const L = lang || S.lang || 'en';
+  const dups = _journeyRepeatedWords(journey, L);
+  if (dups.length === 0) return journey;
+  console.log('[_fixJourneyVariety] repeated words detected:', dups);
+
+  const synonymsEn = 'Discovering, Browsing, Exploring, Filtering, Shortlisting, Comparing, Inspecting, Evaluating, Negotiating, Requesting, Booking, Signing, Moving In, Settling';
+  const synonymsAr = 'الاكتشاف، التصفح، الاستكشاف، الفلترة، الاختيار، المقارنة، التقييم، المعاينة، التفاوض، الطلب، الحجز، التوقيع، الانتقال، الاستقرار';
+
+  const sysAr = `أنت محرر رحلة مستخدم UX. مهمتك: إعادة كتابة خطوات الرحلة التالية بحيث لا يتكرر أي فعل أو كلمة مفتاحية في أكثر من خطوة. الكلمات المكررة حالياً هي: ${dups.join('، ')}. استخدم مرادفات متنوعة من هذه القائمة عند الحاجة: ${synonymsAr}. احتفظ بنفس عدد الخطوات وبنفس ترتيبها وبنفس قيم sentiment. التغيير فقط في صياغة phase وaction وemotion لتتنوع المفردات. كل النصوص بالعربية الخليجية. أخرج JSON array فقط بدون أي شرح.`;
+  const sysEn = `You are a UX user-journey editor. Task: rewrite the journey steps below so that no verb or key word repeats across steps. Currently repeated words: ${dups.join(', ')}. Use varied synonyms from this pool when helpful: ${synonymsEn}. Keep the same number of steps in the same order and keep the same sentiment values. Only change phase/action/emotion wording so the vocabulary is diverse. All text in professional English. Output a JSON array only, no explanation.`;
+
+  const promptAr = `أعد كتابة هذه الرحلة بمفردات متنوعة بدون تكرار نفس الكلمة:\n${JSON.stringify(journey)}`;
+  const promptEn = `Rewrite this journey with varied vocabulary, never repeating a key word:\n${JSON.stringify(journey)}`;
+
+  const runRepair = async (src) => {
+    const raw = await callAI(
+      [{ role: 'system', content: L === 'ar' ? sysAr : sysEn },
+       { role: 'user',   content: L === 'ar' ? promptAr : promptEn }],
+      0.2, 2000
+    );
+    const m = raw.match(/\[[\s\S]*\]/);
+    if (!m) return src;
+    const parsed = JSON.parse(m[0]);
+    return Array.isArray(parsed) && parsed.length === src.length ? parsed : src;
+  };
+
+  let fixed = journey;
+  try {
+    fixed = await runRepair(journey);
+    if (_journeyRepeatedWords(fixed, L).length > 0) {
+      console.warn('[_fixJourneyVariety] pass 1 still has repeats — running pass 2');
+      try { fixed = await runRepair(fixed); } catch (_) { /* keep pass 1 */ }
+    }
+  } catch (e) {
+    console.warn('[_fixJourneyVariety] repair call failed, using deterministic fallback:', e && e.message);
+    fixed = journey;
+  }
+
+  // Merge into a working copy: keep original matrix arrays, pick rewritten phase/actions.
+  let merged = journey.map((orig, i) => {
+    const f = (fixed && fixed[i]) || {};
+    return {
+      ...orig,
+      phase:   (f.phase   || orig.phase   || '').toString(),
+      // legacy fields (if present in stored data)
+      action:  (f.action  || orig.action  || '').toString(),
+      emotion: (f.emotion || orig.emotion || '').toString(),
+      sentiment: orig.sentiment || f.sentiment || '',
+      // new matrix fields — prefer rewritten arrays when returned, else keep original
+      actions:       Array.isArray(f.actions)       ? f.actions       : (orig.actions || []),
+      goals:         Array.isArray(f.goals)         ? f.goals         : (orig.goals || []),
+      feelings:      Array.isArray(f.feelings)      ? f.feelings      : (orig.feelings || []),
+      pains:         Array.isArray(f.pains)         ? f.pains         : (orig.pains || []),
+      opportunities: Array.isArray(f.opportunities) ? f.opportunities : (orig.opportunities || []),
+    };
+  });
+
+  // ─── Deterministic fallback ─────────────────────────────
+  // If any key word still repeats, force-rewrite phase names from a fixed
+  // synonym pool so the UI never shows the same word twice.
+  if (_journeyRepeatedWords(merged, L).length > 0) {
+    console.warn('[_fixJourneyVariety] still has repeats after GPT — applying deterministic pool');
+    const poolEn = ['Discovering','Browsing','Exploring','Filtering','Shortlisting','Comparing','Inspecting','Evaluating','Negotiating','Booking','Signing','Moving In','Settling'];
+    const poolAr = ['الاكتشاف','التصفح','الاستكشاف','الفلترة','الاختيار','المقارنة','المعاينة','التقييم','التفاوض','الحجز','التوقيع','الانتقال','الاستقرار'];
+    const pool = L === 'ar' ? poolAr : poolEn;
+    const usedStems = new Set();
+    const stemOf = (s) => {
+      const t = String(s || '').toLowerCase().split(/[^\u0600-\u06FFa-z]+/).filter(Boolean)[0] || '';
+      if (!t) return '';
+      if (L === 'ar' && t.startsWith('ال') && t.length > 4) return t.slice(2);
+      if (L !== 'ar') {
+        if (t.endsWith('ing') && t.length > 5) return t.slice(0, -3);
+        if (t.endsWith('ed')  && t.length > 4) return t.slice(0, -2);
+        if (t.endsWith('s')   && t.length > 4) return t.slice(0, -1);
+      }
+      return t;
+    };
+    merged = merged.map((step, i) => {
+      const currentStem = stemOf(step.phase);
+      if (currentStem && !usedStems.has(currentStem)) {
+        usedStems.add(currentStem);
+        return step;
+      }
+      // Pick a fresh phase word whose stem is not yet used.
+      const fresh = pool.find(w => !usedStems.has(stemOf(w))) || pool[i % pool.length];
+      usedStems.add(stemOf(fresh));
+      return { ...step, phase: fresh };
+    });
+  }
+
+  return merged;
 }
 
 // ─── CHAT HELPERS ─────────────────────────────────────────
@@ -2030,6 +2620,7 @@ function saveInterview(analysis) {
     keyNotes:         analysis ? (analysis.summary || '') : '',
     answers:          extractQA(),
     analysis:         analysis || null,
+    analysisLang:     analysis ? S.lang : null,
   };
   _ivCache.push(record);
   localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
@@ -2048,8 +2639,44 @@ async function loadInterviewById(id) {
   // Force analysis tab open (don't toggle off if already active)
   _dbTab = null;
   dbTab('analysis');
-  // Enforce dashboard language — translate stored analysis if language doesn't match
-  const analysis = await _translateAnalysis(iv.analysis || {});
+  // Enforce dashboard language deterministically:
+  // if analysisLang tag is missing (legacy) OR doesn't match current UI lang → enforce.
+  // No heuristic detection — the tag is the source of truth.
+  let analysis = iv.analysis || {};
+  let mutated  = false;
+  if (analysis.summary && iv.analysisLang !== S.lang) {
+    analysis = await _enforceAnalysisLang(analysis, S.lang);
+    mutated  = true;
+  }
+  // Persona-name repair: detect stale role-label names and auto-replace with real
+  // first names. Runs once per stored record — fixed data is saved back so future
+  // views are instant.
+  if (Array.isArray(analysis.personas) && analysis.personas.some(p => p && _isFakePersonaName(p && p.name))) {
+    const fixed = await _fixPersonaNames(analysis.personas, S.lang);
+    if (fixed !== analysis.personas) {
+      analysis = { ...analysis, personas: fixed };
+      mutated  = true;
+    }
+  }
+  // Journey word-variety repair: detect repeated key words across phases and rewrite.
+  if (Array.isArray(analysis.journey) && _journeyRepeatedWords(analysis.journey, S.lang).length > 0) {
+    try {
+      const fixedJ = await _fixJourneyVariety(analysis.journey, S.lang);
+      if (fixedJ !== analysis.journey) {
+        analysis = { ...analysis, journey: fixedJ };
+        mutated  = true;
+      }
+    } catch (jErr) { console.warn('[loadInterviewById] journey variety repair failed:', jErr); }
+  }
+  if (mutated) {
+    // Save enforced + repaired result back so subsequent loads are instant
+    const idx = _ivCache.findIndex(x => x.id === id);
+    if (idx !== -1) {
+      _ivCache[idx].analysis     = analysis;
+      _ivCache[idx].analysisLang = S.lang;
+      localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
+    }
+  }
   renderAnalysis(analysis, iv, 'res-content', iv);
 }
 
@@ -2061,20 +2688,37 @@ async function analyzeStoredInterview(id) {
   showOv(t('olAnalyze'), t('olSub'));
   try {
     const convo = iv.answers.map(qa => `Researcher: ${qa.q}\nParticipant: ${qa.a}`).join('\n\n');
-    const sysMsg = _buildAnalysisSys();
+    const sysMsg = _buildAnalysisSys(S.lang);
     const schema = _buildAnalysisSchema();
-    const instrAr = 'حلل هذه المقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. كل القيم النصية بالعربية الخليجية:';
-    const instrEn = 'Analyze this interview and output ONLY valid JSON matching this structure exactly. All text values in English:';
+    const instrAr = 'حلل هذه المقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. كل القيم النصية بالعربية الخليجية فقط — بدون أي كلمة إنجليزية، باستثناء "Skoon" وقيم sentiment/impact/effort/priority الثابتة:';
+    const instrEn = 'Analyze this interview and output ONLY valid JSON matching this structure exactly. All text values in English only — no Arabic, no code-switching, except "Skoon" and fixed sentiment/impact/effort/priority enum values:';
     const prompt = `${S.lang === 'ar' ? instrAr : instrEn}\n${schema}\n\nConversation:\n${convo}`;
     const raw = await callAI([{role:'system',content:sysMsg},{role:'user',content:prompt}], 0, 3000);
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch(_) { data = {}; }
 
-    // Save analysis back to the stored interview
+    // Post-generation enforcement: GPT sometimes leaks source-language words even
+    // with a strict system prompt. Run a dedicated translation pass (quiet — overlay
+    // is already showing) to guarantee 100% single-language output before saving.
+    if (data.summary) data = await _enforceAnalysisLang(data, S.lang, true);
+
+    // Persona-name repair: auto-replace any role/title labels with real first names
+    if (Array.isArray(data.personas) && data.personas.length) {
+      data.personas = await _fixPersonaNames(data.personas, S.lang);
+    }
+
+    // Journey word-variety repair: no repeated key word across steps.
+    if (Array.isArray(data.journey) && data.journey.length > 1) {
+      try { data.journey = await _fixJourneyVariety(data.journey, S.lang); }
+      catch (jErr) { console.warn('[analyzeStoredInterview] journey variety repair failed:', jErr); }
+    }
+
+    // Save clean, enforced analysis back to the stored interview
     const idx = _ivCache.findIndex(x => x.id === id);
     if (idx !== -1) {
       _ivCache[idx].analysis = data;
+      _ivCache[idx].analysisLang = S.lang;
       localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
       _postIvToAPI(_ivCache[idx]); // sync updated record to KV
     }
@@ -2083,7 +2727,9 @@ async function analyzeStoredInterview(id) {
     renderAnalysis(data, iv, 'res-content', iv);
   } catch(e) {
     hideOv();
-    alert(t('errAnalysis'));
+    console.error('[analyzeStoredInterview]', e);
+    const detail = (e && e.message) ? String(e.message).slice(0, 300) : '';
+    alert(detail ? `${t('errAnalysis')}\n\n${detail}` : t('errAnalysis'));
   }
 }
 
@@ -2289,7 +2935,9 @@ function renderPanel() {
   set('db-sub-analysis',   'dbAiInsights');
   set('db-ttl-insights',   'dbInsights');
   set('db-sub-insights',   'dbCrossDesc');
-  set('ca-run-btn',        'dbAnalyzeBtn');
+  set('ca-run-btn',          'dbAnalyzeBtn');
+  set('edit-ctx-btn-lbl',      'editCtxBtn');
+  set('edit-ctx-analysis-lbl', 'editCtxBtn');
   const allBtn = document.getElementById('ca-all-btn');
   if (allBtn) allBtn.textContent = t('dbAnalyzeAll');
   // recent sidebar
@@ -2311,7 +2959,7 @@ async function renderAllAnalysis() {
   const allIvs = getAllInterviews().slice().reverse();
   const allAnalyzed = allIvs.filter(iv => iv.analysis && iv.analysis.summary);
   if (allAnalyzed.length > 0) {
-    const merged = { summary: '', insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: { thinks:[], feels:[], says:[], does:[] }, journey: [], impactEffort: [], userFlow: [] };
+    const merged = { summary: '', insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: { thinks:[], feels:[], says:[], does:[] }, journey: [], impactEffort: [], uxIssues: [] };
     allAnalyzed.forEach(iv => {
       const a = iv.analysis;
       if (a.summary) merged.summary += (merged.summary ? ' ' : '') + a.summary;
@@ -2320,10 +2968,11 @@ async function renderAllAnalysis() {
       if (a.empathy) { ['thinks','feels','says','does'].forEach(k => { if (a.empathy[k]) merged.empathy[k].push(...a.empathy[k]); }); }
       if (a.journey) merged.journey.push(...a.journey);
       if (a.impactEffort) merged.impactEffort.push(...a.impactEffort);
-      if (a.userFlow) merged.userFlow.push(...a.userFlow);
+      if (a.uxIssues) merged.uxIssues.push(...a.uxIssues);
     });
-    // Enforce dashboard language on merged analysis before rendering
-    const translated = await _translateAnalysis(merged);
+    // Always enforce dashboard language on merged analysis — merged data spans
+    // interviews analyzed in different languages, so enforcement is unconditional.
+    const translated = await _enforceAnalysisLang(merged, S.lang, false);
     renderAnalysis(translated, null, 'res-content', null);
   } else if (allIvs.length) {
     renderAnalysis({}, allIvs[0], 'res-content', allIvs[0]);
@@ -2389,15 +3038,15 @@ function renderInterviewsTab() {
 }
 
 function ivStatusBadge(reached, total) {
-  const base = 'text-[12px] font-medium py-0.5 rounded-md shrink-0 whitespace-nowrap inline-block text-center';
-  const w    = 'style="min-width:52px;padding-left:6px;padding-right:6px;"';
+  const base = 'text-[12px] font-normal py-0.5 rounded-md shrink-0 whitespace-nowrap inline-block text-center';
+  const w    = 'style="min-width:52px;padding-inline-start:6px;padding-inline-end:6px;"';
   if (!total || total === 0) return '';
   if (reached >= total)
-    return `<span class="${base} bg-green-100 text-green-700" ${w}>${t('badgeCompleted')}</span>`;
+    return `<span class="${base} badge-completed" ${w}>${t('badgeCompleted')}</span>`;
   if (reached >= Math.ceil(total / 2))
-    return `<span class="${base} bg-amber-100 text-amber-700" ${w}>${t('badgePartial')}</span>`;
+    return `<span class="${base} badge-partial" ${w}>${t('badgePartial')}</span>`;
   if (reached > 0)
-    return `<span class="${base} bg-blue-100 text-blue-600" ${w}>${t('badgeEarly')}</span>`;
+    return `<span class="${base} badge-early" ${w}>${t('badgeEarly')}</span>`;
   return `<span class="${base} bg-[var(--bg)] text-muted border border-[var(--border)]" ${w}>${t('badgeIncomplete')}</span>`;
 }
 
@@ -2409,15 +3058,15 @@ function ivRowHtml(iv, fmt, expandable) {
   const badge   = ivStatusBadge(reached, total);
 
   const answers  = Array.isArray(iv.answers) ? iv.answers : [];
-  const insights = iv.analysis && Array.isArray(iv.analysis.insights) ? iv.analysis.insights.filter(Boolean) : [];
-  const quotes   = iv.analysis && Array.isArray(iv.analysis.quotes)   ? iv.analysis.quotes.filter(Boolean)   : [];
-  const uxIssues = iv.analysis && Array.isArray(iv.analysis.patterns) ? iv.analysis.patterns.filter(Boolean) : [];
+  const insights = iv.analysis && Array.isArray(iv.analysis.insights)  ? iv.analysis.insights.filter(Boolean)                                    : [];
+  const quotes   = iv.analysis && Array.isArray(iv.analysis.quotes)    ? iv.analysis.quotes.filter(Boolean)                                      : [];
+  const uxIssues = iv.analysis && Array.isArray(iv.analysis.uxIssues)  ? iv.analysis.uxIssues.filter(u => u && (u.issue||'').trim())             : [];
 
   const notesHtml    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(qa.a)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoNotes')}</div>`;
   const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div class="text-app-text leading-relaxed" style="font-size:12px;font-weight:400;">${esc(iv.analysis.summary)}</div>` : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
   const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(i)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
   const quotesHtml   = quotes.length    ? quotes.map(q => `<div class="iv-quote text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary" style="font-size:12px;font-weight:400;">"${esc(q)}"</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoQuotes')}</div>`;
-  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(u)}</div>`).join('')  : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
+  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(u.issue)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
 
   const bodyHtml = expandable ? `
     <div class="border-t border-[var(--border)]" id="iv-body-${iv.id}" style="display:none;">
@@ -2429,10 +3078,10 @@ function ivRowHtml(iv, fmt, expandable) {
         <button class="iv-tab px-4 py-2 cursor-pointer border-none bg-transparent font-inherit -mb-px transition-colors text-muted border-b-2 border-transparent" style="font-size:12px;font-weight:400;" onclick="ivTab(this,'${iv.id}','ux')">${t('dbUxIssues')}</button>
       </div>
       <div class="iv-tab-pane active p-4" id="ivp-${iv.id}-notes"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbNotes')}</div>${notesHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-summary"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbSummary')}</div>${summaryHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-insights"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbInsightsTab')}</div>${insightsHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-quotes"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbQuotes')}</div>${quotesHtml}</div>
-      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-ux"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbUxIssues')}</div>${uxHtml}</div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-summary"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbSummary')}</div><div id="ivp-${iv.id}-summary-body">${summaryHtml}</div></div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-insights"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbInsightsTab')}</div><div id="ivp-${iv.id}-insights-body">${insightsHtml}</div></div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-quotes"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbQuotes')}</div><div id="ivp-${iv.id}-quotes-body">${quotesHtml}</div></div>
+      <div class="iv-tab-pane p-4" id="ivp-${iv.id}-ux"><div class="text-muted mb-2.5" style="font-size:12px;font-weight:400;">${t('dbUxIssues')}</div><div id="ivp-${iv.id}-ux-body">${uxHtml}</div></div>
     </div>` : '';
 
   return `<div class="bg-surface border border-[var(--border)] rounded overflow-hidden mb-3" id="ivc-${iv.id}">
@@ -2441,7 +3090,7 @@ function ivRowHtml(iv, fmt, expandable) {
       <div class="flex-1 min-w-0">
         <!-- Title row: name + date/time on one side, badge on the other -->
         <div class="flex items-center gap-2">
-          <span class="text-app-text shrink-0" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${num}</span>
+          <span class="text-app-text shrink-0" style="font-size:12px;font-weight:500;font-family:'IBM Plex Sans','IBM Plex Sans Arabic',sans-serif;">${t('dbInterviewLabel')} ${num}</span>
           <span class="text-muted truncate" style="font-size:12px;font-weight:400;">${fmt(iv.date)}</span>
           <span class="ms-auto shrink-0">${badge}</span>
         </div>
@@ -2468,22 +3117,77 @@ function ivTab(btn, ivId, tab) {
   if (pane) pane.classList.add('active');
 }
 
-function toggleIvCard(ivId) {
+async function toggleIvCard(ivId) {
   const body = document.getElementById('iv-body-' + ivId);
   if (!body) return;
-  body.style.display = body.style.display === 'none' ? '' : 'none';
+  const opening = body.style.display === 'none';
+  body.style.display = opening ? '' : 'none';
+  if (!opening) return;
+
+  // On expand: silently enforce language if stored analysis was in a different language.
+  const iv = getAllInterviews().find(x => x.id === ivId);
+  if (!iv || !iv.analysis || !iv.analysis.summary) return;
+  if (iv.analysisLang === S.lang) return; // already correct language
+
+  const loadMsg = `<div style="font-size:12px;font-weight:400;color:var(--muted);font-style:italic;">${S.lang === 'ar' ? 'جارٍ الترجمة…' : 'Translating…'}</div>`;
+  ['summary','insights','quotes','ux'].forEach(tab => {
+    const el = document.getElementById(`ivp-${ivId}-${tab}-body`);
+    if (el) el.innerHTML = loadMsg;
+  });
+
+  try {
+    const analysis = await _enforceAnalysisLang(iv.analysis, S.lang, true);
+    // Save back so subsequent opens are instant
+    const idx = _ivCache.findIndex(x => x.id === ivId);
+    if (idx !== -1) {
+      _ivCache[idx].analysis     = analysis;
+      _ivCache[idx].analysisLang = S.lang;
+      localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
+    }
+    _updateCardContent(ivId, analysis);
+  } catch(_) {
+    _updateCardContent(ivId, iv.analysis); // fall back to original on error
+  }
+}
+
+function _updateCardContent(ivId, analysis) {
+  const noData  = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
+  const noQts   = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoQuotes')}</div>`;
+
+  const sumEl = document.getElementById(`ivp-${ivId}-summary-body`);
+  if (sumEl) sumEl.innerHTML = analysis.summary
+    ? `<div class="text-app-text leading-relaxed" style="font-size:12px;font-weight:400;">${esc(analysis.summary)}</div>`
+    : noData;
+
+  const insEl = document.getElementById(`ivp-${ivId}-insights-body`);
+  const ins   = Array.isArray(analysis.insights) ? analysis.insights.filter(Boolean) : [];
+  if (insEl) insEl.innerHTML = ins.length
+    ? ins.map(i => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(i)}</div>`).join('')
+    : noData;
+
+  const qtEl  = document.getElementById(`ivp-${ivId}-quotes-body`);
+  const qts   = Array.isArray(analysis.quotes) ? analysis.quotes.filter(Boolean) : [];
+  if (qtEl) qtEl.innerHTML = qts.length
+    ? qts.map(q => `<div class="iv-quote text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary" style="font-size:12px;font-weight:400;">"${esc(q)}"</div>`).join('')
+    : noQts;
+
+  const uxEl  = document.getElementById(`ivp-${ivId}-ux-body`);
+  const uxs   = Array.isArray(analysis.uxIssues) ? analysis.uxIssues.filter(u => u && (u.issue||'').trim()) : [];
+  if (uxEl) uxEl.innerHTML = uxs.length
+    ? uxs.map(u => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(u.issue)}</div>`).join('')
+    : noData;
 }
 
 function renderCrossTab() {
-  // Only completed interviews are eligible for cross-analysis
-  const all = getAllInterviews().filter(iv => iv.completed).slice().reverse();
+  // Show ALL interviews so the user can select any combination for cross-analysis
+  const all = getAllInterviews().slice().reverse();
   const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
   const el  = document.getElementById('db-ca-list');
   if (!el) return;
   el.innerHTML = all.length
     ? `<div class="flex flex-col">${all.map(iv => ivRowHtml(iv, fmt, true)).join('')}</div>`
     : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoData')}</div>`;
-  // Add "Analyze All" shortcut button if 2+ completed
+  // Show "Analyze All" shortcut button if there are 2+ interviews
   const allBtn = document.getElementById('ca-all-btn');
   if (allBtn) allBtn.style.display = all.length >= 2 ? '' : 'none';
   updateCaCount();
@@ -2496,18 +3200,18 @@ function updateCaCount() {
   if (countEl) countEl.innerHTML = checked > 0
     ? `<strong>${t('dbSelCount', checked)}</strong>`
     : t('dbSelectHint');
-  if (runBtn) runBtn.disabled = checked < 2;
+  if (runBtn) runBtn.disabled = checked < 1;
 }
 
 async function runAllAnalysis() {
-  const selected = getAllInterviews().filter(iv => iv.completed);
+  const selected = getAllInterviews(); // all interviews, regardless of completion status
   if (selected.length < 1) return;
   await _doCrossAnalysis(selected);
 }
 
 async function runCrossAnalysis() {
   const checked = [...document.querySelectorAll('#db-ca-list .iv-chk:checked')];
-  if (checked.length < 2) return;
+  if (checked.length < 1) return;
   const ids = checked.map(c => c.id.replace('ca-chk-', ''));
   const all = getAllInterviews();
   const selected = ids.map(id => all.find(iv => iv.id === id)).filter(Boolean);
@@ -2515,43 +3219,107 @@ async function runCrossAnalysis() {
 }
 
 async function _doCrossAnalysis(selected) {
-
   const outEl = document.getElementById('db-ca-out');
   if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:12px;font-weight:400;">${t('dbCrossRunning')}</div>`;
 
-  const convo = selected.map((iv, i) => {
-    const qa = (iv.answers || []).map(a => `Q: ${a.q}\nA: ${a.a}`).join('\n');
-    return `--- Interview ${i+1} (${iv.date}) ---\n${qa}`;
+  const selectedSafe = Array.isArray(selected) ? selected : [];
+  // Only keep interviews that have at least one non-empty answer — empty records break the API call
+  const valid = selectedSafe.filter(iv =>
+    Array.isArray(iv.answers) && iv.answers.some(a => a && (a.a || '').trim())
+  );
+  if (valid.length === 0) {
+    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:12px;font-weight:400;">${t('dbNoData')}</div>`;
+    return;
+  }
+  console.log('[_doCrossAnalysis] selected=', selectedSafe.length, '| valid=', valid.length);
+
+  // Build transcript — cap each interview at 1500 chars to stay within token limits
+  const MAX_IV_CHARS = 1500;
+  const convo = valid.map((iv, i) => {
+    const qa = (iv.answers || [])
+      .filter(a => a && ((a.q || '').trim() || (a.a || '').trim()))
+      .map(a => `Q: ${(a.q || '').trim()}\nA: ${(a.a || '').trim()}`)
+      .join('\n');
+    const body = qa.length > MAX_IV_CHARS ? qa.slice(0, MAX_IV_CHARS) + '\n[truncated]' : qa;
+    return `--- Interview ${i + 1} ---\n${body}`;
   }).join('\n\n');
 
-  const sysMsg = _buildAnalysisSys();
+  const sysMsg = _buildAnalysisSys(S.lang);
   const schema = _buildAnalysisSchema();
-  const instrAr = `حلل هذه ${selected.length} مقابلات معاً وأخرج JSON صحيح فقط يطابق هذا الهيكل. ركز على الأنماط المشتركة بين المقابلات. كل القيم النصية بالعربية الخليجية:`;
-  const instrEn = `Analyze these ${selected.length} completed interviews together and output ONLY valid JSON matching this structure. Focus on patterns across interviews. All text values in English:`;
-  const prompt = `${S.lang === 'ar' ? instrAr : instrEn}\n${schema}\n\nInterviews:\n${convo}`;
+  // Language-aware prompt: instruct GPT to emit target language directly.
+  // _enforceAnalysisLang still runs afterwards as a second safety net.
+  const instrAr = `حلل هذه الـ ${valid.length} مقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. ركّز على الأنماط المشتركة بين المقابلات. كل القيم النصية بالعربية الخليجية فقط بدون أي كلمة إنجليزية — باستثناء القيم الثابتة في sentiment/impact/effort/priority و"Skoon":`;
+  const instrEn = `Analyze these ${valid.length} interview(s) and output ONLY valid JSON matching this structure exactly. Focus on shared patterns across interviews. All text values in English only — zero Arabic, zero code-switching — except fixed enum values in sentiment/impact/effort/priority and "Skoon":`;
+  const prompt  = `${S.lang === 'ar' ? instrAr : instrEn}\n${schema}\n\nInterviews:\n${convo}`;
 
   try {
     showOv(t('olAnalyze'), t('olSub'));
-    const raw = await callAI([{ role:'system', content:sysMsg },{ role:'user', content:prompt }], 0, 4000);
-    hideOv();
+    const raw = await callAI([{ role: 'system', content: sysMsg }, { role: 'user', content: prompt }], 0, 4000);
     let data;
-    try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch(_) { data = {}; }
-    renderCrossOutput(data);
-  } catch(e) {
+    try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch (_) { data = {}; }
+
+    // Enforcement runs in its own guard so translation failures never kill the whole analysis —
+    // we still show the generated output even if the language pass fails.
+    if (data && data.summary) {
+      try {
+        data = await _enforceAnalysisLang(data, S.lang, true);
+      } catch (enfErr) {
+        console.warn('[_doCrossAnalysis] enforcement failed, rendering raw analysis:', enfErr);
+      }
+    }
+
+    // Persona-name repair — auto-replace role labels with real first names
+    if (data && Array.isArray(data.personas) && data.personas.length) {
+      try {
+        data.personas = await _fixPersonaNames(data.personas, S.lang);
+      } catch (fixErr) {
+        console.warn('[_doCrossAnalysis] persona-name repair failed:', fixErr);
+      }
+    }
+
+    // Journey word-variety repair — no repeated key word across steps.
+    if (data && Array.isArray(data.journey) && data.journey.length > 1) {
+      try {
+        data.journey = await _fixJourneyVariety(data.journey, S.lang);
+      } catch (jErr) {
+        console.warn('[_doCrossAnalysis] journey variety repair failed:', jErr);
+      }
+    }
+
     hideOv();
-    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:12px;font-weight:400;">${t('errAnalysis')}</div>`;
+    if (!data || !data.summary) {
+      if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:12px;font-weight:400;">${t('dbCrossEmpty')}</div>`;
+      return;
+    }
+    // Scope stats to the user's exact selection — match the chosen checkboxes 1:1,
+    // not getAllInterviews() and not the post-validation subset.
+    const selectedStats = {
+      totalIvs:      selectedSafe.length,
+      totalAnswered: selectedSafe.reduce((sum, iv) => sum
+        + (Array.isArray(iv.answers)
+            ? iv.answers.filter(a => a && (a.a || '').trim()).length
+            : 0), 0),
+    };
+    console.log('[_doCrossAnalysis] stats=', selectedStats);
+    renderCrossOutput(data, selectedStats);
+  } catch (e) {
+    console.error('[_doCrossAnalysis]', e);
+    hideOv();
+    const detail = e && e.message ? String(e.message).slice(0, 200) : '';
+    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:12px;font-weight:400;line-height:1.6;">${t('errAnalysis')}${detail ? `<br><span style="opacity:0.75;">${esc(detail)}</span>` : ''}</div>`;
   }
 }
 
-function renderCrossOutput(d) {
+function renderCrossOutput(d, statsOverride = null) {
   const el = document.getElementById('db-ca-out');
   if (!el) return;
   if (!d || Object.keys(d).length === 0) {
     el.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:12px;font-weight:400;">${t('dbCrossEmpty')}</div>`;
     return;
   }
-  // Reuse renderAnalysis rendering, targeting db-ca-out
-  renderAnalysis(d, null, 'db-ca-out');
+  // Reuse renderAnalysis rendering, targeting db-ca-out.
+  // statsOverride scopes the stat cards to the selected interviews only.
+  renderAnalysis(d, null, 'db-ca-out', null, statsOverride);
 }
 
 // ─── END / ANALYZE ────────────────────────────────────────
@@ -2574,10 +3342,10 @@ async function analyze() {
       .map(m => `${m.role === 'assistant' ? 'Researcher' : 'Participant'}: ${m.content}`)
       .join('\n\n');
 
-    const sysMsg = _buildAnalysisSys();
+    const sysMsg = _buildAnalysisSys(S.lang);
     const schema = _buildAnalysisSchema();
-    const instrAr = 'حلل هذه المقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. كل القيم النصية بالعربية الخليجية:';
-    const instrEn = 'Analyze this interview and output ONLY valid JSON matching this structure exactly. All text values in English:';
+    const instrAr = 'حلل هذه المقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. كل القيم النصية بالعربية الخليجية فقط — بدون أي كلمة إنجليزية، باستثناء "Skoon" وقيم sentiment/impact/effort/priority الثابتة:';
+    const instrEn = 'Analyze this interview and output ONLY valid JSON matching this structure exactly. All text values in English only — no Arabic, no code-switching, except "Skoon" and fixed sentiment/impact/effort/priority enum values:';
     const prompt = `${S.lang === 'ar' ? instrAr : instrEn}\n${schema}\n\nConversation:\n${convo}`;
 
     const raw = await callAI(
@@ -2587,14 +3355,30 @@ async function analyze() {
 
     let data;
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
-    catch (_) { data = { summary: raw, insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: {}, journey: [], impactEffort: [], userFlow: [] }; }
+    catch (_) { data = { summary: raw, insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: {}, journey: [], impactEffort: [], uxIssues: [] }; }
+
+    // Post-generation enforcement — ensure 100% single-language before saving
+    if (data.summary) data = await _enforceAnalysisLang(data, S.lang, true);
+
+    // Persona-name repair — auto-replace role labels with real first names
+    if (Array.isArray(data.personas) && data.personas.length) {
+      data.personas = await _fixPersonaNames(data.personas, S.lang);
+    }
+
+    // Journey word-variety repair — no repeated key word across steps.
+    if (Array.isArray(data.journey) && data.journey.length > 1) {
+      try { data.journey = await _fixJourneyVariety(data.journey, S.lang); }
+      catch (jErr) { console.warn('[analyze] journey variety repair failed:', jErr); }
+    }
 
     saveInterview(data);
     hideOv();
     renderResults(data);
   } catch (err) {
     hideOv();
-    alert(t('errAnalysis'));
+    console.error('[analyze]', err);
+    const detail = (err && err.message) ? String(err.message).slice(0, 300) : '';
+    alert(detail ? `${t('errAnalysis')}\n\n${detail}` : t('errAnalysis'));
   }
 }
 
@@ -2627,7 +3411,7 @@ async function renderResults(d) {
     const allAnalyzed = all.filter(iv => iv.analysis && iv.analysis.summary);
     if (allAnalyzed.length > 1) {
       // Merge all analyses into aggregated view
-      const merged = { summary: '', insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: { thinks:[], feels:[], says:[], does:[] }, journey: [], impactEffort: [], userFlow: [] };
+      const merged = { summary: '', insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: { thinks:[], feels:[], says:[], does:[] }, journey: [], impactEffort: [], uxIssues: [] };
       allAnalyzed.forEach(iv => {
         const a = iv.analysis;
         if (a.summary) merged.summary += (merged.summary ? ' ' : '') + a.summary;
@@ -2636,7 +3420,7 @@ async function renderResults(d) {
         if (a.empathy) { ['thinks','feels','says','does'].forEach(k => { if (a.empathy[k]) merged.empathy[k].push(...a.empathy[k]); }); }
         if (a.journey) merged.journey.push(...a.journey);
         if (a.impactEffort) merged.impactEffort.push(...a.impactEffort);
-        if (a.userFlow) merged.userFlow.push(...a.userFlow);
+        if (a.uxIssues) merged.uxIssues.push(...a.uxIssues);
       });
       renderAnalysis(merged, null, 'res-content', null);
     } else if (allAnalyzed.length === 1) {
@@ -2650,7 +3434,7 @@ async function renderResults(d) {
   }
 }
 
-function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
+function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null, statsOverride = null) {
   // Reset section detail store
   window._raDetails = {};
 
@@ -2687,16 +3471,28 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
     }
   }
   // Analysis stats — total interviews + total answered questions
+  // When statsOverride is supplied (e.g. Cross Analysis with a specific selection),
+  // use that scope instead of getAllInterviews(), and count only non-empty answers.
   if (S.isResearcher) {
-    const _allIvs = getAllInterviews();
-    const _totalAns = _allIvs.reduce((sum, x) => sum + (Array.isArray(x.answers) ? x.answers.length : 0), 0);
+    let _ivCount, _ansCount;
+    if (statsOverride && typeof statsOverride.totalIvs === 'number' && typeof statsOverride.totalAnswered === 'number') {
+      _ivCount  = statsOverride.totalIvs;
+      _ansCount = statsOverride.totalAnswered;
+    } else {
+      const _allIvs = getAllInterviews();
+      _ivCount  = _allIvs.length;
+      _ansCount = _allIvs.reduce((sum, x) => sum
+        + (Array.isArray(x.answers)
+            ? x.answers.filter(a => a && (a.a || '').trim()).length
+            : 0), 0);
+    }
     html += `<div style="display:flex;gap:12px;margin-bottom:16px;">
       <div style="flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-align:center;">
-        <div style="font-size:14px;font-weight:500;color:var(--text);">${_allIvs.length}</div>
+        <div style="font-size:14px;font-weight:500;color:var(--text);">${_ivCount}</div>
         <div style="font-size:12px;font-weight:400;color:var(--muted);">${t('anTotalIvs')}</div>
       </div>
       <div style="flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-align:center;">
-        <div style="font-size:14px;font-weight:500;color:var(--text);">${_totalAns}</div>
+        <div style="font-size:14px;font-weight:500;color:var(--text);">${_ansCount}</div>
         <div style="font-size:12px;font-weight:400;color:var(--muted);">${t('anTotalAns')}</div>
       </div>
     </div>`;
@@ -2772,15 +3568,35 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
     const ph = `<span style="color:var(--muted);font-size:12px;font-weight:400;font-style:italic;">—</span>`;
 
     // 6 — Personas
-    const personas = (d.personas || []).filter(Boolean);
+    // Filter: persona MUST have a real first name. Any role label / description
+    // is considered fake. _isFakePersonaName is the single source of truth;
+    // auto-repair also uses it so bad names get replaced before they reach this filter.
+    const rawPersonas  = Array.isArray(d.personas) ? d.personas.filter(p => p && (p.name||'').trim()) : [];
+    const personas     = rawPersonas.filter(p => !_isFakePersonaName(p.name));
+    const allFiltered  = rawPersonas.length > 0 && personas.length === 0;
+    // Localised gender label — raw JSON always stores enum 'male' / 'female'
+    const genderLabel = (g) => {
+      const v = (g || '').trim().toLowerCase();
+      if (v === 'male')   return t('pMale');
+      if (v === 'female') return t('pFemale');
+      return '';
+    };
+    const personasEmptyBody = allFiltered
+      ? `<div style="padding:16px 18px;color:var(--muted);font-size:12px;font-weight:400;line-height:1.7;">${t('pStaleHint')}</div>`
+      : ph;
     const personasBody = personas.length ? `<div class="persona-grid">${personas.map(p => `
       <div class="persona-card">
-        <div class="persona-name">${esc(p.name||'')}</div>
-        ${p.age        ? `<div class="persona-row">${t('pAge')}: <span>${esc(p.age)}</span></div>` : ''}
-        ${p.goal       ? `<div class="persona-row">${t('pGoal')}: <span>${esc(p.goal)}</span></div>` : ''}
-        ${p.pain       ? `<div class="persona-row">${t('pPain')}: <span>${esc(p.pain)}</span></div>` : ''}
-        ${p.motivation ? `<div class="persona-row">${t('pMotivation')}: <span>${esc(p.motivation)}</span></div>` : ''}
-      </div>`).join('')}</div>` : ph;
+        ${(p.name||'').trim() ? `<div class="persona-name">${esc(p.name)}</div>` : ''}
+        ${genderLabel(p.gender)           ? `<div class="persona-row">${t('pGender')}: <span>${esc(genderLabel(p.gender))}</span></div>` : ''}
+        ${(p.age||'').trim()              ? `<div class="persona-row">${t('pAge')}: <span>${esc(p.age)}</span></div>` : ''}
+        ${(p.city||'').trim()             ? `<div class="persona-row">${t('pCity')}: <span>${esc(p.city)}</span></div>` : ''}
+        ${(p.job||'').trim()              ? `<div class="persona-row">${t('pJob')}: <span>${esc(p.job)}</span></div>` : ''}
+        ${(p.emotion||'').trim()          ? `<div class="persona-row">${t('pEmotion')}: <span>${esc(p.emotion)}</span></div>` : ''}
+        ${(p.rentalPreference||'').trim() ? `<div class="persona-row">${t('pRentalPref')}: <span>${esc(p.rentalPreference)}</span></div>` : ''}
+        ${(p.goal||'').trim()             ? `<div class="persona-row">${t('pGoal')}: <span>${esc(p.goal)}</span></div>` : ''}
+        ${(p.pain||'').trim()             ? `<div class="persona-row">${t('pPain')}: <span>${esc(p.pain)}</span></div>` : ''}
+        ${(p.motivation||'').trim()       ? `<div class="persona-row">${t('pMotivation')}: <span>${esc(p.motivation)}</span></div>` : ''}
+      </div>`).join('')}</div>` : personasEmptyBody;
     html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('personas'), 'personas', personasBody)}${personasBody}</div>`;
 
     // 7 — Empathy Map
@@ -2789,53 +3605,169 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null) {
     const empBody = `<div class="empathy-grid">${['thinks','feels','says','does'].map(k => `
       <div class="empathy-cell">
         <div class="empathy-lbl">${empLabel[k]}</div>
-        <div class="empathy-items">${(emp[k]||[]).length ? emp[k].map(x=>`• ${esc(x)}`).join('<br>') : `<span style="color:var(--muted);font-size:12px;font-weight:400;font-style:italic;">—</span>`}</div>
+        <div class="empathy-items">${(emp[k]||[]).filter(x=>(x||'').trim()).length ? emp[k].filter(x=>(x||'').trim()).map(x=>`• ${esc(x)}`).join('<br>') : `<span style="color:var(--muted);font-size:12px;font-weight:400;font-style:italic;">—</span>`}</div>
       </div>`).join('')}</div>`;
     html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('empathy'), 'empathy', empBody)}${empBody}</div>`;
 
-    // 8 — User Journey Map
-    const journey = (d.journey || []).filter(Boolean);
-    const sentClass = s => s==='positive'?'js-pos':s==='negative'?'js-neg':'js-neu';
-    const sentLabel = s => s==='positive'?t('sentPos'):s==='negative'?t('sentNeg'):t('sentNeu');
-    const journeyBody = journey.length ? `<div class="journey-steps">${journey.map(j => `
-      <div class="journey-step">
-        <div class="journey-phase">${esc(j.phase||'')}</div>
-        <div class="journey-action">${esc(j.action||'')}</div>
-        <div class="journey-emotion">${esc(j.emotion||'')}</div>
-        ${j.sentiment ? `<span class="journey-sentiment ${sentClass(j.sentiment)}">${sentLabel(j.sentiment)}</span>` : ''}
-      </div>`).join('')}</div>` : ph;
+    // 8 — User Journey Map (matrix layout)
+    // Normalise each step to the new matrix shape. Old records only have
+    // { phase, action, emotion, sentiment } — upgrade them in-place for render.
+    const sentEmoji = s => s==='positive' ? '😊' : s==='negative' ? '😞' : '😐';
+    const normStep = (j) => {
+      if (!j) return null;
+      const out = {
+        phase: String(j.phase || '').trim(),
+        actions: Array.isArray(j.actions) ? j.actions.filter(x => String(x||'').trim()) : [],
+        goals: Array.isArray(j.goals) ? j.goals.filter(x => String(x||'').trim()) : [],
+        feelings: Array.isArray(j.feelings) ? j.feelings.filter(f => f && String(f.text||'').trim()) : [],
+        pains: Array.isArray(j.pains) ? j.pains.filter(x => String(x||'').trim()) : [],
+        opportunities: Array.isArray(j.opportunities) ? j.opportunities.filter(x => String(x||'').trim()) : [],
+      };
+      // Back-compat: old shape had single action/emotion/sentiment
+      if (!out.actions.length && String(j.action||'').trim()) out.actions = [String(j.action).trim()];
+      if (!out.feelings.length && String(j.emotion||'').trim()) {
+        out.feelings = [{ text: String(j.emotion).trim(), sentiment: j.sentiment || 'neutral' }];
+      }
+      return out;
+    };
+    const journey = (d.journey || []).map(normStep).filter(j => j && (j.phase || j.actions.length || j.goals.length || j.feelings.length || j.pains.length || j.opportunities.length));
+
+    let journeyBody;
+    if (!journey.length) {
+      journeyBody = ph;
+    } else {
+      const cols = journey.length;
+      const grid = `grid-template-columns: 200px repeat(${cols}, minmax(140px, 1fr));`;
+      // Header row: empty corner + phase titles
+      let cells = `<div class="jm-head-cell" style="background:transparent;border-inline-end:1px solid var(--border);"></div>`;
+      cells += journey.map((j, i) => `<div class="jm-head-cell jm-col-${i % 6}">${esc(j.phase || '—')}</div>`).join('');
+
+      const noteOrEmpty = (arr, colIdx, render) => {
+        if (!arr.length) return `<span class="jm-empty">—</span>`;
+        return arr.map(render).join('');
+      };
+
+      // Row: actions
+      cells += `<div class="jm-row-label"><div class="jm-row-title">${t('jmActions')}</div><div class="jm-row-desc">${t('jmActionsDesc')}</div></div>`;
+      cells += journey.map((j, i) => `<div class="jm-cell jm-col-${i % 6}">${
+        noteOrEmpty(j.actions, i, a => `<div class="jm-note">${esc(a)}</div>`)
+      }</div>`).join('');
+
+      // Row: goals
+      cells += `<div class="jm-row-label"><div class="jm-row-title">${t('jmGoals')}</div><div class="jm-row-desc">${t('jmGoalsDesc')}</div></div>`;
+      cells += journey.map((j, i) => `<div class="jm-cell jm-col-${i % 6}">${
+        noteOrEmpty(j.goals, i, g => `<div class="jm-note">${esc(g)}</div>`)
+      }</div>`).join('');
+
+      // Row: feelings
+      cells += `<div class="jm-row-label"><div class="jm-row-title">${t('jmFeelings')}</div><div class="jm-row-desc">${t('jmFeelingsDesc')}</div></div>`;
+      cells += journey.map((j, i) => `<div class="jm-cell jm-col-${i % 6}">${
+        noteOrEmpty(j.feelings, i, f => `<div class="jm-note jm-feel"><span class="jm-feel-emo">${sentEmoji(f.sentiment)}</span><span>${esc(f.text)}</span></div>`)
+      }</div>`).join('');
+
+      // Row: pain points
+      cells += `<div class="jm-row-label"><div class="jm-row-title">${t('jmPains')}</div><div class="jm-row-desc">${t('jmPainsDesc')}</div></div>`;
+      cells += journey.map((j, i) => `<div class="jm-cell jm-col-${i % 6}">${
+        noteOrEmpty(j.pains, i, p => `<div class="jm-note">${esc(p)}</div>`)
+      }</div>`).join('');
+
+      // Row: opportunities
+      cells += `<div class="jm-row-label"><div class="jm-row-title">${t('jmOpps')}</div><div class="jm-row-desc">${t('jmOppsDesc')}</div></div>`;
+      cells += journey.map((j, i) => `<div class="jm-cell jm-col-${i % 6}">${
+        noteOrEmpty(j.opportunities, i, o => `<div class="jm-note">${esc(o)}</div>`)
+      }</div>`).join('');
+
+      journeyBody = `<div class="jm-wrap"><div class="jm-grid" style="${grid}">${cells}</div></div>`;
+    }
     html += `<div class="rc" style="margin-bottom:16px;"><div class="ra-sec-hd" style="pointer-events:none;cursor:default;"><span class="ra-sec-ttl">${t('journey')}</span></div>${journeyBody}</div>`;
 
     // 9 — Impact vs Effort
-    const ie = (d.impactEffort || []).filter(Boolean);
+    // Filter: skip rows where action is empty OR both impact and effort are missing
+    const ie = (d.impactEffort || []).filter(r => r && (r.action||'').trim() && ((r.impact||'').trim() || (r.effort||'').trim()));
     const chipClass = v => v==='High'?'ie-hi':v==='Low'?'ie-lo':'ie-md';
     const ieChip = v => { const m={'High':t('ieHigh'),'Medium':t('ieMedium'),'Low':t('ieLow')}; return m[v]||v; };
-    const iePri = v => { const m={'Do First':t('ieDoFirst'),'Schedule':t('ieSchedule'),'Delegate':t('ieDelegate'),'Drop':t('ieDrop')}; return m[v]||v; };
+    // Priority: map Do First/Schedule/Delegate/Drop → High/Medium/Low for consistency
+    const priToLevel = v => ({'Do First':'High','Schedule':'Medium','Delegate':'Low','Drop':'Low'}[v]||'Medium');
+    const iePri = v => ieChip(priToLevel(v));
     const ieBody = ie.length ? `<table class="ie-table">
       <thead><tr><th>${t('ieAction')}</th><th>${t('ieImpact')}</th><th>${t('ieEffort')}</th><th>${t('iePriority')}</th></tr></thead>
       <tbody>${ie.map(r => `<tr>
         <td>${esc(r.action||'')}</td>
-        <td><span class="ie-chip ${chipClass(r.impact)}">${esc(ieChip(r.impact||''))}</span></td>
-        <td><span class="ie-chip ${chipClass(r.effort)}">${esc(ieChip(r.effort||''))}</span></td>
-        <td><strong>${esc(iePri(r.priority||''))}</strong></td>
+        <td>${(r.impact||'').trim() ? `<span class="ie-chip ${chipClass(r.impact)}">${esc(ieChip(r.impact))}</span>` : '—'}</td>
+        <td>${(r.effort||'').trim() ? `<span class="ie-chip ${chipClass(r.effort)}">${esc(ieChip(r.effort))}</span>` : '—'}</td>
+        <td>${(r.priority||'').trim() ? `<span class="ie-chip ${chipClass(priToLevel(r.priority))}">${esc(iePri(r.priority))}</span>` : '—'}</td>
       </tr>`).join('')}</tbody>
     </table>` : ph;
     html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('impactEff'), 'ie', ieBody)}${ieBody}</div>`;
 
-    // 10 — User Flow
-    const flow = (d.userFlow || []).filter(Boolean);
-    const flowBody = flow.length ? `<div class="flow-steps">${flow.map(s => `
-      <div class="flow-row">
-        <div class="flow-left">
-          <div class="flow-dot" style="width:10px;height:10px;min-width:10px;font-size:0;"></div>
-          <div class="flow-line"></div>
-        </div>
-        <div class="flow-content">
-          <div class="flow-step-ttl">${esc(s.step||'')}</div>
-          <div class="flow-step-desc">${esc(s.description||'')}</div>
-        </div>
-      </div>`).join('')}</div>` : ph;
-    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('userFlow'), 'flow', flowBody)}${flowBody}</div>`;
+    // 10 — UX Issues & Cost to Fix
+    // Framework: Frequency (1-5) × Severity (1-5) → Criticality = avg.
+    // Sort by criticality desc, then cost asc (Low → High) within each band.
+    const costOrder = { 'Low':0, 'Medium':1, 'High':2 };
+    const rawIssues = (d.uxIssues || []).filter(u => u && (String(u.issue||'').trim() || String(u.description||'').trim()));
+    const issues = rawIssues.map(u => {
+      const f = Math.max(1, Math.min(5, parseInt(u.frequency, 10) || 0)) || 1;
+      const s = Math.max(1, Math.min(5, parseInt(u.severity,  10) || 0)) || 1;
+      const crit = Math.round(((f + s) / 2) * 10) / 10;
+      return { ...u, frequency: f, severity: s, criticality: crit };
+    }).sort((a, b) => {
+      if (b.criticality !== a.criticality) return b.criticality - a.criticality;
+      return (costOrder[a.costToFix] ?? 1) - (costOrder[b.costToFix] ?? 1);
+    });
+
+    const critClass = c => c >= 4.5 ? 'ie-hi' : c >= 3 ? 'ie-md' : 'ie-lo';
+    const sevClass  = s => s >= 4 ? 'ie-hi' : s >= 3 ? 'ie-md' : 'ie-lo';
+    const freqClass = f => f >= 4 ? 'ie-hi' : f >= 3 ? 'ie-md' : 'ie-lo';
+
+    let uxBody;
+    if (!issues.length) {
+      uxBody = ph;
+    } else {
+      const rows = issues.map(u => {
+        const costLabel = u.costToFix ? (u.costToFix === 'High' ? t('ieHigh') : u.costToFix === 'Low' ? t('ieLow') : t('ieMedium')) : '—';
+        const costCls = u.costToFix === 'High' ? 'ie-hi' : u.costToFix === 'Low' ? 'ie-lo' : 'ie-md';
+        return `<tr>
+          <td style="min-width:160px;">
+            <div style="font-size:12px;font-weight:500;color:var(--text);">${esc(u.issue || '—')}</div>
+          </td>
+          <td style="text-align:center;"><span class="ie-chip ${freqClass(u.frequency)}">${u.frequency}</span></td>
+          <td style="text-align:center;"><span class="ie-chip ${sevClass(u.severity)}">${u.severity}</span></td>
+          <td style="text-align:center;"><span class="ie-chip ${critClass(u.criticality)}">${u.criticality}</span></td>
+          <td style="text-align:center;"><span class="ie-chip ${costCls}">${esc(costLabel)}</span></td>
+        </tr>`;
+      }).join('');
+
+      const formulaBlock = `
+        <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:stretch;">
+          <div style="flex:1;min-width:200px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+            <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:7px;">${t('uxLegendTitle')}</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.8;">
+              <b>${t('uxFreq')} (1–5):</b> ${t('uxLegendFreqShort')}<br>
+              <b>${t('uxSev')} (1–5):</b> ${t('uxLegendSevShort')}<br>
+              <b>${t('uxCrit')}:</b> ${t('uxLegendCritShort')}
+            </div>
+          </div>
+          <div style="flex:1;min-width:200px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:11px;font-weight:600;color:var(--text);">${t('uxFormulaTitle')}</div>
+            <div style="font-size:13px;font-weight:600;color:var(--primary);text-align:center;padding:6px 10px;background:var(--plight);border-radius:6px;letter-spacing:0.2px;">
+              ${t('uxCrit')} = (${t('uxSev')} + ${t('uxFreq')}) ÷ 2
+            </div>
+            <div style="font-size:11px;font-weight:400;color:var(--muted);line-height:1.6;">${t('uxStrategy')}</div>
+          </div>
+        </div>`;
+
+      uxBody = `<div style="overflow-x:auto;"><table class="ie-table" style="min-width:480px;">
+        <thead><tr>
+          <th style="text-align:start;">${t('uxIssue')}</th>
+          <th style="text-align:center;">${t('uxFreq')}</th>
+          <th style="text-align:center;">${t('uxSev')}</th>
+          <th style="text-align:center;">${t('uxCrit')}</th>
+          <th style="text-align:center;">${t('uxCost')}</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>` + formulaBlock;
+    }
+    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('uxIssues'), 'uxIssues', uxBody)}${uxBody}</div>`;
 
   } // end isResearcher
 
@@ -2926,11 +3858,12 @@ let _brandTaps = 0, _brandTimer = null;
 function onBrandClick() {
   _brandTaps++;
   clearTimeout(_brandTimer);
-  _brandTimer = setTimeout(() => { _brandTaps = 0; }, 600);
+  _brandTimer = setTimeout(() => { _brandTaps = 0; }, 1500);
   if (_brandTaps >= 3) {
     _brandTaps = 0;
     clearTimeout(_brandTimer);
-    openResearcherModal();
+    if (S.isResearcher) { renderResults({}); }
+    else { openResearcherModal(); }
   }
 }
 
@@ -2959,14 +3892,108 @@ function submitResearcherPin() {
   }
 }
 
+// ─── CONTEXT EDITOR ──────────────────────────────────────
+const _CTX_DEFS = {
+  businessName: 'Skoon',
+  goal:     'Understand user behavior while searching for rental property and how it influences their decision-making.',
+  audience: 'People searching for rental property in Saudi Arabia who face difficulty comparing options and choosing the most suitable one.',
+  prompt: '',
+};
+
+function getCtx(field) {
+  const v = localStorage.getItem('interview.' + field);
+  if (v !== null && v.trim()) return v.trim();
+  // Legacy fallbacks (backward-compatible)
+  if (field === 'goal')     { const o = localStorage.getItem('skoon_goal');            if (o && o.trim()) return o.trim(); }
+  if (field === 'audience') { const o = localStorage.getItem('skoon_audience');        if (o && o.trim()) return o.trim(); }
+  if (field === 'prompt')   { const o = localStorage.getItem('custom_analysis_prompt'); if (o && o.trim()) return o.trim(); }
+  return _CTX_DEFS[field] !== undefined ? _CTX_DEFS[field] : '';
+}
+
+// Keep legacy alias so any surviving references don't break
+function getCustomAnalysisPrompt() { return getCtx('prompt'); }
+
+function openContextEditor() {
+  const ar  = S.lang === 'ar';
+  const dir = ar ? 'rtl' : 'ltr';
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  if (ar) {
+    set('cxe-title',      'تعديل السياق');
+    set('cxe-lbl-biz',    'اسم الشركة');
+    set('cxe-lbl-goal',   'هدف المقابلة');
+    set('cxe-lbl-aud',    'الجمهور المستهدف');
+    set('cxe-lbl-prompt', 'موجّه التحليل');
+    set('cxe-desc',       'تعليمات اختيارية تُضاف إلى موجّه نظام التحليل.');
+    set('cxe-reset-btn',  'إعادة للافتراضي');
+    set('cxe-save-btn',   'حفظ');
+  } else {
+    set('cxe-title',      'Edit Context');
+    set('cxe-lbl-biz',    'Business Name');
+    set('cxe-lbl-goal',   'Interview Goal');
+    set('cxe-lbl-aud',    'Target Audience');
+    set('cxe-lbl-prompt', 'Analysis Prompt');
+    set('cxe-desc',       'Optional custom instructions appended to the AI analysis system prompt.');
+    set('cxe-reset-btn',  'Reset to Default');
+    set('cxe-save-btn',   'Save');
+  }
+  const fieldMap = { biz: 'businessName', goal: 'goal', aud: 'audience', prompt: 'prompt' };
+  Object.entries(fieldMap).forEach(([elId, ctxKey]) => {
+    const el = document.getElementById('cxe-' + elId);
+    if (el) { el.value = getCtx(ctxKey); el.dir = dir; }
+  });
+  document.getElementById('context-editor-ov').classList.add('show');
+}
+
+function closeContextEditor() {
+  document.getElementById('context-editor-ov').classList.remove('show');
+}
+
+function saveContext() {
+  const biz    = (document.getElementById('cxe-biz')?.value    || '').trim();
+  const goal   = (document.getElementById('cxe-goal')?.value   || '').trim();
+  const aud    = (document.getElementById('cxe-aud')?.value    || '').trim();
+  const prompt = (document.getElementById('cxe-prompt')?.value || '').trim();
+  localStorage.setItem('interview.businessName', biz    || _CTX_DEFS.businessName);
+  localStorage.setItem('interview.goal',         goal   || _CTX_DEFS.goal);
+  localStorage.setItem('interview.audience',     aud    || _CTX_DEFS.audience);
+  // Sync to legacy keys so setup page and existing code stays consistent
+  localStorage.setItem('skoon_goal',     goal   || _CTX_DEFS.goal);
+  localStorage.setItem('skoon_audience', aud    || _CTX_DEFS.audience);
+  if (prompt) localStorage.setItem('interview.prompt', prompt);
+  else        localStorage.removeItem('interview.prompt');
+  _ensureSetupPrefills();
+  closeContextEditor();
+}
+
+function resetContext() {
+  ['interview.businessName', 'interview.goal', 'interview.audience', 'interview.prompt'].forEach(k => localStorage.removeItem(k));
+  const vals = { biz: _CTX_DEFS.businessName, goal: _CTX_DEFS.goal, aud: _CTX_DEFS.audience, prompt: '' };
+  Object.entries(vals).forEach(([id, v]) => { const el = document.getElementById('cxe-' + id); if (el) el.value = v; });
+}
+
 // ─── RESTART ──────────────────────────────────────────────
-function goHome() { goTo('page-setup'); }
+function _ensureSetupPrefills() {
+  const pairs = [
+    { id: 'inp-goal', ctxField: 'goal',     defKey: 'goalPre' },
+    { id: 'inp-aud',  ctxField: 'audience', defKey: 'audPre'  },
+  ];
+  pairs.forEach(({ id, ctxField, defKey }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const saved = getCtx(ctxField);
+    if (saved && saved.trim()) { el.value = saved; el.dataset.edited = '1'; }
+    else if (!el.value.trim()) { el.value = t(defKey); }
+  });
+}
+
+function goHome() { goTo('page-setup'); _ensureSetupPrefills(); }
 
 function restart() {
   clearSession();
   S.msgs = []; S.mainAsked = 0; S.followUps = 0;
   S.waitingForAnswer = false; S.done = false;
   goTo('page-setup');
+  _ensureSetupPrefills();
 }
 </script>
 </body>
