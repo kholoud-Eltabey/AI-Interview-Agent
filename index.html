@@ -2597,10 +2597,14 @@ function extractQA() {
 }
 
 // Returns sequential 1-based number for an interview (oldest = #1)
-// Falls back to stored iv.num if present, otherwise derives from sorted position
+// Always derives number from sorted position — never trusts stored iv.num (can collide)
 function getInterviewNumber(id) {
   const all = getAllInterviews();
-  const sorted = all.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+  // Sort by date ascending; use id as stable tiebreaker so same-timestamp sessions get different numbers
+  const sorted = all.slice().sort((a, b) => {
+    const dt = new Date(a.date) - new Date(b.date);
+    return dt !== 0 ? dt : (a.id < b.id ? -1 : 1);
+  });
   const idx = sorted.findIndex(iv => iv.id === id);
   return idx >= 0 ? idx + 1 : all.length;
 }
@@ -3007,7 +3011,7 @@ function renderSbRecent() {
   if (!all.length) { el.innerHTML = lbl; return; }
   el.innerHTML = lbl + all.map(iv => `
     <div class="sb-rc-item px-2.5 py-1.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')">
-      <div class="text-app-text leading-tight" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${iv.num || getInterviewNumber(iv.id)}</div>
+      <div class="text-app-text leading-tight" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${getInterviewNumber(iv.id)}</div>
     </div>`).join('');
 }
 
@@ -3030,7 +3034,7 @@ function renderOverview() {
   if (latestEl) latestEl.innerHTML = all.length ? `
     <div class="text-app-text mb-2" style="font-size:14px;font-weight:500;">${t('dbLatest')}</div>
     <div class="flex flex-col gap-1.5">${latest.map(iv => {
-      const num   = iv.num || getInterviewNumber(iv.id);
+      const num   = getInterviewNumber(iv.id);
       const r     = iv.lastQuestionSeen || 0;
       const tot   = iv.totalQuestions   || 0;
       const badge = ivStatusBadge(r, tot);
@@ -3073,7 +3077,7 @@ function ivStatusBadge(reached, total) {
 }
 
 function ivRowHtml(iv, fmt, expandable) {
-  const num     = iv.num || getInterviewNumber(iv.id);
+  const num     = getInterviewNumber(iv.id);
   const reached = iv.lastQuestionSeen || 0;
   const total   = iv.totalQuestions   || 0;
   const pct     = total > 0 ? Math.round((reached / total) * 100) : 0;
