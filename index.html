@@ -2330,12 +2330,17 @@ function showTyping() {
 function rmTyping()  { const e = document.getElementById('typing-ind'); if (e) e.remove(); scrollBtm(); }
 function scrollBtm() {
   const _scroll = () => {
+    // Primary: scroll the anchor element into view — reliable even during reflow
+    const anchor = document.getElementById('chat-btm');
+    if (anchor) { anchor.scrollIntoView({ block: 'end' }); return; }
+    // Fallback: direct scrollTop if anchor missing
     const c = document.getElementById('chat-scroll');
     if (c) c.scrollTop = c.scrollHeight;
   };
-  _scroll();                          // immediate
-  requestAnimationFrame(_scroll);     // after next paint
-  setTimeout(_scroll, 120);           // after animations settle
+  _scroll();                           // immediate
+  requestAnimationFrame(_scroll);      // after next paint
+  setTimeout(_scroll, 80);             // after bubble renders
+  setTimeout(_scroll, 300);            // after any CSS transition
 }
 
 // Failsafe: MutationObserver fires scrollBtm on every DOM change inside #msgs
@@ -2343,7 +2348,7 @@ function scrollBtm() {
   const init = () => {
     const msgs = document.getElementById('msgs');
     if (!msgs) { setTimeout(init, 200); return; }
-    new MutationObserver(scrollBtm).observe(msgs, { childList: true, subtree: true });
+    new MutationObserver(scrollBtm).observe(msgs, { childList: true, subtree: true, characterData: true });
   };
   document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', init)
