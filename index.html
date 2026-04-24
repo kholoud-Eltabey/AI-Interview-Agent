@@ -1418,7 +1418,7 @@ const TR = {
     dbNoData: 'No interviews yet', dbNoAnalysis: 'No analysis — interview not yet analyzed',
     dbSelectHint: 'Select interviews below to run cross analysis',
     dbAnalyzeBtn: 'Analyze Selected', dbSelCount: (n) => `${n} interview${n===1?'':'s'} selected`,
-    dbAnalyzeAll: 'Analyze All Completed Interviews',
+    dbAnalyzeAll: 'Analyze All Completed Interviews', dbAnalyzeNow: 'Analyze Now',
     dbCrossRunning: 'Analyzing…', dbCrossEmpty: 'No output yet',
     homeBtn:   'Home',
     dbInterviewLabel: 'Interview',
@@ -1541,7 +1541,7 @@ const TR = {
     dbNoData: 'لا توجد مقابلات بعد', dbNoAnalysis: 'لا يوجد تحليل — المقابلة لم تُحلَّل بعد',
     dbSelectHint: 'اختر مقابلات أدناه لتشغيل التحليل المقارن',
     dbAnalyzeBtn: 'تحليل المختارة', dbSelCount: (n) => `${n} مقابلة مختارة`,
-    dbAnalyzeAll: 'تحليل كل الأبحاث المكتملة',
+    dbAnalyzeAll: 'تحليل كل الأبحاث المكتملة', dbAnalyzeNow: 'حلل الآن',
     dbCrossRunning: 'جاري التحليل…', dbCrossEmpty: 'لا توجد نتائج بعد',
     homeBtn:   'الرئيسية',
     dbInterviewLabel: 'المقابلة',
@@ -2660,6 +2660,12 @@ function deleteInterview(id, e) {
     .catch(err => console.warn('[deleteInterview] KV delete failed:', err.message));
 }
 
+// Analyze from the card tab "Analyze Now" button — runs analysis then refreshes card
+async function analyzeFromCard(id) {
+  await analyzeStoredInterview(id);
+  renderInterviewsTab();
+}
+
 // kept as no-op for backward compat (renderResults calls it)
 function renderHistory() {}
 function renderNotes()   {}
@@ -3048,7 +3054,7 @@ function renderOverview() {
     <div class="flex flex-col gap-1.5">${latest.map(iv => {
       const num   = getInterviewNumber(iv.id);
       const r     = iv.lastQuestionSeen || 0;
-      const tot   = iv.totalQuestions   || 0;
+      const tot   = iv.totalQuestions   || 10;
       const badge = ivStatusBadge(r, tot);
       return `<div class="iv-card-row flex items-center gap-2 bg-surface border border-[var(--border)] rounded px-3 py-2.5" tabindex="0" onclick="loadInterviewById('${iv.id}')" onkeydown="if(event.key==='Enter')loadInterviewById('${iv.id}')" onfocus="this.classList.add('active')" onblur="this.classList.remove('active')">
         <div class="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
@@ -3091,7 +3097,7 @@ function ivStatusBadge(reached, total) {
 function ivRowHtml(iv, fmt, expandable) {
   const num     = getInterviewNumber(iv.id);
   const reached = iv.lastQuestionSeen || 0;
-  const total   = iv.totalQuestions   || 0;
+  const total   = iv.totalQuestions   || 10;
   const pct     = total > 0 ? Math.round((reached / total) * 100) : 0;
   const badge   = ivStatusBadge(reached, total);
 
@@ -3101,10 +3107,15 @@ function ivRowHtml(iv, fmt, expandable) {
   const uxIssues = iv.analysis && Array.isArray(iv.analysis.uxIssues)  ? iv.analysis.uxIssues.filter(u => u && (u.issue||'').trim())             : [];
 
   const notesHtml    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(qa.a)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoNotes')}</div>`;
-  const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div class="text-app-text leading-relaxed" style="font-size:12px;font-weight:400;">${esc(iv.analysis.summary)}</div>` : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
-  const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(i)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
-  const quotesHtml   = quotes.length    ? quotes.map(q => `<div class="iv-quote text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary" style="font-size:12px;font-weight:400;">"${esc(q)}"</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoQuotes')}</div>`;
-  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(u.issue)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
+
+  // "Analyze Now" button shown when interview has no analysis yet
+  const analyzeBtn = `<button onclick="event.stopPropagation();analyzeFromCard('${iv.id}')" style="margin-top:8px;font-size:12px;font-weight:500;color:var(--primary);background:var(--plight);border:1px solid transparent;border-radius:6px;padding:5px 12px;cursor:pointer;display:block;">${t('dbAnalyzeNow')}</button>`;
+  const noAnalysisHtml = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>${analyzeBtn}`;
+
+  const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div class="text-app-text leading-relaxed" style="font-size:12px;font-weight:400;">${esc(iv.analysis.summary)}</div>` : noAnalysisHtml;
+  const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(i)}</div>`).join('') : noAnalysisHtml;
+  const quotesHtml   = quotes.length    ? quotes.map(q => `<div class="iv-quote text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary" style="font-size:12px;font-weight:400;">"${esc(q)}"</div>`).join('') : noAnalysisHtml;
+  const uxHtml       = uxIssues.length  ? uxIssues.map(u => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(u.issue)}</div>`).join('') : noAnalysisHtml;
 
   const bodyHtml = expandable ? `
     <div class="border-t border-[var(--border)]" id="iv-body-${iv.id}" style="display:none;">
