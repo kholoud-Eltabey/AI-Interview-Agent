@@ -50,13 +50,30 @@ export async function onRequestPost(context) {
   return json({ ok: true, id: interview.id });
 }
 
+// DELETE /api/interviews?id=xxx  — remove one interview by id
+export async function onRequestDelete(context) {
+  const { request, env } = context;
+  if (!env.SKOON_INTERVIEWS) return json({ error: 'KV not configured.' }, 500);
+
+  const url = new URL(request.url);
+  const id  = url.searchParams.get('id');
+  if (!id) return json({ error: 'id query param required.' }, 400);
+
+  const list    = await getAll(env.SKOON_INTERVIEWS);
+  const trimmed = list.filter(iv => iv.id !== id);
+
+  if (trimmed.length === list.length) return json({ ok: true, deleted: false }); // not found — no-op
+  await saveAll(env.SKOON_INTERVIEWS, trimmed);
+  return json({ ok: true, deleted: true, id });
+}
+
 // OPTIONS — CORS preflight
 export async function onRequestOptions() {
   return new Response(null, {
     status: 204,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },
   });

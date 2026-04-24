@@ -2644,13 +2644,20 @@ function deleteInterview(id, e) {
   if (!confirm(t('dbDeleteConfirm'))) return;
   const idx = _ivCache.findIndex(x => x.id === id);
   if (idx === -1) return;
+
+  // Remove from in-memory cache + localStorage immediately
   _ivCache.splice(idx, 1);
   localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
-  // refresh all visible areas
+
+  // Refresh all visible areas right away
   renderSbRecent();
   renderOverview();
   renderInterviewsTab();
   renderCrossTab();
+
+  // Also delete from KV so it doesn't come back on next load
+  fetch(`/api/interviews?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+    .catch(err => console.warn('[deleteInterview] KV delete failed:', err.message));
 }
 
 // kept as no-op for backward compat (renderResults calls it)
