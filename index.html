@@ -1741,7 +1741,7 @@ async function startInterview() {
 
   S.msgs = []; S.mainAsked = 0; S.followUps = 0;
   S.waitingForAnswer = false; S.done = false;
-  S._iid = Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+  S._iid = Date.now().toString(36) + Math.random().toString(36).slice(2,8) + Math.random().toString(36).slice(2,5);
 
   S.msgs.push({ role: 'system', content: buildSys() });
 
@@ -2556,7 +2556,7 @@ async function loadInterviewsFromAPI() {
       const remoteIds = new Set(remote.map(iv => iv.id));
       const onlyLocal = local.filter(iv => !remoteIds.has(iv.id));
 
-      _ivCache  = [...remote, ...onlyLocal];
+      _ivCache  = _dedupeById([...remote, ...onlyLocal]);
       _ivLoaded = true;
 
       // Push any local-only records up to KV so they're never lost
@@ -2571,8 +2571,22 @@ async function loadInterviewsFromAPI() {
   } catch(_) {}
 
   // API unreachable — fall back to localStorage only
-  _ivCache  = local;
+  _ivCache  = _dedupeById(local);
   _ivLoaded = true;
+}
+
+// Deduplicate by ID — keep the record with the most data (prefer analysis present)
+function _dedupeById(list) {
+  const map = new Map();
+  for (const iv of list) {
+    if (!map.has(iv.id)) { map.set(iv.id, iv); continue; }
+    const existing = map.get(iv.id);
+    // Prefer the version that has analysis, or the one with more answers
+    const existingScore = (existing.analysis ? 10 : 0) + (existing.answers ? existing.answers.length : 0);
+    const newScore      = (iv.analysis      ? 10 : 0) + (iv.answers      ? iv.answers.length      : 0);
+    if (newScore > existingScore) map.set(iv.id, iv);
+  }
+  return [...map.values()];
 }
 
 async function _postIvToAPI(record) {
