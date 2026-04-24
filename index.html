@@ -2547,16 +2547,23 @@ async function loadInterviewsFromAPI() {
   try { local = JSON.parse(localStorage.getItem('skoon_interviews') || '[]'); }
   catch(_) { local = []; }
 
+  // IDs the user has explicitly deleted — never re-add these from KV
+  let deletedIds = new Set();
+  try { deletedIds = new Set(JSON.parse(localStorage.getItem('skoon_deleted_ids') || '[]')); }
+  catch(_) {}
+
   try {
     const res = await fetch('/api/interviews');
     if (res.ok) {
       const remote = await res.json();
 
-      // Merge: start with remote, then add any local records not yet in KV
-      const remoteIds = new Set(remote.map(iv => iv.id));
-      const onlyLocal = local.filter(iv => !remoteIds.has(iv.id));
+      // Filter out any KV records the user deleted locally
+      const filteredRemote = remote.filter(iv => !deletedIds.has(iv.id));
+      const remoteIds = new Set(filteredRemote.map(iv => iv.id));
+      // Add local-only records (not yet synced to KV) that weren't deleted
+      const onlyLocal = local.filter(iv => !remoteIds.has(iv.id) && !deletedIds.has(iv.id));
 
-      _ivCache  = _dedupeById([...remote, ...onlyLocal]);
+      _ivCache  = _dedupeById([...filteredRemote, ...onlyLocal]);
       _ivLoaded = true;
 
       // Push any local-only records up to KV so they're never lost
@@ -2570,8 +2577,8 @@ async function loadInterviewsFromAPI() {
     }
   } catch(_) {}
 
-  // API unreachable — fall back to localStorage only
-  _ivCache  = _dedupeById(local);
+  // API unreachable — fall back to localStorage only (still respect deleted list)
+  _ivCache  = _dedupeById(local.filter(iv => !deletedIds.has(iv.id)));
   _ivLoaded = true;
 }
 
@@ -2658,6 +2665,12 @@ function deleteInterview(id, e) {
   if (!confirm(t('dbDeleteConfirm'))) return;
   const idx = _ivCache.findIndex(x => x.id === id);
   if (idx === -1) return;
+
+  // Track deleted ID so it can never come back from KV on reload
+  let deletedIds = [];
+  try { deletedIds = JSON.parse(localStorage.getItem('skoon_deleted_ids') || '[]'); } catch(_) {}
+  if (!deletedIds.includes(id)) deletedIds.push(id);
+  localStorage.setItem('skoon_deleted_ids', JSON.stringify(deletedIds));
 
   // Remove from in-memory cache + localStorage immediately
   _ivCache.splice(idx, 1);
