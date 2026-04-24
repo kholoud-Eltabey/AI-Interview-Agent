@@ -3050,7 +3050,7 @@ async function renderAllAnalysis() {
 function renderSbRecent() {
   const el = document.getElementById('sb-recent');
   if (!el) return;
-  const all = getAllInterviews().slice().reverse().slice(0, 5);
+  const all = getAllInterviews().slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
   const fmtDate = iso => new Date(iso).toLocaleDateString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { month:'short', day:'numeric' });
   const lbl = `<span class="block text-muted px-2 pt-2 pb-1" style="font-size:12px;font-weight:400;">${t('dbRecent')}</span>`;
   if (!all.length) { el.innerHTML = lbl; return; }
@@ -3074,7 +3074,7 @@ function renderOverview() {
     <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:14px;font-weight:500;">${rate}%</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbRate')}</div></div>`;
 
   const fmtDT  = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
-  const latest = all.slice().reverse().slice(0, 5);
+  const latest = all.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
   const latestEl = document.getElementById('db-latest');
   if (latestEl) latestEl.innerHTML = all.length ? `
     <div class="text-app-text mb-2" style="font-size:14px;font-weight:500;">${t('dbLatest')}</div>
@@ -3099,7 +3099,7 @@ function renderOverview() {
 }
 
 function renderInterviewsTab() {
-  const all = getAllInterviews().slice().reverse();
+  const all = getAllInterviews().slice().sort((a, b) => new Date(b.date) - new Date(a.date));
   const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
   const el  = document.getElementById('db-iv-list');
   if (!el) return;
