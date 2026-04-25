@@ -95,7 +95,6 @@ html { scroll-behavior: smooth; }
 
 /* Single font declaration for the whole product */
 *, *::before, *::after { font-family: var(--font); }
-body.local-env { padding-top: 32px; }
 body {
   font-family: var(--font);
   font-size: var(--fs-body); font-weight: var(--fw-body); line-height: var(--lh-body);
@@ -2554,8 +2553,6 @@ function finishMsg() {
 // We no longer route localhost to the production URL because Cloudflare Access
 // protects all *.pages.dev URLs and blocks unauthenticated cross-origin requests.
 const _API_BASE = '';
-const _IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-if (_IS_LOCAL) document.body.classList.add('local-env');
 let _ivCache = [];
 let _ivLoaded = false;
 
@@ -4134,32 +4131,6 @@ function restart() {
 }
 </script>
 
-<!-- LOCAL TEST BANNER — only visible on localhost, hidden on production -->
-<div id="local-banner" style="
-  display:none;
-  position:fixed;
-  top:0; left:0; right:0;
-  z-index:10000;
-  background:#78350f;
-  color:#fef3c7;
-  font-family:'IBM Plex Sans','IBM Plex Sans Arabic',sans-serif;
-  font-size:12px;
-  font-weight:600;
-  text-align:center;
-  padding:7px 16px;
-  letter-spacing:0.03em;
-  pointer-events:none;
-">⚠ LOCAL TEST MODE — not connected to real data &nbsp;·&nbsp; Real version: skoon-interview-agent.pages.dev</div>
-
-<script>
-  if (_IS_LOCAL) {
-    const b = document.getElementById('local-banner');
-    if (b) b.style.display = 'block';
-  }
-</script>
-
-<!-- APP VERSION LABEL — temporary, remove after deploy confirmed -->
-<div style="position:fixed;bottom:8px;inset-inline-end:10px;z-index:9999;background:rgba(11,94,87,0.9);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;pointer-events:none;letter-spacing:0.04em;">DEPLOY-CHECK-001</div>
 
 </body>
 </html>
