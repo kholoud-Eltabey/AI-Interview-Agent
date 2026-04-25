@@ -117,10 +117,10 @@ button, input, textarea, select, table, th, td {
 }
 
 /* ── PAGES ── */
-.page { display: none; min-height: 100vh; flex-direction: column; }
+.page { display: none; min-height: 100vh; flex-direction: column; padding-bottom: 28px; }
 .page.active { display: flex; }
 /* Chat page: fixed viewport height so flex layout pins input + End Interview at bottom */
-#page-chat { height: 100vh; min-height: unset; overflow: hidden; }
+#page-chat { height: 100vh; min-height: unset; overflow: hidden; padding-bottom: 0; }
 
 /* ── SETUP ── */
 #page-setup { align-items: center; padding: 40px 20px 64px; }
@@ -2554,9 +2554,12 @@ function finishMsg() {
 // We no longer route localhost to the production URL because Cloudflare Access
 // protects all *.pages.dev URLs and blocks unauthenticated cross-origin requests.
 const _API_BASE = '';
+const _APP_VERSION = 'SAME-SOURCE-002';
 
 let _ivCache = [];
 let _ivLoaded = false;
+let _storageMode = 'loading'; // 'cloudflare-kv' | 'wrangler-local-kv' | 'localStorage-only'
+let _kvLastLoaded = null;
 
 async function loadInterviewsFromAPI() {
   // Always read localStorage first so we never lose data while offline
@@ -2587,6 +2590,11 @@ async function loadInterviewsFromAPI() {
         // Merge: KV records take precedence; local-only records are appended.
         _ivCache  = _dedupeById([...kvData, ...localOnly]);
         _ivLoaded = true;
+        _kvLastLoaded = new Date();
+
+        // Determine storage mode from hostname
+        const h = window.location.hostname;
+        _storageMode = h === 'localhost' || h === '127.0.0.1' ? 'wrangler-local-kv' : 'cloudflare-kv';
 
         // Mirror merged state into localStorage for offline fallback
         localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
@@ -2594,6 +2602,8 @@ async function loadInterviewsFromAPI() {
         // Push local-only records up to KV so they are persisted server-side
         // (fire-and-forget — failures are silently ignored)
         for (const iv of localOnly) _postIvToAPI(iv);
+
+        _updateDebugPanel();
         return;
       }
     }
@@ -2602,6 +2612,9 @@ async function loadInterviewsFromAPI() {
   // KV unreachable — use localStorage as fallback (still respect deleted list)
   _ivCache  = _dedupeById(local.filter(iv => !deletedIds.has(iv.id)));
   _ivLoaded = true;
+  _storageMode = 'localStorage-only';
+  _kvLastLoaded = new Date();
+  _updateDebugPanel();
 }
 
 // Deduplicate by ID — keep the record with the most data (prefer analysis present)
@@ -2681,6 +2694,7 @@ function saveInterview(analysis) {
   _ivCache.push(record);
   localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
   _postIvToAPI(record); // sync to KV (fire and forget)
+  _updateDebugPanel();
 }
 
 // ── SYNC ALL LOCAL INTERVIEWS TO SERVER KV ────────────────
@@ -2714,6 +2728,25 @@ async function syncToServer() {
   }
 }
 
+// ─── DEBUG PANEL ─────────────────────────────────────────────
+function _updateDebugPanel() {
+  const el = document.getElementById('debug-panel');
+  if (!el) return;
+  const host = window.location.host || 'unknown';
+  const count = _ivCache.length;
+  const ts = _kvLastLoaded ? _kvLastLoaded.toLocaleTimeString() : '—';
+  const modeColor = _storageMode === 'cloudflare-kv' ? '#22c55e'
+    : _storageMode === 'wrangler-local-kv' ? '#f59e0b' : '#ef4444';
+  el.innerHTML = [
+    `<span style="opacity:.6;margin-inline-end:6px;">▶</span>`,
+    `<span><b>APP_VERSION</b> ${_APP_VERSION}</span>`,
+    `<span style="border-inline-start:1px solid rgba(255,255,255,.25);padding-inline-start:10px;"><b>SERVED_FROM</b> ${host}</span>`,
+    `<span style="border-inline-start:1px solid rgba(255,255,255,.25);padding-inline-start:10px;"><b>STORAGE_MODE</b> <span style="color:${modeColor};font-weight:700;">${_storageMode}</span></span>`,
+    `<span style="border-inline-start:1px solid rgba(255,255,255,.25);padding-inline-start:10px;"><b>INTERVIEW_COUNT</b> ${count}</span>`,
+    `<span style="border-inline-start:1px solid rgba(255,255,255,.25);padding-inline-start:10px;"><b>LAST_UPDATED</b> ${ts}</span>`,
+  ].join('');
+}
+
 function deleteInterview(id, e) {
   if (e) e.stopPropagation();
   if (!confirm(t('dbDeleteConfirm'))) return;
@@ -2735,6 +2768,7 @@ function deleteInterview(id, e) {
   renderOverview();
   renderInterviewsTab();
   renderCrossTab();
+  _updateDebugPanel();
 
   // Also delete from KV so it doesn't come back on next load
   fetch(_API_BASE + `/api/interviews?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
@@ -4169,6 +4203,30 @@ function restart() {
 }
 </script>
 
+<!-- ── RUNTIME DEBUG PANEL ── -->
+<div id="debug-panel" style="
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:9999;
+  background:#0B2520;
+  color:#a7f3d0;
+  font-family:'IBM Plex Mono','Courier New',monospace;
+  font-size:11px;
+  font-weight:400;
+  padding:5px 14px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  border-top:1px solid rgba(11,94,87,.6);
+  line-height:1.4;
+  letter-spacing:.01em;
+  pointer-events:none;
+">
+  <span style="opacity:.5">Loading runtime info…</span>
+</div>
 
 </body>
 </html>
