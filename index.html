@@ -929,6 +929,11 @@ a:focus-visible,
         <span class="prestart-row-txt" id="prestart-p4-lbl">You can stop at any time</span>
       </div>
     </div>
+    <div style="width:100%;max-width:440px;margin-bottom:16px;">
+      <input class="inp" id="prestart-name-inp" type="text" autocomplete="off"
+        style="font-size:14px;font-weight:400;"
+        oninput="localStorage.setItem('skoon_user_name',this.value.trim())">
+    </div>
     <button class="btn btn-p" onclick="startInterview()" style="max-width:440px;">
       <span id="prestart-start-lbl">Start Interview</span>
     </button>
@@ -1425,6 +1430,9 @@ const TR = {
     dbAnalyzeBtn: 'Analyze Selected', dbSelCount: (n) => `${n} interview${n===1?'':'s'} selected`,
     dbAnalyzeAll: 'Analyze All Completed Interviews', dbAnalyzeNow: 'Analyze Now',
     dbCrossRunning: 'Analyzing…', dbCrossEmpty: 'No output yet',
+    dbNoAnalysisFull: 'No analysis yet — click Analyze Now to generate this section.',
+    createdBy: 'Created by:', dateLabel: 'Date:',
+    prestartNamePh: 'Enter your name',
     homeBtn:   'Home',
     dbInterviewLabel: 'Interview',
     greetHello: 'Hello, ',
@@ -1548,6 +1556,9 @@ const TR = {
     dbAnalyzeBtn: 'تحليل المختارة', dbSelCount: (n) => `${n} مقابلة مختارة`,
     dbAnalyzeAll: 'تحليل كل الأبحاث المكتملة', dbAnalyzeNow: 'حلل الآن',
     dbCrossRunning: 'جاري التحليل…', dbCrossEmpty: 'لا توجد نتائج بعد',
+    dbNoAnalysisFull: 'لا يوجد تحليل بعد — اضغط على حلل الآن لإنشاء هذا القسم.',
+    createdBy: 'تم بواسطة:', dateLabel: 'التاريخ:',
+    prestartNamePh: 'أدخل اسمك',
     homeBtn:   'الرئيسية',
     dbInterviewLabel: 'المقابلة',
     greetHello: 'مرحباً، ',
@@ -1669,6 +1680,10 @@ function renderTR() {
   set('prestart-p4-lbl',    t('prestartP4'));
   set('prestart-start-lbl', t('prestartBtn'));
   set('prestart-back-lbl',  t('prestartBack'));
+  ph('prestart-name-inp', t('prestartNamePh'));
+  const savedName = localStorage.getItem('skoon_user_name') || '';
+  const nameInp = document.getElementById('prestart-name-inp');
+  if (nameInp && !nameInp.value && savedName) nameInp.value = savedName;
 
   document.querySelectorAll('.tagline-lbl').forEach(el => el.textContent = t('tagline'));
   // API status card
@@ -2661,6 +2676,7 @@ function saveInterview(analysis) {
     date:             new Date().toISOString(),
     lang:             S.lang,
 
+    createdByName:    localStorage.getItem('skoon_user_name') || localStorage.getItem('researcher_name') || (S.lang === 'ar' ? 'المستخدم' : 'User'),
     completed:        S.mainAsked >= S.numQ,
     goal:             S.goal || '',
     audience:         S.audience || '',
@@ -2815,10 +2831,11 @@ async function analyzeStoredInterview(id) {
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch(_) { data = {}; }
 
-    // Post-generation enforcement: GPT sometimes leaks source-language words even
-    // with a strict system prompt. Run a dedicated translation pass (quiet — overlay
-    // is already showing) to guarantee 100% single-language output before saving.
-    if (data.summary) data = await _enforceAnalysisLang(data, S.lang, true);
+    // NOTE: _enforceAnalysisLang is intentionally NOT called here.
+    // _buildAnalysisSys(S.lang) already instructs GPT to generate natively in the
+    // correct language. Running a post-generation translation pass would waste API
+    // calls and risk corrupting naturally-generated Arabic or English text.
+    // Language enforcement for *existing* analyses happens in toggleIvCard instead.
 
     // Persona-name repair: auto-replace any role/title labels with real first names
     if (Array.isArray(data.personas) && data.personas.length) {
@@ -3198,7 +3215,14 @@ function ivRowHtml(iv, fmt, expandable) {
   const quotes   = iv.analysis && Array.isArray(iv.analysis.quotes)    ? iv.analysis.quotes.filter(Boolean)                                      : [];
   const uxIssues = iv.analysis && Array.isArray(iv.analysis.uxIssues)  ? iv.analysis.uxIssues.filter(u => u && (u.issue||'').trim())             : [];
 
-  const notesHtml    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(qa.a)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoNotes')}</div>`;
+  // Notes creator header — shown above answers in the Notes tab only
+  const creatorName = iv.createdByName || localStorage.getItem('skoon_user_name') || localStorage.getItem('researcher_name') || (S.lang === 'ar' ? 'المستخدم' : 'User');
+  const notesHeader = `<div style="font-size:12px;font-weight:400;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">`
+    + `<div>${esc(t('createdBy'))} <span style="color:var(--text);font-weight:500;">${esc(creatorName)}</span></div>`
+    + `<div>${esc(t('dateLabel'))} ${fmt(iv.date)}</div>`
+    + `</div>`;
+  const notesBody    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(qa.a)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoNotes')}</div>`;
+  const notesHtml    = notesHeader + notesBody;
 
   // "Analyze Now" button shown when interview has no analysis yet
   const analyzeBtn = `<button onclick="event.stopPropagation();analyzeFromCard('${iv.id}')" style="margin-top:8px;font-size:12px;font-weight:500;color:var(--primary);background:var(--plight);border:1px solid transparent;border-radius:6px;padding:5px 12px;cursor:pointer;display:block;">${t('dbAnalyzeNow')}</button>`;
@@ -3297,9 +3321,11 @@ async function toggleIvCard(ivId) {
 }
 
 function _updateCardContent(ivId, analysis) {
-  // Empty-state strings use t() so they follow the current dashboard language
-  const noData = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
-  const noQts  = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoQuotes')}</div>`;
+  // Empty-state strings use t() so they follow the current dashboard language.
+  // Include "Analyze Now" button so the user can trigger analysis from any tab.
+  const _aBtn = `<button onclick="event.stopPropagation();analyzeFromCard('${ivId}')" style="margin-top:8px;font-size:12px;font-weight:500;color:var(--primary);background:var(--plight);border:1px solid transparent;border-radius:6px;padding:5px 12px;cursor:pointer;display:block;">${t('dbAnalyzeNow')}</button>`;
+  const noData = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysisFull')}</div>${_aBtn}`;
+  const noQts  = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysisFull')}</div>${_aBtn}`;
 
   const sumEl = document.getElementById(`ivp-${ivId}-summary-body`);
   if (sumEl) sumEl.innerHTML = (analysis && analysis.summary)
@@ -3504,8 +3530,9 @@ async function analyze() {
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch (_) { data = { summary: raw, insights: [], quotes: [], patterns: [], recommendations: [], personas: [], empathy: {}, journey: [], impactEffort: [], uxIssues: [] }; }
 
-    // Post-generation enforcement — ensure 100% single-language before saving
-    if (data.summary) data = await _enforceAnalysisLang(data, S.lang, true);
+    // NOTE: _enforceAnalysisLang is intentionally NOT called here.
+    // _buildAnalysisSys(S.lang) generates natively in the correct language.
+    // Post-translation would waste API calls and risk corrupting native output.
 
     // Persona-name repair — auto-replace role labels with real first names
     if (Array.isArray(data.personas) && data.personas.length) {
