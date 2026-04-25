@@ -4,7 +4,7 @@
   "description": "Skoon AI-Powered User Interview Agent — Cloudflare Pages app",
   "scripts": {
     "dev":    "npx serve . --listen 3000",
-    "deploy": "wrangler pages deploy . --project-name skoon-interview-agent"
+    "deploy": "git push origin main"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"
