@@ -1311,6 +1311,10 @@ a:focus-visible,
 </div>
 
 <script>
+// ─── VERSION ──────────────────────────────────────────────
+const APP_VERSION = 'latest-fix-001';
+console.log('%c APP_VERSION = ' + APP_VERSION + ' ', 'background:#0B5E57;color:#fff;font-weight:600;padding:2px 6px;border-radius:3px;');
+
 // ─── STATE ────────────────────────────────────────────────
 const S = {
   lang: 'en', theme: 'light',
@@ -3963,8 +3967,9 @@ function onBrandClick() {
   if (_brandTaps >= 3) {
     _brandTaps = 0;
     clearTimeout(_brandTimer);
-    if (S.isResearcher) { renderResults({}); }
-    else { openResearcherModal(); }
+    // Always require the passcode on triple-click — never bypass, even for
+    // returning researchers. Sidebar Dashboard nav is unaffected.
+    openResearcherModal();
   }
 }
 
