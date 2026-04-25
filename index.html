@@ -1281,6 +1281,7 @@ a:focus-visible,
           <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
           <button class="btn btn-s" onclick="openContextEditor()" id="edit-ctx-btn"><span id="edit-ctx-btn-lbl">Edit Context</span></button>
           <button class="btn btn-s" onclick="goHome()" id="s-home-btn">Home</button>
+          <button class="btn btn-s" id="sync-btn" onclick="syncToServer()" title="Push all local interviews to server KV">⟳ Sync</button>
         </div>
       </div>
     </div>
@@ -2674,6 +2675,37 @@ function saveInterview(analysis) {
   _ivCache.push(record);
   localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
   _postIvToAPI(record); // sync to KV (fire and forget)
+}
+
+// ── SYNC ALL LOCAL INTERVIEWS TO SERVER KV ────────────────
+// Use this from the deployed URL to push browser-localStorage-only interviews
+// up to Cloudflare KV so all environments see the same data.
+async function syncToServer() {
+  const btn = document.getElementById('sync-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⟳ Syncing…'; }
+  const all = getAllInterviews();
+  if (!all.length) {
+    if (btn) { btn.disabled = false; btn.textContent = '⟳ Sync'; }
+    alert('No interviews to sync.');
+    return;
+  }
+  let ok = 0, fail = 0;
+  for (const iv of all) {
+    try {
+      const r = await fetch('/api/interviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(iv),
+      });
+      if (r.ok) ok++; else fail++;
+    } catch(e) { fail++; }
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '⟳ Sync'; }
+  if (fail === 0) {
+    alert(`✓ Synced ${ok} interview${ok===1?'':'s'} to server.`);
+  } else {
+    alert(`Synced ${ok} / ${all.length}. ${fail} failed — server may be unreachable.`);
+  }
 }
 
 function deleteInterview(id, e) {
