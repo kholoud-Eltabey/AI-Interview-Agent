@@ -3541,6 +3541,13 @@ async function renderResults(d) {
   }
   // Refresh from KV so dashboard always shows latest data from all devices
   await loadInterviewsFromAPI();
+
+  // Auto-sync: push every interview from _ivCache to KV silently.
+  // This ensures any browser-localStorage-only interviews (saved while the API
+  // was unreachable) are written to KV on the next dashboard open, so all
+  // environments stay consistent without any manual action required.
+  for (const iv of _ivCache) { _postIvToAPI(iv); }
+
   // renderPanel already calls renderSbRecent/renderOverview/renderInterviewsTab/renderCrossTab
   // so there is a single render pass from the freshly loaded _ivCache.
   renderPanel();
