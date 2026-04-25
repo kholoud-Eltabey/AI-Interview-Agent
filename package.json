@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Skoon AI-Powered User Interview Agent — Cloudflare Pages app",
   "scripts": {
-    "dev":     "wrangler pages dev . --port 8788",
-    "preview": "npx serve . --listen 3000",
-    "deploy":  "wrangler pages deploy . --project-name skoon-interview-agent"
+    "dev":         "npx serve . --listen 3000",
+    "deploy":      "wrangler pages deploy . --project-name skoon-interview-agent",
+    "dev:wrangler": "wrangler pages dev . --port 8788"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"

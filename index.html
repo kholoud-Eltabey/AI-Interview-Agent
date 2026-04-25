@@ -2594,7 +2594,9 @@ async function loadInterviewsFromAPI() {
 
         // Determine storage mode from hostname
         const h = window.location.hostname;
-        _storageMode = h === 'localhost' || h === '127.0.0.1' ? 'wrangler-local-kv' : 'cloudflare-kv';
+        // wrangler pages dev serves /api/interviews on localhost;
+        // plain static servers (npx serve) return 404 so never reach here.
+        _storageMode = (h === 'localhost' || h === '127.0.0.1') ? 'wrangler-local-kv' : 'cloudflare-kv';
 
         // Mirror merged state into localStorage for offline fallback
         localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
