@@ -2710,12 +2710,17 @@ function deleteInterview(id, e) {
 }
 
 // Analyze from the card tab "Analyze Now" button — runs analysis, refreshes cards,
-// then re-opens the card so the user immediately sees the new analysis content.
+// then re-opens the card on the Summary tab so the user immediately sees the result.
 async function analyzeFromCard(id) {
   await analyzeStoredInterview(id);
-  // Re-render is already called inside analyzeStoredInterview; re-open the card.
+  // renderInterviewsTab() already ran inside analyzeStoredInterview — re-open card.
   const body = document.getElementById('iv-body-' + id);
-  if (body) body.style.display = '';
+  if (body) {
+    body.style.display = '';
+    // Auto-switch to Summary tab so user immediately sees the new analysis
+    const tabs = document.querySelectorAll(`#iv-tabs-${id} .iv-tab`);
+    if (tabs.length >= 2) ivTab(tabs[1], id, 'summary');
+  }
 }
 
 // kept as no-op for backward compat (renderResults calls it)
