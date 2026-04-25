@@ -1648,17 +1648,11 @@ function applyLang(lang) {
   document.documentElement.setAttribute('lang', lang);
   document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
 
-  // If interview is active, restart it in the new language (no mixed-language chat)
+  // If interview is active, only update the system prompt language — never restart
+  // Progress, chat history, and question count are all preserved.
   const chatActive = S.msgs.length > 0 && document.getElementById('page-chat').classList.contains('active');
-  if (chatActive) {
-    S.msgs = []; S.mainAsked = 0; S.followUps = 0;
-    S.waitingForAnswer = false; S.done = false;
-    S.msgs.push({ role: 'system', content: buildSys() });
-    document.getElementById('msgs').innerHTML = '';
-    document.getElementById('end-row').style.display = 'none';
-    document.getElementById('prog-lbl').textContent = '';
-    document.getElementById('prog-fill').style.width = '0%';
-    sendIntro();
+  if (chatActive && S.msgs[0] && S.msgs[0].role === 'system') {
+    S.msgs[0].content = buildSys();
   }
 
   renderTR();
