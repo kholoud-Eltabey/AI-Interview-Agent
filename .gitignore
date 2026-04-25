@@ -16,3 +16,5 @@ Thumbs.db
 
 # Wrangler temp files
 .wrangler/
+# Wrangler local KV state (fake data — never commit)
+.wrangler/state/
