@@ -2690,10 +2690,13 @@ function deleteInterview(id, e) {
     .catch(err => console.warn('[deleteInterview] KV delete failed:', err.message));
 }
 
-// Analyze from the card tab "Analyze Now" button — runs analysis then refreshes card
+// Analyze from the card tab "Analyze Now" button — runs analysis, refreshes cards,
+// then re-opens the card so the user immediately sees the new analysis content.
 async function analyzeFromCard(id) {
   await analyzeStoredInterview(id);
-  renderInterviewsTab();
+  // Re-render is already called inside analyzeStoredInterview; re-open the card.
+  const body = document.getElementById('iv-body-' + id);
+  if (body) body.style.display = '';
 }
 
 // kept as no-op for backward compat (renderResults calls it)
@@ -2794,6 +2797,12 @@ async function analyzeStoredInterview(id) {
 
     hideOv();
     renderAnalysis(data, iv, 'res-content', iv);
+    // Refresh interview cards so Summary / Insights / Quotes / UX Issues tabs
+    // show the newly saved analysis immediately (works whether triggered from
+    // the Analysis tab or from the card "Analyze Now" button).
+    renderInterviewsTab();
+    renderOverview();
+    renderSbRecent();
   } catch(e) {
     hideOv();
     console.error('[analyzeStoredInterview]', e);
@@ -2817,6 +2826,14 @@ function dbTab(tab) {
   // "New Interview" + "Home" buttons visible only on Dashboard (overview)
   const btns = document.getElementById('db-bottom-btns');
   if (btns) btns.style.display = (tab === 'overview') ? '' : 'none';
+
+  // Re-render count/list tabs from _ivCache on every switch so all views stay
+  // consistent — no stale stats or missing cards after delete / analysis / lang change.
+  if (tab === 'overview')   { renderSbRecent(); renderOverview(); }
+  if (tab === 'interviews') renderInterviewsTab();
+  if (tab === 'insights')   renderCrossTab();
+  // 'analysis' tab rendering is managed by renderPanel / renderResults / loadInterviewById.
+  // Do NOT trigger it here — that would overwrite freshly-rendered analysis content.
 }
 
 function getDisplayName() {
@@ -3235,28 +3252,29 @@ async function toggleIvCard(ivId) {
 }
 
 function _updateCardContent(ivId, analysis) {
-  const noData  = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
-  const noQts   = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoQuotes')}</div>`;
+  // Empty-state strings use t() so they follow the current dashboard language
+  const noData = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>`;
+  const noQts  = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoQuotes')}</div>`;
 
   const sumEl = document.getElementById(`ivp-${ivId}-summary-body`);
-  if (sumEl) sumEl.innerHTML = analysis.summary
+  if (sumEl) sumEl.innerHTML = (analysis && analysis.summary)
     ? `<div class="text-app-text leading-relaxed" style="font-size:12px;font-weight:400;">${esc(analysis.summary)}</div>`
     : noData;
 
   const insEl = document.getElementById(`ivp-${ivId}-insights-body`);
-  const ins   = Array.isArray(analysis.insights) ? analysis.insights.filter(Boolean) : [];
+  const ins   = (analysis && Array.isArray(analysis.insights)) ? analysis.insights.filter(Boolean) : [];
   if (insEl) insEl.innerHTML = ins.length
     ? ins.map(i => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(i)}</div>`).join('')
     : noData;
 
   const qtEl  = document.getElementById(`ivp-${ivId}-quotes-body`);
-  const qts   = Array.isArray(analysis.quotes) ? analysis.quotes.filter(Boolean) : [];
+  const qts   = (analysis && Array.isArray(analysis.quotes)) ? analysis.quotes.filter(Boolean) : [];
   if (qtEl) qtEl.innerHTML = qts.length
     ? qts.map(q => `<div class="iv-quote text-app-text italic leading-relaxed px-3 py-2 bg-plight rounded-md mb-2 border-s-[3px] border-primary" style="font-size:12px;font-weight:400;">"${esc(q)}"</div>`).join('')
     : noQts;
 
   const uxEl  = document.getElementById(`ivp-${ivId}-ux-body`);
-  const uxs   = Array.isArray(analysis.uxIssues) ? analysis.uxIssues.filter(u => u && (u.issue||'').trim()) : [];
+  const uxs   = (analysis && Array.isArray(analysis.uxIssues)) ? analysis.uxIssues.filter(u => u && (u.issue||'').trim()) : [];
   if (uxEl) uxEl.innerHTML = uxs.length
     ? uxs.map(u => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(u.issue)}</div>`).join('')
     : noData;
@@ -3478,10 +3496,9 @@ async function renderResults(d) {
   }
   // Refresh from KV so dashboard always shows latest data from all devices
   await loadInterviewsFromAPI();
+  // renderPanel already calls renderSbRecent/renderOverview/renderInterviewsTab/renderCrossTab
+  // so there is a single render pass from the freshly loaded _ivCache.
   renderPanel();
-  renderOverview();
-  renderInterviewsTab();
-  renderCrossTab();
   // If d has real analysis data (just finished interview), show it; otherwise aggregate
   const hasRealData = !!(d && (d.summary || (d.insights && d.insights.length)));
   if (hasRealData) {
