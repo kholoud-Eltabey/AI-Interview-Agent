@@ -2566,27 +2566,21 @@ async function loadInterviewsFromAPI() {
     if (res.ok) {
       const remote = await res.json();
 
-      // Filter out any KV records the user deleted locally
-      const filteredRemote = remote.filter(iv => !deletedIds.has(iv.id));
-      const remoteIds = new Set(filteredRemote.map(iv => iv.id));
-      // Add local-only records (not yet synced to KV) that weren't deleted
-      const onlyLocal = local.filter(iv => !remoteIds.has(iv.id) && !deletedIds.has(iv.id));
-
-      _ivCache  = _dedupeById([...filteredRemote, ...onlyLocal]);
+      // KV is the sole source of truth when reachable.
+      // Only apply the local deleted-IDs filter as a safety net in case a
+      // previous DELETE request to KV failed (e.g. network blip).
+      // Do NOT merge stale localStorage data — that causes phantom interviews
+      // and count mismatches across Dashboard / Interviews / sidebar.
+      _ivCache  = _dedupeById(remote.filter(iv => !deletedIds.has(iv.id)));
       _ivLoaded = true;
 
-      // Push any local-only records up to KV so they're never lost
-      for (const iv of onlyLocal) {
-        _postIvToAPI(iv);
-      }
-
-      // Keep localStorage in sync with the merged result
+      // Mirror KV state into localStorage so the offline fallback stays fresh
       localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
       return;
     }
   } catch(_) {}
 
-  // API unreachable — fall back to localStorage only (still respect deleted list)
+  // KV unreachable — use localStorage as fallback (still respect deleted list)
   _ivCache  = _dedupeById(local.filter(iv => !deletedIds.has(iv.id)));
   _ivLoaded = true;
 }
