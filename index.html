@@ -1602,7 +1602,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const el = document.getElementById(id);
     if (!el) return;
     const saved = getCtx(keys.ctxField);
-    if (saved && saved.trim()) { el.value = saved; el.dataset.edited = '1'; }
+    // Only mark as user-edited if it's NOT a language-default placeholder
+    const isDefaultVal = !saved || !saved.trim() || saved === TR.en.goalPre || saved === TR.ar.goalPre || saved === TR.en.audPre || saved === TR.ar.audPre;
+    if (saved && saved.trim() && !isDefaultVal) { el.value = saved; el.dataset.edited = '1'; }
     el.addEventListener('input', () => {
       el.dataset.edited = '1';
       localStorage.setItem(keys.ivKey,     el.value);
@@ -1709,25 +1711,28 @@ function renderTR() {
   set('res-sub',    t('resSub'));
   ph('chat-ta',     t('taPh'));
 
-  // Prefill goal / audience — restore from localStorage first, then translation default
+  // Prefill goal / audience — restore from localStorage first, then language-aware default
+  // A value counts as "real user content" only if it differs from BOTH language defaults
   const gEl = document.getElementById('inp-goal');
   const aEl = document.getElementById('inp-aud');
   if (gEl) {
     const saved = getCtx('goal');
-    if (saved && saved.trim()) {
+    const isLangDefault = !saved || !saved.trim() || saved === TR.en.goalPre || saved === TR.ar.goalPre;
+    if (saved && saved.trim() && !isLangDefault) {
       gEl.value = saved; gEl.dataset.edited = '1';
     } else {
-      const isDefault = !gEl.dataset.edited || gEl.value === TR.en.goalPre || gEl.value === TR.ar.goalPre || !gEl.value.trim();
-      if (isDefault) gEl.value = t('goalPre');
+      gEl.value = t('goalPre');
+      delete gEl.dataset.edited;
     }
   }
   if (aEl) {
     const saved = getCtx('audience');
-    if (saved && saved.trim()) {
+    const isLangDefault = !saved || !saved.trim() || saved === TR.en.audPre || saved === TR.ar.audPre;
+    if (saved && saved.trim() && !isLangDefault) {
       aEl.value = saved; aEl.dataset.edited = '1';
     } else {
-      const isDefault = !aEl.dataset.edited || aEl.value === TR.en.audPre || aEl.value === TR.ar.audPre || !aEl.value.trim();
-      if (isDefault) aEl.value = t('audPre');
+      aEl.value = t('audPre');
+      delete aEl.dataset.edited;
     }
   }
 
@@ -4076,8 +4081,8 @@ function submitResearcherPin() {
 // ─── CONTEXT EDITOR ──────────────────────────────────────
 const _CTX_DEFS = {
   businessName: 'Skoon',
-  goal:     'Understand user behavior while searching for rental property and how it influences their decision-making.',
-  audience: 'People searching for rental property in Saudi Arabia who face difficulty comparing options and choosing the most suitable one.',
+  goal:     '',   // language-aware default injected by renderTR() via t('goalPre')
+  audience: '',   // language-aware default injected by renderTR() via t('audPre')
   prompt: '',
 };
 
@@ -4148,7 +4153,7 @@ function saveContext() {
 
 function resetContext() {
   ['interview.businessName', 'interview.goal', 'interview.audience', 'interview.prompt'].forEach(k => localStorage.removeItem(k));
-  const vals = { biz: _CTX_DEFS.businessName, goal: _CTX_DEFS.goal, aud: _CTX_DEFS.audience, prompt: '' };
+  const vals = { biz: _CTX_DEFS.businessName, goal: t('goalPre'), aud: t('audPre'), prompt: '' };
   Object.entries(vals).forEach(([id, v]) => { const el = document.getElementById('cxe-' + id); if (el) el.value = v; });
 }
 
@@ -4178,23 +4183,6 @@ function restart() {
 }
 </script>
 
-<!-- ── VERSION BADGE (always visible, every environment) ── -->
-<div id="version-badge" style="
-  position:fixed;
-  bottom:10px;
-  inset-inline-end:12px;
-  z-index:9999;
-  background:#0B5E57;
-  color:#fff;
-  font-family:'IBM Plex Sans',sans-serif;
-  font-size:11px;
-  font-weight:600;
-  padding:3px 8px;
-  border-radius:4px;
-  opacity:0.85;
-  pointer-events:none;
-  letter-spacing:0.02em;
-">VERSION: SAME-SOURCE-001</div>
 
 </body>
 </html>
