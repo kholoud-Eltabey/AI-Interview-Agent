@@ -2537,6 +2537,15 @@ function finishMsg() {
 // _ivCache is the single source of truth at runtime.
 // It is populated from /api/interviews on load and kept in sync.
 // localStorage acts as a fallback when the API is unreachable.
+//
+// _API_BASE: All environments (localhost, file://, Cloudflare) point to the
+// same deployed Cloudflare KV API so data is identical everywhere.
+const _API_BASE = (() => {
+  const h = window.location.hostname;
+  return (!h || h === 'localhost' || h === '127.0.0.1')
+    ? 'https://skoon-interview-agent.pages.dev'
+    : '';
+})();
 
 let _ivCache = [];
 let _ivLoaded = false;
@@ -2553,7 +2562,7 @@ async function loadInterviewsFromAPI() {
   catch(_) {}
 
   try {
-    const res = await fetch('/api/interviews');
+    const res = await fetch(_API_BASE + '/api/interviews');
     if (res.ok) {
       const remote = await res.json();
 
@@ -2598,7 +2607,7 @@ function _dedupeById(list) {
 
 async function _postIvToAPI(record) {
   try {
-    await fetch('/api/interviews', {
+    await fetch(_API_BASE + '/api/interviews', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(record),
@@ -2683,7 +2692,7 @@ function deleteInterview(id, e) {
   renderCrossTab();
 
   // Also delete from KV so it doesn't come back on next load
-  fetch(`/api/interviews?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+  fetch(_API_BASE + `/api/interviews?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
     .catch(err => console.warn('[deleteInterview] KV delete failed:', err.message));
 }
 
