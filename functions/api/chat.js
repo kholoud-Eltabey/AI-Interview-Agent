@@ -47,14 +47,7 @@ export async function onRequestOptions(context) {
 // ─── POST /api/chat ───────────────────────────────────────
 export async function onRequestPost(context) {
   const { request, env } = context;
-  const cors    = corsHeaders(request);
-  const apiKey  = env.OPENAI_API_KEY;
-
-  console.log('[chat] API key exists:', !!apiKey, '| length:', apiKey ? apiKey.length : 0);
-
-  if (!apiKey) {
-    return jsonErr(500, 'config_missing', 'OpenAI API key not configured on the server.', cors);
-  }
+  const cors = corsHeaders(request);
 
   let body;
   try {
@@ -63,7 +56,20 @@ export async function onRequestPost(context) {
     return jsonErr(400, 'bad_json', 'Invalid JSON in request body.', cors);
   }
 
-  const { messages, temperature = 0.7, max_tokens = 1000 } = body;
+  // Key resolution order:
+  //   1. clientApiKey from request body (user's own key entered in the setup page)
+  //   2. env.OPENAI_API_KEY (server-side default)
+  // OpenAI is always called server-side — the key never goes browser → OpenAI directly.
+  const { messages, temperature = 0.7, max_tokens = 1000, clientApiKey } = body;
+  const apiKey = (clientApiKey && typeof clientApiKey === 'string' && clientApiKey.startsWith('sk-'))
+    ? clientApiKey
+    : env.OPENAI_API_KEY;
+
+  console.log('[chat] key source:', clientApiKey ? 'client' : 'env', '| key exists:', !!apiKey);
+
+  if (!apiKey) {
+    return jsonErr(500, 'config_missing', 'No OpenAI API key available. Enter your key on the setup page.', cors);
+  }
   if (!Array.isArray(messages) || messages.length === 0) {
     return jsonErr(400, 'bad_request', '`messages` must be a non-empty array.', cors);
   }

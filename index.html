@@ -996,13 +996,32 @@ a:focus-visible,
       </div>
     </div>
 
-    <!-- API status card — key is pre-configured on the server, never exposed to UI -->
+    <!-- API key card -->
     <div class="card">
-      <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API</span></div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span id="api-status-dot" style="width:8px;height:8px;border-radius:50%;background:#16a34a;flex-shrink:0;"></span>
-        <span id="api-status-lbl" style="font-size:12px;font-weight:500;color:var(--text);">Connected</span>
-        <span id="api-status-sub" style="font-size:12px;font-weight:400;color:var(--muted);margin-inline-start:auto;">Powered by OpenAI GPT-4o</span>
+      <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API SETTINGS</span></div>
+
+      <div class="fg">
+        <div class="fl"><span id="s-key-lbl">OpenAI API Key</span></div>
+        <div style="position:relative;">
+          <input type="password" class="inp" id="s-key-inp" autocomplete="off"
+            style="padding-inline-end:36px;"
+            oninput="showKeyOk()" />
+          <button class="ic-btn" onclick="toggleKeyVis()"
+            style="position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:var(--rxs);"
+            title="Show / hide">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="hint" id="s-key-hint" style="font-size:12px;color:var(--muted);margin-bottom:6px;">Stored locally. Never sent anywhere except OpenAI.</div>
+      <div id="s-key-saved" style="display:none;font-size:12px;font-weight:500;color:var(--primary);margin-bottom:6px;"></div>
+
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-s" style="flex:1;" onclick="clearKey()" id="s-clear-btn">Clear Key</button>
+        <button class="btn btn-p" style="flex:1;" onclick="saveKey()" id="s-save-btn">Save Key</button>
       </div>
     </div>
 
@@ -1599,7 +1618,12 @@ const t = (k, ...a) => { const v = TR[S.lang][k]; return typeof v === 'function'
 
 // ─── INIT ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  // API key lives on the server — nothing to restore
+  // Restore saved API key into the input field and show status
+  const savedKey = localStorage.getItem('skoon_api_key');
+  const keyInp   = document.getElementById('s-key-inp');
+  if (keyInp && savedKey) keyInp.value = savedKey;
+  // showKeyOk() runs after applyLang() so t('keySaved') resolves correctly
+
   // Restore theme
   applyTheme(localStorage.getItem('app_theme') || 'light');
 
@@ -1609,6 +1633,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Restore language (triggers renderTR which sets prefills only if fields are empty/default)
   applyLang(localStorage.getItem('app_language') || 'en');
+  showKeyOk(); // update "key saved" label now that t() is ready
 
   // Load all interviews from KV (server) so dashboard always has fresh data
   await loadInterviewsFromAPI();
@@ -1744,11 +1769,35 @@ function renderTR() {
   renderPanel(); // re-translate panel labels on lang switch
 }
 
-// ─── API KEY — removed (key lives on the server) ──────────
-function toggleKeyVis() {}
-function saveKey()      {}
-function clearKey()     {}
-function showKeyOk()    {}
+// ─── API KEY — stored in localStorage, sent to server in request body ────
+// The OpenAI call is always made server-side (chat.js). The key is sent
+// over HTTPS to the Worker which uses it instead of env.OPENAI_API_KEY.
+function toggleKeyVis() {
+  const inp = document.getElementById('s-key-inp');
+  if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+function saveKey() {
+  const inp = document.getElementById('s-key-inp');
+  const val = (inp ? inp.value : '').trim();
+  if (!val) return;
+  localStorage.setItem('skoon_api_key', val);
+  showKeyOk();
+}
+function clearKey() {
+  localStorage.removeItem('skoon_api_key');
+  const inp = document.getElementById('s-key-inp');
+  if (inp) inp.value = '';
+  const saved = document.getElementById('s-key-saved');
+  if (saved) saved.style.display = 'none';
+}
+function showKeyOk() {
+  const key   = localStorage.getItem('skoon_api_key');
+  const saved = document.getElementById('s-key-saved');
+  if (saved) {
+    saved.textContent = key ? t('keySaved') : '';
+    saved.style.display = key ? 'block' : 'none';
+  }
+}
 
 // ─── ERRORS ───────────────────────────────────────────────
 function showE(id, msg) { const e = document.getElementById(id); if (e) { e.textContent = msg; e.style.display = 'block'; } }
@@ -1875,10 +1924,13 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
 
   let res;
   try {
+    // Include user's own key if saved — the server uses it instead of env.OPENAI_API_KEY.
+    // Key is sent over HTTPS; OpenAI is called server-side only.
+    const _clientKey = localStorage.getItem('skoon_api_key') || undefined;
     res = await fetch(_chatUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages, temperature: temp, max_tokens: maxTok }),
+      body: JSON.stringify({ messages, temperature: temp, max_tokens: maxTok, ...(_clientKey ? { clientApiKey: _clientKey } : {}) }),
       signal: ctrl.signal,
     });
   } catch (netErr) {
