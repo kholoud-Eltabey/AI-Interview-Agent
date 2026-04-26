@@ -910,27 +910,6 @@ a:focus-visible,
           <div style="font-size:11px;color:var(--muted);line-height:1.4;" id="api-status-sub">Powered by OpenAI GPT-4o</div>
         </div>
       </div>
-      <!-- Admin-only key override — hidden unless S.isResearcher -->
-      <div id="cxe-api-edit" style="display:none;margin-top:10px;">
-        <div style="font-size:12px;font-weight:400;color:var(--muted);margin-bottom:6px;" id="cxe-key-lbl">OpenAI API Key Override</div>
-        <div style="position:relative;margin-bottom:6px;">
-          <input type="password" class="inp" id="cxe-key-inp" autocomplete="off"
-            style="padding-inline-end:36px;font-size:13px;"
-            oninput="cxeShowKeyOk()" />
-          <button class="ic-btn" onclick="cxeToggleKeyVis()"
-            style="position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:var(--rxs);"
-            title="Show / hide">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-        <div id="cxe-key-saved" style="display:none;font-size:12px;font-weight:500;color:var(--primary);margin-bottom:6px;"></div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-s" style="flex:1;" onclick="cxeClearKey()" id="cxe-clear-key-btn">Clear Key</button>
-          <button class="btn btn-p" style="flex:1;" onclick="cxeSaveKey()" id="cxe-save-key-btn">Save Key</button>
-        </div>
-      </div>
     </div>
 
     <div style="display:flex;gap:8px;">
@@ -1725,12 +1704,6 @@ function renderTR() {
   set('s-goal-lbl', t('goalLbl'));
   set('s-aud-lbl',  t('audLbl'));
   set('s-nq-note',  t('nqNote'));
-  set('s-api-lbl',  t('apiLbl'));
-  set('s-key-lbl',  t('keyLbl'));
-  set('s-key-saved',t('keySaved'));
-  set('s-key-hint', t('keyHint'));
-  set('s-clear-btn',t('clearBtn'));
-  set('s-save-btn', t('saveBtn'));
   set('s-start-txt',t('startBtn'));
   set('s-end-txt',  t('endBtn'));
   set('s-new-btn',  t('newBtn'));
@@ -1781,36 +1754,6 @@ function renderTR() {
   set('spp-signout',   ar ? 'تسجيل الخروج'        : 'Sign Out');
 
   renderPanel(); // re-translate panel labels on lang switch
-}
-
-// ─── API KEY — stored in localStorage, sent to server in request body ────
-// The OpenAI call is always made server-side (chat.js). The key is sent
-// over HTTPS to the Worker which uses it instead of env.OPENAI_API_KEY.
-function toggleKeyVis() {
-  const inp = document.getElementById('s-key-inp');
-  if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
-}
-function saveKey() {
-  const inp = document.getElementById('s-key-inp');
-  const val = (inp ? inp.value : '').trim();
-  if (!val) return;
-  localStorage.setItem('skoon_api_key', val);
-  showKeyOk();
-}
-function clearKey() {
-  localStorage.removeItem('skoon_api_key');
-  const inp = document.getElementById('s-key-inp');
-  if (inp) inp.value = '';
-  const saved = document.getElementById('s-key-saved');
-  if (saved) saved.style.display = 'none';
-}
-function showKeyOk() {
-  const key   = localStorage.getItem('skoon_api_key');
-  const saved = document.getElementById('s-key-saved');
-  if (saved) {
-    saved.textContent = key ? t('keySaved') : '';
-    saved.style.display = key ? 'block' : 'none';
-  }
 }
 
 // ─── ERRORS ───────────────────────────────────────────────
@@ -1938,13 +1881,11 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
 
   let res;
   try {
-    // Include user's own key if saved — the server uses it instead of env.OPENAI_API_KEY.
-    // Key is sent over HTTPS; OpenAI is called server-side only.
-    const _clientKey = localStorage.getItem('skoon_api_key') || undefined;
+    // Key lives ONLY in Cloudflare env.OPENAI_API_KEY — never in the browser.
     res = await fetch(_chatUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages, temperature: temp, max_tokens: maxTok, ...(_clientKey ? { clientApiKey: _clientKey } : {}) }),
+      body: JSON.stringify({ messages, temperature: temp, max_tokens: maxTok }),
       signal: ctrl.signal,
     });
   } catch (netErr) {
@@ -4170,39 +4111,23 @@ function openContextEditor() {
     set('cxe-desc',          'تعليمات اختيارية تُضاف إلى موجّه نظام التحليل.');
     set('cxe-reset-btn',     'إعادة للافتراضي');
     set('cxe-save-btn',      'حفظ');
-    set('cxe-lbl-api',       'إعدادات API');
-    set('cxe-key-lbl',       'مفتاح API للاستبدال');
-    set('cxe-clear-key-btn', 'حذف المفتاح');
-    set('cxe-save-key-btn',  'حفظ المفتاح');
+    set('cxe-lbl-api', 'إعدادات API');
   } else {
-    set('cxe-title',         'Edit Context');
-    set('cxe-lbl-biz',       'Business Name');
-    set('cxe-lbl-goal',      'Interview Goal');
-    set('cxe-lbl-aud',       'Target Audience');
-    set('cxe-lbl-prompt',    'Analysis Prompt');
-    set('cxe-desc',          'Optional custom instructions appended to the AI analysis system prompt.');
-    set('cxe-reset-btn',     'Reset to Default');
-    set('cxe-save-btn',      'Save');
-    set('cxe-lbl-api',       'API SETTINGS');
-    set('cxe-key-lbl',       'OpenAI API Key Override');
-    set('cxe-clear-key-btn', 'Clear Key');
-    set('cxe-save-key-btn',  'Save Key');
+    set('cxe-title',      'Edit Context');
+    set('cxe-lbl-biz',    'Business Name');
+    set('cxe-lbl-goal',   'Interview Goal');
+    set('cxe-lbl-aud',    'Target Audience');
+    set('cxe-lbl-prompt', 'Analysis Prompt');
+    set('cxe-desc',       'Optional custom instructions appended to the AI analysis system prompt.');
+    set('cxe-reset-btn',  'Reset to Default');
+    set('cxe-save-btn',   'Save');
+    set('cxe-lbl-api',    'API SETTINGS');
   }
   const fieldMap = { biz: 'businessName', goal: 'goal', aud: 'audience', prompt: 'prompt' };
   Object.entries(fieldMap).forEach(([elId, ctxKey]) => {
     const el = document.getElementById('cxe-' + elId);
     if (el) { el.value = getCtx(ctxKey); el.dir = dir; }
   });
-  // API edit section: only visible for researchers / admins (triple-click brand → passcode)
-  const apiEdit = document.getElementById('cxe-api-edit');
-  if (apiEdit) {
-    apiEdit.style.display = S.isResearcher ? '' : 'none';
-    if (S.isResearcher) {
-      const keyInp = document.getElementById('cxe-key-inp');
-      if (keyInp) { keyInp.type = 'password'; keyInp.value = localStorage.getItem('skoon_api_key') || ''; }
-      cxeShowKeyOk();
-    }
-  }
   document.getElementById('context-editor-ov').classList.add('show');
 }
 
@@ -4233,33 +4158,6 @@ function resetContext() {
   Object.entries(vals).forEach(([id, v]) => { const el = document.getElementById('cxe-' + id); if (el) el.value = v; });
 }
 
-// ─── CONTEXT EDITOR — API KEY (admin / researcher only) ──
-// The key override lives in Edit Context; regular users never see it.
-function cxeToggleKeyVis() {
-  const inp = document.getElementById('cxe-key-inp');
-  if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
-}
-function cxeSaveKey() {
-  const inp = document.getElementById('cxe-key-inp');
-  const val = (inp ? inp.value : '').trim();
-  if (!val) return;
-  localStorage.setItem('skoon_api_key', val);
-  cxeShowKeyOk();
-}
-function cxeClearKey() {
-  localStorage.removeItem('skoon_api_key');
-  const inp = document.getElementById('cxe-key-inp');
-  if (inp) inp.value = '';
-  cxeShowKeyOk();
-}
-function cxeShowKeyOk() {
-  const key   = localStorage.getItem('skoon_api_key');
-  const saved = document.getElementById('cxe-key-saved');
-  if (saved) {
-    saved.textContent  = key ? t('keySaved') : '';
-    saved.style.display = key ? 'block' : 'none';
-  }
-}
 
 // ─── API CONNECTIVITY STATUS ──────────────────────────────
 // Probes /api/chat with an intentionally empty messages array.
@@ -4271,12 +4169,11 @@ let _apiConnected = null; // null = not yet checked
 async function checkApiStatus() {
   const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
   const chatUrl = isLocal ? (_CF_READ_API + '/api/chat') : '/api/chat';
-  const clientKey = localStorage.getItem('skoon_api_key') || undefined;
   try {
     const res = await fetch(chatUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [], ...(clientKey ? { clientApiKey: clientKey } : {}) }),
+      body: JSON.stringify({ messages: [] }),
       signal: AbortSignal.timeout(10000),
     });
     const data = await res.json().catch(() => ({}));
