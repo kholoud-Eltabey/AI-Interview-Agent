@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Skoon AI-Powered User Interview Agent — Cloudflare Pages app",
   "scripts": {
-    "dev":    "npx serve . --listen 3000",
+    "dev":    "npx serve . --listen 4000",
     "deploy": "git push origin main"
   },
   "devDependencies": {

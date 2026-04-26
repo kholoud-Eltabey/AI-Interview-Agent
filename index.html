@@ -2538,62 +2538,42 @@ function finishMsg() {
 
 // ─── INTERVIEW STORAGE (KV-backed, in-memory cache) ───────
 // _ivCache is the single source of truth at runtime.
-// It is populated from /api/interviews on load and kept in sync.
-// localStorage acts as a fallback when the API is unreachable.
+// Interview data always comes from the API — localStorage is NOT a data source.
 //
-// _API_BASE is always '' (relative URL).
-//   - On deployed Cloudflare Pages: /api/interviews → same-origin → KV Worker
-//   - On localhost (wrangler pages dev): /api/interviews → local wrangler KV
-// We no longer route localhost to the production URL because Cloudflare Access
-// protects all *.pages.dev URLs and blocks unauthenticated cross-origin requests.
-const _API_BASE = '';
+// On Cloudflare Pages: fetch('/api/interviews') → same-origin KV Worker
+// On localhost (npx serve): /api/interviews returns 404 — fall back to
+//   the production Cloudflare URL so localhost shows the same data as production.
+const _API_BASE    = '';
+const _CF_READ_API = 'https://skoon-interview-agent.pages.dev';
 let _ivCache = [];
 let _ivLoaded = false;
 
 async function loadInterviewsFromAPI() {
-  // Always read localStorage first so we never lose data while offline
-  let local = [];
-  try { local = JSON.parse(localStorage.getItem('skoon_interviews') || '[]'); }
-  catch(_) { local = []; }
-
   // IDs the user has explicitly deleted — never re-add these from any source
   let deletedIds = new Set();
   try { deletedIds = new Set(JSON.parse(localStorage.getItem('skoon_deleted_ids') || '[]')); }
   catch(_) {}
 
+  // On localhost npx serve, relative /api/interviews returns 404 (no Functions running).
+  // Use the production URL directly so localhost always shows the same data as Cloudflare.
+  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const apiUrl  = isLocal ? (_CF_READ_API + '/api/interviews') : (_API_BASE + '/api/interviews');
+
   try {
-    const res = await fetch(_API_BASE + '/api/interviews');
+    const res = await fetch(apiUrl);
     if (res.ok) {
       let remote;
       try { remote = await res.json(); } catch(_) { remote = null; }
-
-      // Validate: must be an array (guards against CF Access login-page HTML responses)
       if (Array.isArray(remote)) {
-        const kvData  = remote.filter(iv => iv && iv.id && !deletedIds.has(iv.id));
-        const kvIds   = new Set(kvData.map(iv => iv.id));
-
-        // Interviews that exist in localStorage but not yet in KV (e.g. created
-        // while the API was unreachable, or saved on a different device/browser).
-        const localOnly = local.filter(iv => iv && iv.id && !kvIds.has(iv.id) && !deletedIds.has(iv.id));
-
-        // Merge: KV records take precedence; local-only records are appended.
-        _ivCache  = _dedupeById([...kvData, ...localOnly]);
+        _ivCache  = _dedupeById(remote.filter(iv => iv && iv.id && !deletedIds.has(iv.id)));
         _ivLoaded = true;
-
-        // Mirror merged state into localStorage for offline fallback
-        localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
-
-        // Push local-only records up to KV so they are persisted server-side
-        // (fire-and-forget — failures are silently ignored)
-        for (const iv of localOnly) _postIvToAPI(iv);
-
         return;
       }
     }
   } catch(_) {}
 
-  // KV unreachable — use localStorage as fallback (still respect deleted list)
-  _ivCache  = _dedupeById(local.filter(iv => !deletedIds.has(iv.id)));
+  // API unreachable — empty cache (no localStorage fallback; stale data would mislead)
+  _ivCache  = [];
   _ivLoaded = true;
 }
 
