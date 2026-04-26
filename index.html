@@ -861,15 +861,15 @@ a:focus-visible,
 
 <!-- RESEARCHER PASSCODE MODAL -->
 <div class="ov" id="researcher-ov" onclick="if(event.target===this)closeResearcherModal()">
-  <div class="ov-card" style="max-width:300px;text-align:left;">
-    <div style="font-size:14px;font-weight:500;margin-bottom:16px;color:var(--text);">Access</div>
+  <div class="ov-card" style="max-width:300px;text-align:start;">
+    <div style="font-size:14px;font-weight:500;margin-bottom:16px;color:var(--text);" id="researcher-modal-title">Access</div>
     <input type="password" class="inp" id="researcher-pin" placeholder="Passcode"
       autocomplete="off" style="margin-bottom:6px;"
       onkeydown="if(event.key==='Enter')submitResearcherPin()">
     <div id="researcher-err" style="display:none;font-size:12px;font-weight:400;color:var(--danger);margin-bottom:8px;">Incorrect passcode</div>
     <div style="display:flex;gap:8px;margin-top:10px;">
-      <button class="btn btn-s" style="flex:1;" onclick="closeResearcherModal()">Cancel</button>
-      <button class="btn btn-p" style="flex:1;padding:10px 0;" onclick="submitResearcherPin()">Enter</button>
+      <button class="btn btn-s" style="flex:1;" id="researcher-cancel-btn" onclick="closeResearcherModal()">Cancel</button>
+      <button class="btn btn-p" style="flex:1;padding:10px 0;" id="researcher-enter-btn" onclick="submitResearcherPin()">Enter</button>
     </div>
   </div>
 </div>
@@ -1169,12 +1169,12 @@ a:focus-visible,
             <input class="profile-inp" id="spp-inp-newpw" type="password" autocomplete="new-password" />
           </div>
 
-          <button onclick="saveProfile()" class="w-full bg-primary hover:bg-phover text-white text-[12px] font-semibold py-2 rounded-[var(--rxs)] transition-colors mt-1" id="spp-save">Save</button>
+          <button onclick="saveProfile()" class="w-full bg-primary hover:bg-phover text-white text-[12px] font-semibold py-2 rounded-[var(--rxs)] transition-colors mt-1" id="spp-save">حفظ</button>
         </div>
 
         <!-- Actions -->
         <div class="border-t border-[var(--border)] mt-auto shrink-0">
-          <button class="w-full text-start px-4 py-2.5 text-[12px] text-danger hover:bg-app-bg transition-colors" onclick="if(confirm('Sign out?')){localStorage.removeItem('researcher_access');location.reload();}" id="spp-signout">Sign Out</button>
+          <button class="w-full text-start px-4 py-2.5 text-[12px] text-danger hover:bg-app-bg transition-colors" onclick="if(confirm(S.lang==='ar'?'تسجيل الخروج؟':'Sign out?')){localStorage.removeItem('researcher_access');location.reload();}" id="spp-signout">Sign Out</button>
         </div>
 
       </div>
@@ -1560,7 +1560,7 @@ const TR = {
     dbAiInsights: 'استنتاجات مولّدة بالذكاء الاصطناعي', dbCrossDesc: 'اختر مقابلات لتحليلها معاً',
     dbTotal: 'المجموع', dbCompleted: 'مكتملة', dbIncomplete: 'غير مكتملة', dbRate: 'نسبة الإكمال',
     dbLatest: 'آخر المقابلات', dbRecent: 'الأخيرة', dbDeleteConfirm: 'حذف هذه المقابلة؟ لا يمكن التراجع عن هذا.',
-    dbNotes: 'ملاحظات', dbSummary: 'ملخص', dbInsightsTab: 'استنتاجات', dbQuotes: 'اقتباسات', dbUxIssues: 'مشاكل UX',
+    dbNotes: 'ملاحظات', dbSummary: 'ملخص', dbInsightsTab: 'استنتاجات', dbQuotes: 'اقتباسات', dbUxIssues: 'مشاكل التجربة',
     dbNoData: 'لا توجد مقابلات بعد', dbNoAnalysis: 'لا يوجد تحليل — المقابلة لم تُحلَّل بعد',
     dbSelectHint: 'اختر مقابلات أدناه لتشغيل التحليل المقارن',
     dbAnalyzeBtn: 'تحليل المختارة', dbSelCount: (n) => `${n} مقابلة مختارة`,
@@ -1715,6 +1715,32 @@ function renderTR() {
   }
 
   if (S.mainAsked > 0) renderProg();
+
+  // ── Researcher passcode modal ──────────────────────────────
+  const ar = S.lang === 'ar';
+  set('researcher-modal-title', ar ? 'الدخول'            : 'Access');
+  set('researcher-err',         ar ? 'رمز المرور غير صحيح' : 'Incorrect passcode');
+  set('researcher-cancel-btn',  ar ? 'إلغاء'              : 'Cancel');
+  set('researcher-enter-btn',   ar ? 'دخول'               : 'Enter');
+  ph('researcher-pin',          ar ? 'رمز المرور'         : 'Passcode');
+
+  // ── Profile panel labels (also updated by openProfilePanel, kept in sync here) ──
+  set('spp-title',     ar ? 'الملف الشخصي'       : 'Profile');
+  set('spp-lbl-lang',  ar ? 'اللغة'               : 'Language');
+  set('spp-stat-lang', ar ? 'العربية'              : 'English');
+  set('spp-lbl-mode',  ar ? 'الوضع'               : 'Mode');
+  set('spp-lbl-total', ar ? 'المجموع'             : 'Total');
+  set('spp-lbl-done',  ar ? 'مكتملة'              : 'Completed');
+  set('spp-lbl-rate',  ar ? 'نسبة الإكمال'       : 'Rate');
+  set('spp-lbl-last',  ar ? 'آخر نشاط'           : 'Last');
+  set('spp-lbl-name',  ar ? 'الاسم'               : 'Name');
+  set('spp-lbl-job',   ar ? 'المسمى الوظيفي'      : 'Job Title');
+  set('spp-lbl-email', ar ? 'البريد الإلكتروني'   : 'Email');
+  set('spp-lbl-curpw', ar ? 'كلمة المرور الحالية' : 'Current Password');
+  set('spp-lbl-newpw', ar ? 'كلمة المرور الجديدة' : 'New Password');
+  set('spp-save',      ar ? 'حفظ'                 : 'Save');
+  set('spp-signout',   ar ? 'تسجيل الخروج'        : 'Sign Out');
+
   renderPanel(); // re-translate panel labels on lang switch
 }
 
