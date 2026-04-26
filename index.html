@@ -3295,7 +3295,8 @@ function _updateCardContent(ivId, analysis) {
 
 function renderCrossTab() {
   // Show ALL interviews so the user can select any combination for cross-analysis
-  const all = getAllInterviews().slice().reverse();
+  // Sort by date descending — newest interview at the top
+  const all = getAllInterviews().slice().sort((a, b) => new Date(b.date) - new Date(a.date));
   const fmt = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
   const el  = document.getElementById('db-ca-list');
   if (!el) return;
@@ -3430,11 +3431,14 @@ function renderCrossOutput(d, statsOverride = null) {
   if (!el) return;
   if (!d || Object.keys(d).length === 0) {
     el.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:12px;font-weight:400;">${t('dbCrossEmpty')}</div>`;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     return;
   }
   // Reuse renderAnalysis rendering, targeting db-ca-out.
   // statsOverride scopes the stat cards to the selected interviews only.
   renderAnalysis(d, null, 'db-ca-out', null, statsOverride);
+  // Scroll the output into view so the user sees it without having to scroll manually
+  setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
 }
 
 // ─── END / ANALYZE ────────────────────────────────────────
