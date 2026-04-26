@@ -2847,6 +2847,31 @@ async function loadInterviewById(id) {
   renderAnalysis(analysis, iv, 'res-content', iv);
 }
 
+// Turn a callAI error into a friendly one-liner the researcher can act on.
+function _aiErrMsg(e) {
+  const ar  = S.lang === 'ar';
+  const msg = (e && e.message) ? e.message.toLowerCase() : '';
+  const cod = (e && e.code)    ? e.code.toLowerCase()    : '';
+  if (cod === 'config_missing' || msg.includes('config_missing') || msg.includes('no openai api key')) {
+    return ar
+      ? 'لا يوجد مفتاح API. افتح "تعديل السياق" → إعدادات API وأدخل مفتاحك.'
+      : 'No API key configured. Open Edit Context → API SETTINGS and enter your key.';
+  }
+  if (cod.includes('quota') || msg.includes('quota') || msg.includes('insufficient_quota') || msg.includes('429')) {
+    return ar
+      ? 'انتهى رصيد مفتاح الخادم. افتح "تعديل السياق" → إعدادات API وأدخل مفتاحك الخاص.'
+      : 'Server API key quota exceeded. Open Edit Context → API SETTINGS and enter your own key.';
+  }
+  if (cod === 'timeout' || msg.includes('timed out')) {
+    return ar ? 'انتهت مهلة الطلب — جرّب مجدداً.' : 'Request timed out — please try again.';
+  }
+  if (cod === 'network_error' || msg.includes('network')) {
+    return ar ? 'خطأ في الشبكة — تحقق من اتصالك.' : 'Network error — check your connection.';
+  }
+  const detail = (e && e.message) ? String(e.message).slice(0, 200) : '';
+  return detail || (ar ? 'فشل التحليل.' : 'Analysis failed.');
+}
+
 async function analyzeStoredInterview(id) {
   const all = getAllInterviews();
   const iv  = all.find(x => x.id === id);
@@ -2902,8 +2927,7 @@ async function analyzeStoredInterview(id) {
   } catch(e) {
     hideOv();
     console.error('[analyzeStoredInterview]', e);
-    const detail = (e && e.message) ? String(e.message).slice(0, 300) : '';
-    alert(detail ? `${t('errAnalysis')}\n\n${detail}` : t('errAnalysis'));
+    alert(_aiErrMsg(e));
   }
 }
 
@@ -3522,8 +3546,7 @@ async function _doCrossAnalysis(selected) {
   } catch (e) {
     console.error('[_doCrossAnalysis]', e);
     hideOv();
-    const detail = e && e.message ? String(e.message).slice(0, 200) : '';
-    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:12px;font-weight:400;line-height:1.6;">${t('errAnalysis')}${detail ? `<br><span style="opacity:0.75;">${esc(detail)}</span>` : ''}</div>`;
+    if (outEl) outEl.innerHTML = `<div style="padding:20px;color:var(--danger);font-size:12px;font-weight:400;line-height:1.6;">${esc(_aiErrMsg(e))}</div>`;
   }
 }
 
@@ -3598,8 +3621,7 @@ async function analyze() {
   } catch (err) {
     hideOv();
     console.error('[analyze]', err);
-    const detail = (err && err.message) ? String(err.message).slice(0, 300) : '';
-    alert(detail ? `${t('errAnalysis')}\n\n${detail}` : t('errAnalysis'));
+    alert(_aiErrMsg(err));
   }
 }
 
