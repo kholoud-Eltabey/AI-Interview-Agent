@@ -56,11 +56,13 @@ export async function onRequestPost(context) {
     return jsonErr(400, 'bad_json', 'Invalid JSON in request body.', cors);
   }
 
-  // API key lives ONLY in env.OPENAI_API_KEY — never accepted from the client.
-  const { messages, temperature = 0.7, max_tokens = 1000 } = body;
-  const apiKey = env.OPENAI_API_KEY;
+  // Primary key: env.OPENAI_API_KEY (set in Cloudflare dashboard, never exposed to clients).
+  // Fallback: body.clientKey — researcher can store their own key in Edit Context.
+  // env key always takes priority; clientKey is only used when env is absent.
+  const { messages, temperature = 0.7, max_tokens = 1000, clientKey } = body;
+  const apiKey = env.OPENAI_API_KEY || (typeof clientKey === 'string' ? clientKey.trim() : '');
 
-  console.log('[chat] key exists:', !!apiKey);
+  console.log('[chat] key source:', env.OPENAI_API_KEY ? 'env' : (clientKey ? 'clientKey' : 'none'));
 
   if (!apiKey) {
     return jsonErr(500, 'config_missing', 'OpenAI API key not configured on the server.', cors);
