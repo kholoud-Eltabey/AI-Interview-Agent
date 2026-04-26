@@ -1029,6 +1029,18 @@ a:focus-visible,
       </div>
     </div>
 
+    <!-- API status card — read-only, visible to all users -->
+    <div class="card">
+      <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API SETTINGS</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:13px;font-weight:500;color:var(--text);" id="setup-api-status-lbl">Connected</span>
+        </div>
+        <span style="font-size:12px;color:var(--muted);" id="setup-api-status-sub">Powered by OpenAI GPT-4o</span>
+      </div>
+    </div>
+
     <div class="start-err" id="start-err"></div>
     <button class="btn btn-p" onclick="goTo('page-prestart')">
       <span id="s-start-txt">Start Interview</span>
@@ -1700,9 +1712,14 @@ function renderTR() {
   if (nameInp && !nameInp.value && savedName) nameInp.value = savedName;
 
   document.querySelectorAll('.tagline-lbl').forEach(el => el.textContent = t('tagline'));
-  // API status card
-  set('api-status-lbl', S.lang === 'ar' ? 'متصل' : 'Connected');
-  set('api-status-sub', S.lang === 'ar' ? 'مدعوم بـ OpenAI GPT-4o' : 'Powered by OpenAI GPT-4o');
+  // API status cards (setup page + Edit Context modal)
+  const _apiConn = S.lang === 'ar' ? 'متصل' : 'Connected';
+  const _apiSub  = S.lang === 'ar' ? 'مدعوم بـ OpenAI GPT-4o' : 'Powered by OpenAI GPT-4o';
+  set('api-status-lbl',       _apiConn);
+  set('api-status-sub',       _apiSub);
+  set('setup-api-status-lbl', _apiConn);
+  set('setup-api-status-sub', _apiSub);
+  set('s-api-lbl', S.lang === 'ar' ? 'إعدادات API' : 'API SETTINGS');
 
   set('s-ctx-lbl',  t('ctxLbl'));
   set('s-biz-lbl',  t('bizLbl'));
