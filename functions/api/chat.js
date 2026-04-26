@@ -1,5 +1,6 @@
 // ─── /api/chat — Cloudflare Pages Function ────────────────
 // Holds OpenAI key server-side, proxies chat completions with:
+//   • CORS allowlist: pages.dev + localhost:4000 (for local dev)
 //   • Always-available models (no preview-tier gated models)
 //   • Fallback chain on 403/404/model_not_found/timeout
 //   • 45s abort timeout per model attempt
@@ -11,26 +12,60 @@ const FALLBACK_MODEL = 'gpt-4o-mini';
 const MODEL_CHAIN    = [PRIMARY_MODEL, FALLBACK_MODEL];
 const REQUEST_TIMEOUT_MS = 45_000;
 
+// ─── CORS ─────────────────────────────────────────────────
+// Allow the production deployment and local dev origins.
+// The OpenAI key is never sent to the browser — it lives in env.OPENAI_API_KEY.
+// CORS only controls which browser origins may call this endpoint;
+// server-to-server calls (curl, etc.) bypass CORS entirely.
+const ALLOWED_ORIGINS = new Set([
+  'https://skoon-interview-agent.pages.dev',
+  'http://localhost:4000',
+  'http://127.0.0.1:4000',
+]);
+
+function corsHeaders(request) {
+  const origin = (request && request.headers.get('Origin')) || '';
+  // Echo back the exact origin if it's in the allowlist so browsers accept it.
+  // Fall back to the production origin for same-origin requests (no Origin header).
+  const allow = ALLOWED_ORIGINS.has(origin) ? origin : 'https://skoon-interview-agent.pages.dev';
+  return {
+    'Access-Control-Allow-Origin':  allow,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
+  };
+}
+
+// ─── OPTIONS preflight ────────────────────────────────────
+export async function onRequestOptions(context) {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders(context.request),
+  });
+}
+
+// ─── POST /api/chat ───────────────────────────────────────
 export async function onRequestPost(context) {
   const { request, env } = context;
-  const apiKey = env.OPENAI_API_KEY;
+  const cors    = corsHeaders(request);
+  const apiKey  = env.OPENAI_API_KEY;
 
   console.log('[chat] API key exists:', !!apiKey, '| length:', apiKey ? apiKey.length : 0);
 
   if (!apiKey) {
-    return jsonErr(500, 'config_missing', 'OpenAI API key not configured on the server.');
+    return jsonErr(500, 'config_missing', 'OpenAI API key not configured on the server.', cors);
   }
 
   let body;
   try {
     body = await request.json();
   } catch {
-    return jsonErr(400, 'bad_json', 'Invalid JSON in request body.');
+    return jsonErr(400, 'bad_json', 'Invalid JSON in request body.', cors);
   }
 
   const { messages, temperature = 0.7, max_tokens = 1000 } = body;
   if (!Array.isArray(messages) || messages.length === 0) {
-    return jsonErr(400, 'bad_request', '`messages` must be a non-empty array.');
+    return jsonErr(400, 'bad_request', '`messages` must be a non-empty array.', cors);
   }
 
   const basePayload = {
@@ -55,11 +90,11 @@ export async function onRequestPost(context) {
     const attempt = await callOpenAI(payload, apiKey);
 
     if (attempt.ok) {
-      // Success — return OpenAI body straight through
+      // Success — return OpenAI body straight through with CORS headers
       console.log('[chat] success with', model, '| status:', attempt.status);
       return new Response(attempt.bodyText, {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...cors },
       });
     }
 
@@ -77,7 +112,7 @@ export async function onRequestPost(context) {
     if (!shouldFallback(attempt)) {
       // Don't mask auth, rate-limit, or true server errors by retrying
       console.log('[chat] not a fallback-eligible error — returning to client');
-      return jsonErrFromAttempt(attempt);
+      return jsonErrFromAttempt(attempt, cors);
     }
     console.log('[chat] falling back to next model in chain…');
   }
@@ -85,12 +120,13 @@ export async function onRequestPost(context) {
   // Every model in the chain failed
   console.error('[chat] all models exhausted. last failure:', lastFailure);
   return jsonErrFromAttempt(
-    lastFailure || { status: 502, kind: 'unknown', code: 'no_model', message: 'No model responded.' }
+    lastFailure || { status: 502, kind: 'unknown', code: 'no_model', message: 'No model responded.' },
+    cors
   );
 }
 
-export async function onRequestGet() {
-  return jsonErr(405, 'method_not_allowed', 'Method not allowed. Use POST.');
+export async function onRequestGet(context) {
+  return jsonErr(405, 'method_not_allowed', 'Method not allowed. Use POST.', corsHeaders(context.request));
 }
 
 // ─── OpenAI call with timeout + normalised result ─────────
@@ -169,14 +205,14 @@ function shouldFallback(attempt) {
 }
 
 // ─── JSON error helpers ───────────────────────────────────
-function jsonErr(status, code, message) {
+function jsonErr(status, code, message, extraHeaders = {}) {
   return new Response(
     JSON.stringify({ error: { code, message, status } }),
-    { status, headers: { 'Content-Type': 'application/json' } }
+    { status, headers: { 'Content-Type': 'application/json', ...extraHeaders } }
   );
 }
 
-function jsonErrFromAttempt(a) {
+function jsonErrFromAttempt(a, extraHeaders = {}) {
   // If OpenAI returned a JSON body, pass it through so the frontend can show the raw detail.
   if (a.bodyText) {
     try {
@@ -192,7 +228,7 @@ function jsonErrFromAttempt(a) {
               kind:    a.kind,
             },
           }),
-          { status: a.status || 502, headers: { 'Content-Type': 'application/json' } }
+          { status: a.status || 502, headers: { 'Content-Type': 'application/json', ...extraHeaders } }
         );
       }
     } catch (_) { /* fall through */ }
@@ -207,6 +243,6 @@ function jsonErrFromAttempt(a) {
         kind:    a.kind,
       },
     }),
-    { status: a.status || 502, headers: { 'Content-Type': 'application/json' } }
+    { status: a.status || 502, headers: { 'Content-Type': 'application/json', ...extraHeaders } }
   );
 }
