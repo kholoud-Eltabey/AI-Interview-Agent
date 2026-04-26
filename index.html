@@ -2813,12 +2813,13 @@ function _aiErrMsg(e) {
   return detail || (ar ? 'فشل التحليل.' : 'Analysis failed.');
 }
 
-async function analyzeStoredInterview(id) {
+// silent=true → no overlay spinner, no alert; used by _autoAnalyzeAll background queue
+async function analyzeStoredInterview(id, silent = false) {
   const all = getAllInterviews();
   const iv  = all.find(x => x.id === id);
   if (!iv || !iv.answers || !iv.answers.length) return;
 
-  showOv(t('olAnalyze'), t('olSub'));
+  if (!silent) showOv(t('olAnalyze'), t('olSub'));
   try {
     const convo = iv.answers.map(qa => `Researcher: ${qa.q}\nParticipant: ${qa.a}`).join('\n\n');
     const sysMsg = _buildAnalysisSys(S.lang);
@@ -2831,12 +2832,6 @@ async function analyzeStoredInterview(id) {
     try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); }
     catch(_) { data = {}; }
 
-    // NOTE: _enforceAnalysisLang is intentionally NOT called here.
-    // _buildAnalysisSys(S.lang) already instructs GPT to generate natively in the
-    // correct language. Running a post-generation translation pass would waste API
-    // calls and risk corrupting naturally-generated Arabic or English text.
-    // Language enforcement for *existing* analyses happens in toggleIvCard instead.
-
     // Persona-name repair: auto-replace any role/title labels with real first names
     if (Array.isArray(data.personas) && data.personas.length) {
       data.personas = await _fixPersonaNames(data.personas, S.lang);
@@ -2848,27 +2843,51 @@ async function analyzeStoredInterview(id) {
       catch (jErr) { console.warn('[analyzeStoredInterview] journey variety repair failed:', jErr); }
     }
 
-    // Save clean, enforced analysis back to the stored interview
+    // Save back to cache + localStorage + KV
     const idx = _ivCache.findIndex(x => x.id === id);
     if (idx !== -1) {
-      _ivCache[idx].analysis = data;
+      _ivCache[idx].analysis     = data;
       _ivCache[idx].analysisLang = S.lang;
       localStorage.setItem('skoon_interviews', JSON.stringify(_ivCache));
-      _postIvToAPI(_ivCache[idx]); // sync updated record to KV
+      _postIvToAPI(_ivCache[idx]);
     }
 
-    hideOv();
-    renderAnalysis(data, iv, 'res-content', iv);
-    // Refresh interview cards so Summary / Insights / Quotes / UX Issues tabs
-    // show the newly saved analysis immediately (works whether triggered from
-    // the Analysis tab or from the card "Analyze Now" button).
+    if (!silent) hideOv();
+    if (!silent) renderAnalysis(data, iv, 'res-content', iv);
+    // Always refresh the card if it's currently open so tabs show new analysis
+    _updateCardContent(id, data);
     renderInterviewsTab();
     renderOverview();
     renderSbRecent();
   } catch(e) {
-    hideOv();
+    if (!silent) hideOv();
     console.error('[analyzeStoredInterview]', e);
-    alert(_aiErrMsg(e));
+    if (!silent) alert(_aiErrMsg(e));
+    else console.warn('[analyzeStoredInterview silent]', _aiErrMsg(e));
+    throw e; // re-throw so _autoAnalyzeAll can count failures
+  }
+}
+
+// ─── AUTO-ANALYZE QUEUE ──────────────────────────────────
+// Silently analyzes every interview that has answers but no analysis yet.
+// Called whenever researcher opens the dashboard — runs sequentially in
+// the background so the UI stays responsive.
+let _autoAnalyzing = false;
+async function _autoAnalyzeAll() {
+  if (_autoAnalyzing) return;
+  _autoAnalyzing = true;
+  try {
+    const pending = getAllInterviews().filter(iv =>
+      iv.answers && iv.answers.length > 0 && (!iv.analysis || !iv.analysis.summary)
+    );
+    if (pending.length === 0) return;
+    console.log('[_autoAnalyzeAll] pending:', pending.length);
+    for (const iv of pending) {
+      try { await analyzeStoredInterview(iv.id, true); }
+      catch(e) { /* already logged; keep going for remaining interviews */ }
+    }
+  } finally {
+    _autoAnalyzing = false;
   }
 }
 
@@ -2893,6 +2912,9 @@ function dbTab(tab) {
   if (tab === 'overview')   { renderSbRecent(); renderOverview(); }
   if (tab === 'interviews') renderInterviewsTab();
   if (tab === 'insights')   renderCrossTab();
+
+  // Auto-analyze any interview that still lacks analysis
+  _autoAnalyzeAll();
   // 'analysis' tab rendering is managed by renderPanel / renderResults / loadInterviewById.
   // Do NOT trigger it here — that would overwrite freshly-rendered analysis content.
 }
@@ -3223,9 +3245,8 @@ function ivRowHtml(iv, fmt, expandable) {
   const notesBody    = answers.length   ? answers.map(qa => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(qa.a)}</div>`).join('') : `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('rnNoNotes')}</div>`;
   const notesHtml    = notesHeader + notesBody;
 
-  // "Analyze Now" button shown when interview has no analysis yet
-  const analyzeBtn = `<button onclick="event.stopPropagation();analyzeFromCard('${iv.id}')" style="margin-top:8px;font-size:12px;font-weight:500;color:var(--primary);background:var(--plight);border:1px solid transparent;border-radius:6px;padding:5px 12px;cursor:pointer;display:block;">${t('dbAnalyzeNow')}</button>`;
-  const noAnalysisHtml = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysis')}</div>${analyzeBtn}`;
+  // Auto-analysis placeholder — shown while background analysis runs
+  const noAnalysisHtml = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${S.lang === 'ar' ? 'جارٍ التحليل…' : 'Analyzing…'}</div>`;
 
   const summaryHtml  = iv.analysis && iv.analysis.summary ? `<div class="text-app-text leading-relaxed" style="font-size:12px;font-weight:400;">${esc(iv.analysis.summary)}</div>` : noAnalysisHtml;
   const insightsHtml = insights.length  ? insights.map(i => `<div class="iv-bullet text-app-text leading-relaxed mb-1.5" style="font-size:12px;font-weight:400;">${esc(i)}</div>`).join('') : noAnalysisHtml;
@@ -3296,26 +3317,37 @@ async function toggleIvCard(ivId) {
   const iv = getAllInterviews().find(x => x.id === ivId);
   if (!iv) return;
 
-  // If analysis exists, open on Summary tab so the user sees it immediately.
-  // If no analysis yet, keep Notes tab (the HTML default with class="iv-tab active").
-  if (iv.analysis && iv.analysis.summary) {
-    const tabs = document.querySelectorAll(`#iv-tabs-${ivId} .iv-tab`);
-    if (tabs.length >= 2) ivTab(tabs[1], ivId, 'summary');
+  // ── Case 1: no analysis yet → auto-analyze immediately ───
+  if (!iv.analysis || !iv.analysis.summary) {
+    if (iv.answers && iv.answers.length > 0) {
+      const analyzingMsg = `<div style="font-size:12px;font-weight:400;color:var(--muted);font-style:italic;padding:6px 0;">${S.lang === 'ar' ? 'جارٍ التحليل…' : 'Analyzing…'}</div>`;
+      ['summary','insights','quotes','ux'].forEach(tab => {
+        const el = document.getElementById(`ivp-${ivId}-${tab}-body`);
+        if (el) el.innerHTML = analyzingMsg;
+      });
+      try {
+        await analyzeStoredInterview(ivId, true);
+        const tabs2 = document.querySelectorAll(`#iv-tabs-${ivId} .iv-tab`);
+        if (tabs2.length >= 2) ivTab(tabs2[1], ivId, 'summary');
+      } catch(_) { /* error already logged */ }
+    }
+    return;
   }
 
-  // On expand: silently enforce language if stored analysis was in a different language.
-  if (!iv.analysis || !iv.analysis.summary) return;
-  if (iv.analysisLang === S.lang) return; // already correct language
+  // ── Case 2: analysis exists → open on Summary tab ────────
+  const tabs = document.querySelectorAll(`#iv-tabs-${ivId} .iv-tab`);
+  if (tabs.length >= 2) ivTab(tabs[1], ivId, 'summary');
+
+  // ── Case 3: language mismatch → silently translate ────────
+  if (iv.analysisLang === S.lang) return;
 
   const loadMsg = `<div style="font-size:12px;font-weight:400;color:var(--muted);font-style:italic;">${S.lang === 'ar' ? 'جارٍ الترجمة…' : 'Translating…'}</div>`;
   ['summary','insights','quotes','ux'].forEach(tab => {
     const el = document.getElementById(`ivp-${ivId}-${tab}-body`);
     if (el) el.innerHTML = loadMsg;
   });
-
   try {
     const analysis = await _enforceAnalysisLang(iv.analysis, S.lang, true);
-    // Save back so subsequent opens are instant
     const idx = _ivCache.findIndex(x => x.id === ivId);
     if (idx !== -1) {
       _ivCache[idx].analysis     = analysis;
@@ -3324,16 +3356,13 @@ async function toggleIvCard(ivId) {
     }
     _updateCardContent(ivId, analysis);
   } catch(_) {
-    _updateCardContent(ivId, iv.analysis); // fall back to original on error
+    _updateCardContent(ivId, iv.analysis);
   }
 }
 
 function _updateCardContent(ivId, analysis) {
-  // Empty-state strings use t() so they follow the current dashboard language.
-  // Include "Analyze Now" button so the user can trigger analysis from any tab.
-  const _aBtn = `<button onclick="event.stopPropagation();analyzeFromCard('${ivId}')" style="margin-top:8px;font-size:12px;font-weight:500;color:var(--primary);background:var(--plight);border:1px solid transparent;border-radius:6px;padding:5px 12px;cursor:pointer;display:block;">${t('dbAnalyzeNow')}</button>`;
-  const noData = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysisFull')}</div>${_aBtn}`;
-  const noQts  = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${t('dbNoAnalysisFull')}</div>${_aBtn}`;
+  const noData = `<div class="text-muted italic" style="font-size:12px;font-weight:400;">${S.lang === 'ar' ? 'جارٍ التحليل…' : 'Analyzing…'}</div>`;
+  const noQts  = noData;
 
   const sumEl = document.getElementById(`ivp-${ivId}-summary-body`);
   if (sumEl) sumEl.innerHTML = (analysis && analysis.summary)
@@ -3582,6 +3611,8 @@ async function renderResults(d) {
   // renderPanel already calls renderSbRecent/renderOverview/renderInterviewsTab/renderCrossTab
   // so there is a single render pass from the freshly loaded _ivCache.
   renderPanel();
+  // Kick off silent background analysis for any un-analyzed interviews
+  _autoAnalyzeAll();
   // If d has real analysis data (just finished interview), show it; otherwise aggregate
   const hasRealData = !!(d && (d.summary || (d.insights && d.insights.length)));
   if (hasRealData) {
@@ -3704,7 +3735,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null, statsOver
           <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px;">${t('noAnalysisYet')}</div>
           <div style="font-size:12px;font-weight:400;color:var(--muted);">${t('noAnalysisDesc')}</div>
         </div>
-        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:12px;font-weight:500;padding:9px 22px;">${t('analyzeNow')}</button>` : ''}
+        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:12px;font-weight:500;padding:9px 22px;">${t('reanalyze')}</button>` : ''}
       </div>`;
     return;
   }
