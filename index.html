@@ -904,9 +904,9 @@ a:focus-visible,
     <div id="cxe-api-section" style="margin-bottom:18px;">
       <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-api">API SETTINGS</div>
       <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);">
-        <span style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block;"></span>
+        <span id="cxe-api-dot" style="width:7px;height:7px;border-radius:50%;background:#9ca3af;flex-shrink:0;display:inline-block;"></span>
         <div>
-          <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;" id="api-status-lbl">Connected</div>
+          <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;" id="api-status-lbl">Checking…</div>
           <div style="font-size:11px;color:var(--muted);line-height:1.4;" id="api-status-sub">Powered by OpenAI GPT-4o</div>
         </div>
       </div>
@@ -1034,8 +1034,8 @@ a:focus-visible,
       <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API SETTINGS</span></div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block;"></span>
-          <span style="font-size:13px;font-weight:500;color:var(--text);" id="setup-api-status-lbl">Connected</span>
+          <span id="setup-api-dot" style="width:7px;height:7px;border-radius:50%;background:#9ca3af;flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:13px;font-weight:500;color:var(--text);" id="setup-api-status-lbl">Checking…</span>
         </div>
         <span style="font-size:12px;color:var(--muted);" id="setup-api-status-sub">Powered by OpenAI GPT-4o</span>
       </div>
@@ -1643,7 +1643,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Restore language (triggers renderTR which sets prefills only if fields are empty/default)
   applyLang(localStorage.getItem('app_language') || 'en');
-  // (no API key input on setup page — key managed via Edit Context, admin only)
+  // Probe API connectivity — sets green/red dot on setup page & Edit Context
+  checkApiStatus();
 
   // Load all interviews from KV (server) so dashboard always has fresh data
   await loadInterviewsFromAPI();
@@ -1713,13 +1714,11 @@ function renderTR() {
 
   document.querySelectorAll('.tagline-lbl').forEach(el => el.textContent = t('tagline'));
   // API status cards (setup page + Edit Context modal)
-  const _apiConn = S.lang === 'ar' ? 'متصل' : 'Connected';
-  const _apiSub  = S.lang === 'ar' ? 'مدعوم بـ OpenAI GPT-4o' : 'Powered by OpenAI GPT-4o';
-  set('api-status-lbl',       _apiConn);
+  const _apiSub = S.lang === 'ar' ? 'مدعوم بـ OpenAI GPT-4o' : 'Powered by OpenAI GPT-4o';
   set('api-status-sub',       _apiSub);
-  set('setup-api-status-lbl', _apiConn);
   set('setup-api-status-sub', _apiSub);
   set('s-api-lbl', S.lang === 'ar' ? 'إعدادات API' : 'API SETTINGS');
+  _renderApiStatus(); // re-translate connected/not-connected label on lang switch
 
   set('s-ctx-lbl',  t('ctxLbl'));
   set('s-biz-lbl',  t('bizLbl'));
@@ -4238,6 +4237,57 @@ function cxeShowKeyOk() {
     saved.textContent  = key ? t('keySaved') : '';
     saved.style.display = key ? 'block' : 'none';
   }
+}
+
+// ─── API CONNECTIVITY STATUS ──────────────────────────────
+// Probes /api/chat with an intentionally empty messages array.
+// If the server has a key (env or client), it reaches the messages
+// validation and returns 400 bad_request → connected (key present).
+// If no key anywhere → 500 config_missing → not connected.
+let _apiConnected = null; // null = not yet checked
+
+async function checkApiStatus() {
+  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const chatUrl = isLocal ? (_CF_READ_API + '/api/chat') : '/api/chat';
+  const clientKey = localStorage.getItem('skoon_api_key') || undefined;
+  try {
+    const res = await fetch(chatUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [], ...(clientKey ? { clientApiKey: clientKey } : {}) }),
+      signal: AbortSignal.timeout(10000),
+    });
+    const data = await res.json().catch(() => ({}));
+    // bad_request means server reached key-present validation → key exists → connected
+    // config_missing means no key available anywhere → not connected
+    const connected = !!(data?.error?.code === 'bad_request' || res.ok);
+    _apiConnected = connected;
+  } catch (_) {
+    _apiConnected = false;
+  }
+  _renderApiStatus();
+}
+
+function _renderApiStatus() {
+  const ar   = S.lang === 'ar';
+  const ok   = _apiConnected === true;
+  const chk  = _apiConnected === null;
+  const dot  = ok ? '#22c55e' : chk ? '#9ca3af' : 'var(--danger)';
+  const lbl  = ok  ? (ar ? 'متصل'      : 'Connected')
+             : chk ? (ar ? 'جارٍ الفحص…' : 'Checking…')
+             :        (ar ? 'غير متصل'  : 'Not connected');
+
+  // Setup page dot + label
+  const d1 = document.getElementById('setup-api-dot');
+  const l1 = document.getElementById('setup-api-status-lbl');
+  if (d1) d1.style.background = dot;
+  if (l1) l1.textContent = lbl;
+
+  // Edit Context modal dot + label
+  const d2 = document.getElementById('cxe-api-dot');
+  const l2 = document.getElementById('api-status-lbl');
+  if (d2) d2.style.background = dot;
+  if (l2) l2.textContent = lbl;
 }
 
 // ─── RESTART ──────────────────────────────────────────────
