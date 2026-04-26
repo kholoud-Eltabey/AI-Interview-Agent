@@ -1836,15 +1836,20 @@ function renderProg() {
 
 // ─── OPENAI API — proxied through Cloudflare Worker ───────
 // The API key NEVER reaches the browser.
-// All AI requests go to /api/chat — the Worker holds the key as a server secret.
+// On Cloudflare Pages: /api/chat → same-origin Worker (key stored server-side).
+// On localhost (npx serve): no Functions running, /api/chat → 404.
+//   Route through the production Cloudflare URL so the key stays server-side.
 async function callAI(messages, temp = 0.85, maxTok = 700) {
+  const _isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const _chatUrl = _isLocal ? (_CF_READ_API + '/api/chat') : '/api/chat';
+
   // Client-side timeout — slightly longer than server's 45s to let the server reply first
   const ctrl = new AbortController();
   const timeoutId = setTimeout(() => ctrl.abort(), 50_000);
 
   let res;
   try {
-    res = await fetch('/api/chat', {
+    res = await fetch(_chatUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages, temperature: temp, max_tokens: maxTok }),
@@ -1855,7 +1860,7 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
     const isAbort = netErr && (netErr.name === 'AbortError' || /abort/i.test(netErr.message || ''));
     const friendly = isAbort
       ? 'Request timed out — the server did not respond in time.'
-      : `Network error — could not reach /api/chat (${netErr.message || 'unknown'})`;
+      : `Network error — could not reach ${_chatUrl} (${netErr.message || 'unknown'})`;
     console.error('[callAI]', isAbort ? 'timeout' : 'network error:', netErr.message);
     const e = new Error(friendly);
     e.code = isAbort ? 'timeout' : 'network_error';
@@ -1865,7 +1870,7 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
 
   if (!res.ok) {
     const errText = await res.text().catch(() => '');
-    console.error('[callAI] /api/chat responded', res.status, errText.slice(0, 500));
+    console.error('[callAI]', _chatUrl, 'responded', res.status, errText.slice(0, 500));
     let msg  = `HTTP ${res.status}`;
     let code = `http_${res.status}`;
     try {
