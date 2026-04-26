@@ -1454,7 +1454,7 @@ const TR = {
     dbAnalyzeBtn: 'Analyze Selected', dbSelCount: (n) => `${n} interview${n===1?'':'s'} selected`,
     dbAnalyzeAll: 'Analyze All Completed Interviews', dbAnalyzeNow: 'Analyze Now',
     dbCrossRunning: 'Analyzing…', dbCrossEmpty: 'No output yet',
-    dbNoAnalysisFull: 'No analysis yet — click Analyze Now to generate this section.',
+    dbNoAnalysisFull: 'Analyzing…',
     createdBy: 'Created by:', dateLabel: 'Date:',
     prestartNamePh: 'First and last name',
     homeBtn:   'Home',
@@ -1580,7 +1580,7 @@ const TR = {
     dbAnalyzeBtn: 'تحليل المختارة', dbSelCount: (n) => `${n} مقابلة مختارة`,
     dbAnalyzeAll: 'تحليل كل الأبحاث المكتملة', dbAnalyzeNow: 'حلل الآن',
     dbCrossRunning: 'جاري التحليل…', dbCrossEmpty: 'لا توجد نتائج بعد',
-    dbNoAnalysisFull: 'لا يوجد تحليل بعد — اضغط على حلل الآن لإنشاء هذا القسم.',
+    dbNoAnalysisFull: 'جارٍ التحليل…',
     createdBy: 'تم بواسطة:', dateLabel: 'التاريخ:',
     prestartNamePh: 'الاسم واللقب',
     homeBtn:   'الرئيسية',
@@ -2721,10 +2721,9 @@ function deleteInterview(id, e) {
     .catch(err => console.warn('[deleteInterview] KV delete failed:', err.message));
 }
 
-// Analyze from the card tab "Analyze Now" button — runs analysis, refreshes cards,
-// then re-opens the card on the Summary tab so the user immediately sees the result.
+// Legacy alias kept for any surviving inline onclick references
 async function analyzeFromCard(id) {
-  await analyzeStoredInterview(id);
+  await analyzeStoredInterview(id, true);
   // renderInterviewsTab() already ran inside analyzeStoredInterview — re-open card.
   const body = document.getElementById('iv-body-' + id);
   if (body) {
@@ -3722,21 +3721,20 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null, statsOver
     </div>`;
   }
 
-  // Empty state — show analyze button if interview has answers but no analysis
+  // Empty state — auto-trigger analysis silently; show spinner while it runs
   const hasData = !!(d.summary || (d.insights && d.insights.length) || (d.patterns && d.patterns.length));
   if (!hasData) {
     const target = document.getElementById(targetId);
-    if (target) target.innerHTML = html + `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:48px 24px;text-align:center;">
+    const spinnerHtml = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:48px 24px;text-align:center;">
         <div style="width:52px;height:52px;border-radius:50%;background:var(--plight);display:flex;align-items:center;justify-content:center;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
-        <div>
-          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px;">${t('noAnalysisYet')}</div>
-          <div style="font-size:12px;font-weight:400;color:var(--muted);">${t('noAnalysisDesc')}</div>
-        </div>
-        ${hasAnswers && ivId ? `<button class="btn btn-p" onclick="analyzeStoredInterview('${ivId}')" style="font-size:12px;font-weight:500;padding:9px 22px;">${t('reanalyze')}</button>` : ''}
+        <div style="font-size:13px;font-weight:400;color:var(--muted);font-style:italic;">${S.lang === 'ar' ? 'جارٍ التحليل…' : 'Analyzing…'}</div>
       </div>`;
+    if (target) target.innerHTML = html + spinnerHtml;
+    // Auto-trigger analysis if this interview has answers
+    if (hasAnswers && ivId) analyzeStoredInterview(ivId, true);
     return;
   }
 
