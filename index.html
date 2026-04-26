@@ -2728,9 +2728,7 @@ async function analyzeFromCard(id) {
   const body = document.getElementById('iv-body-' + id);
   if (body) {
     body.style.display = '';
-    // Auto-switch to Summary tab so user immediately sees the new analysis
-    const tabs = document.querySelectorAll(`#iv-tabs-${id} .iv-tab`);
-    if (tabs.length >= 2) ivTab(tabs[1], id, 'summary');
+    // Stay on Notes tab — analysis data is now available in the other tabs
   }
 }
 
@@ -3326,16 +3324,13 @@ async function toggleIvCard(ivId) {
       });
       try {
         await analyzeStoredInterview(ivId, true);
-        const tabs2 = document.querySelectorAll(`#iv-tabs-${ivId} .iv-tab`);
-        if (tabs2.length >= 2) ivTab(tabs2[1], ivId, 'summary');
+        // Analysis done — stay on Notes tab, data is now available in other tabs
       } catch(_) { /* error already logged */ }
     }
     return;
   }
 
-  // ── Case 2: analysis exists → open on Summary tab ────────
-  const tabs = document.querySelectorAll(`#iv-tabs-${ivId} .iv-tab`);
-  if (tabs.length >= 2) ivTab(tabs[1], ivId, 'summary');
+  // ── Case 2: analysis exists → stay on Notes tab ────────
 
   // ── Case 3: language mismatch → silently translate ────────
   if (iv.analysisLang === S.lang) return;
