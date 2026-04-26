@@ -900,6 +900,39 @@ a:focus-visible,
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.5;" id="cxe-desc">Optional custom instructions appended to the AI analysis system prompt.</div>
       <textarea class="inp" id="cxe-prompt" rows="4" style="font-size:12px;font-weight:400;resize:vertical;min-height:80px;font-family:inherit;"></textarea>
     </div>
+    <!-- API SETTINGS — read-only status always; key edit only for admin/researcher -->
+    <div id="cxe-api-section" style="margin-bottom:18px;">
+      <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-api">API SETTINGS</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);">
+        <span style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block;"></span>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;" id="api-status-lbl">Connected</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.4;" id="api-status-sub">Powered by OpenAI GPT-4o</div>
+        </div>
+      </div>
+      <!-- Admin-only key override — hidden unless S.isResearcher -->
+      <div id="cxe-api-edit" style="display:none;margin-top:10px;">
+        <div style="font-size:12px;font-weight:400;color:var(--muted);margin-bottom:6px;" id="cxe-key-lbl">OpenAI API Key Override</div>
+        <div style="position:relative;margin-bottom:6px;">
+          <input type="password" class="inp" id="cxe-key-inp" autocomplete="off"
+            style="padding-inline-end:36px;font-size:13px;"
+            oninput="cxeShowKeyOk()" />
+          <button class="ic-btn" onclick="cxeToggleKeyVis()"
+            style="position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:var(--rxs);"
+            title="Show / hide">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div id="cxe-key-saved" style="display:none;font-size:12px;font-weight:500;color:var(--primary);margin-bottom:6px;"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-s" style="flex:1;" onclick="cxeClearKey()" id="cxe-clear-key-btn">Clear Key</button>
+          <button class="btn btn-p" style="flex:1;" onclick="cxeSaveKey()" id="cxe-save-key-btn">Save Key</button>
+        </div>
+      </div>
+    </div>
+
     <div style="display:flex;gap:8px;">
       <button class="btn btn-s" style="flex:1;" onclick="resetContext()" id="cxe-reset-btn">Reset to Default</button>
       <button class="btn btn-p" style="flex:1;padding:10px 0;" onclick="saveContext()" id="cxe-save-btn">Save</button>
@@ -993,35 +1026,6 @@ a:focus-visible,
 
       <div class="fg">
         <div class="hint" id="s-nq-note" style="font-size:12px;color:var(--muted);padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);">This interview contains 10 questions.</div>
-      </div>
-    </div>
-
-    <!-- API key card -->
-    <div class="card">
-      <div class="card-lbl"><span class="card-dot"></span><span id="s-api-lbl">API SETTINGS</span></div>
-
-      <div class="fg">
-        <div class="fl"><span id="s-key-lbl">OpenAI API Key</span></div>
-        <div style="position:relative;">
-          <input type="password" class="inp" id="s-key-inp" autocomplete="off"
-            style="padding-inline-end:36px;"
-            oninput="showKeyOk()" />
-          <button class="ic-btn" onclick="toggleKeyVis()"
-            style="position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:var(--rxs);"
-            title="Show / hide">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="hint" id="s-key-hint" style="font-size:12px;color:var(--muted);margin-bottom:6px;">Stored locally. Never sent anywhere except OpenAI.</div>
-      <div id="s-key-saved" style="display:none;font-size:12px;font-weight:500;color:var(--primary);margin-bottom:6px;"></div>
-
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-s" style="flex:1;" onclick="clearKey()" id="s-clear-btn">Clear Key</button>
-        <button class="btn btn-p" style="flex:1;" onclick="saveKey()" id="s-save-btn">Save Key</button>
       </div>
     </div>
 
@@ -1618,12 +1622,6 @@ const t = (k, ...a) => { const v = TR[S.lang][k]; return typeof v === 'function'
 
 // ─── INIT ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  // Restore saved API key into the input field and show status
-  const savedKey = localStorage.getItem('skoon_api_key');
-  const keyInp   = document.getElementById('s-key-inp');
-  if (keyInp && savedKey) keyInp.value = savedKey;
-  // showKeyOk() runs after applyLang() so t('keySaved') resolves correctly
-
   // Restore theme
   applyTheme(localStorage.getItem('app_theme') || 'light');
 
@@ -1633,7 +1631,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Restore language (triggers renderTR which sets prefills only if fields are empty/default)
   applyLang(localStorage.getItem('app_language') || 'en');
-  showKeyOk(); // update "key saved" label now that t() is ready
+  // (no API key input on setup page — key managed via Edit Context, admin only)
 
   // Load all interviews from KV (server) so dashboard always has fresh data
   await loadInterviewsFromAPI();
@@ -4126,29 +4124,47 @@ function openContextEditor() {
   const dir = ar ? 'rtl' : 'ltr';
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
   if (ar) {
-    set('cxe-title',      'تعديل السياق');
-    set('cxe-lbl-biz',    'اسم الشركة');
-    set('cxe-lbl-goal',   'هدف المقابلة');
-    set('cxe-lbl-aud',    'الجمهور المستهدف');
-    set('cxe-lbl-prompt', 'موجّه التحليل');
-    set('cxe-desc',       'تعليمات اختيارية تُضاف إلى موجّه نظام التحليل.');
-    set('cxe-reset-btn',  'إعادة للافتراضي');
-    set('cxe-save-btn',   'حفظ');
+    set('cxe-title',         'تعديل السياق');
+    set('cxe-lbl-biz',       'اسم الشركة');
+    set('cxe-lbl-goal',      'هدف المقابلة');
+    set('cxe-lbl-aud',       'الجمهور المستهدف');
+    set('cxe-lbl-prompt',    'موجّه التحليل');
+    set('cxe-desc',          'تعليمات اختيارية تُضاف إلى موجّه نظام التحليل.');
+    set('cxe-reset-btn',     'إعادة للافتراضي');
+    set('cxe-save-btn',      'حفظ');
+    set('cxe-lbl-api',       'إعدادات API');
+    set('cxe-key-lbl',       'مفتاح API للاستبدال');
+    set('cxe-clear-key-btn', 'حذف المفتاح');
+    set('cxe-save-key-btn',  'حفظ المفتاح');
   } else {
-    set('cxe-title',      'Edit Context');
-    set('cxe-lbl-biz',    'Business Name');
-    set('cxe-lbl-goal',   'Interview Goal');
-    set('cxe-lbl-aud',    'Target Audience');
-    set('cxe-lbl-prompt', 'Analysis Prompt');
-    set('cxe-desc',       'Optional custom instructions appended to the AI analysis system prompt.');
-    set('cxe-reset-btn',  'Reset to Default');
-    set('cxe-save-btn',   'Save');
+    set('cxe-title',         'Edit Context');
+    set('cxe-lbl-biz',       'Business Name');
+    set('cxe-lbl-goal',      'Interview Goal');
+    set('cxe-lbl-aud',       'Target Audience');
+    set('cxe-lbl-prompt',    'Analysis Prompt');
+    set('cxe-desc',          'Optional custom instructions appended to the AI analysis system prompt.');
+    set('cxe-reset-btn',     'Reset to Default');
+    set('cxe-save-btn',      'Save');
+    set('cxe-lbl-api',       'API SETTINGS');
+    set('cxe-key-lbl',       'OpenAI API Key Override');
+    set('cxe-clear-key-btn', 'Clear Key');
+    set('cxe-save-key-btn',  'Save Key');
   }
   const fieldMap = { biz: 'businessName', goal: 'goal', aud: 'audience', prompt: 'prompt' };
   Object.entries(fieldMap).forEach(([elId, ctxKey]) => {
     const el = document.getElementById('cxe-' + elId);
     if (el) { el.value = getCtx(ctxKey); el.dir = dir; }
   });
+  // API edit section: only visible for researchers / admins (triple-click brand → passcode)
+  const apiEdit = document.getElementById('cxe-api-edit');
+  if (apiEdit) {
+    apiEdit.style.display = S.isResearcher ? '' : 'none';
+    if (S.isResearcher) {
+      const keyInp = document.getElementById('cxe-key-inp');
+      if (keyInp) { keyInp.type = 'password'; keyInp.value = localStorage.getItem('skoon_api_key') || ''; }
+      cxeShowKeyOk();
+    }
+  }
   document.getElementById('context-editor-ov').classList.add('show');
 }
 
@@ -4177,6 +4193,34 @@ function resetContext() {
   ['interview.businessName', 'interview.goal', 'interview.audience', 'interview.prompt'].forEach(k => localStorage.removeItem(k));
   const vals = { biz: _CTX_DEFS.businessName, goal: t('goalPre'), aud: t('audPre'), prompt: '' };
   Object.entries(vals).forEach(([id, v]) => { const el = document.getElementById('cxe-' + id); if (el) el.value = v; });
+}
+
+// ─── CONTEXT EDITOR — API KEY (admin / researcher only) ──
+// The key override lives in Edit Context; regular users never see it.
+function cxeToggleKeyVis() {
+  const inp = document.getElementById('cxe-key-inp');
+  if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+function cxeSaveKey() {
+  const inp = document.getElementById('cxe-key-inp');
+  const val = (inp ? inp.value : '').trim();
+  if (!val) return;
+  localStorage.setItem('skoon_api_key', val);
+  cxeShowKeyOk();
+}
+function cxeClearKey() {
+  localStorage.removeItem('skoon_api_key');
+  const inp = document.getElementById('cxe-key-inp');
+  if (inp) inp.value = '';
+  cxeShowKeyOk();
+}
+function cxeShowKeyOk() {
+  const key   = localStorage.getItem('skoon_api_key');
+  const saved = document.getElementById('cxe-key-saved');
+  if (saved) {
+    saved.textContent  = key ? t('keySaved') : '';
+    saved.style.display = key ? 'block' : 'none';
+  }
 }
 
 // ─── RESTART ──────────────────────────────────────────────
