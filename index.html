@@ -1461,7 +1461,7 @@ const TR = {
     dbCrossRunning: 'Analyzing…', dbCrossEmpty: 'No output yet',
     dbNoAnalysisFull: 'No analysis yet — click Analyze Now to generate this section.',
     createdBy: 'Created by:', dateLabel: 'Date:',
-    prestartNamePh: 'Enter your name',
+    prestartNamePh: 'First and last name',
     homeBtn:   'Home',
     dbInterviewLabel: 'Interview',
     greetHello: 'Hello, ',
@@ -1587,7 +1587,7 @@ const TR = {
     dbCrossRunning: 'جاري التحليل…', dbCrossEmpty: 'لا توجد نتائج بعد',
     dbNoAnalysisFull: 'لا يوجد تحليل بعد — اضغط على حلل الآن لإنشاء هذا القسم.',
     createdBy: 'تم بواسطة:', dateLabel: 'التاريخ:',
-    prestartNamePh: 'أدخل اسمك',
+    prestartNamePh: 'الاسم واللقب',
     homeBtn:   'الرئيسية',
     dbInterviewLabel: 'المقابلة',
     greetHello: 'مرحباً، ',
@@ -2722,7 +2722,7 @@ function saveInterview(analysis) {
     date:             new Date().toISOString(),
     lang:             S.lang,
 
-    createdByName:    localStorage.getItem('skoon_user_name') || localStorage.getItem('researcher_name') || (S.lang === 'ar' ? 'المستخدم' : 'User'),
+    createdByName:    localStorage.getItem('skoon_user_name') || (S.lang === 'ar' ? 'مستخدم' : 'User'),
     completed:        S.mainAsked >= S.numQ,
     goal:             S.goal || '',
     audience:         S.audience || '',
@@ -3236,7 +3236,7 @@ function ivRowHtml(iv, fmt, expandable) {
   const uxIssues = iv.analysis && Array.isArray(iv.analysis.uxIssues)  ? iv.analysis.uxIssues.filter(u => u && (u.issue||'').trim())             : [];
 
   // Notes creator header — shown above answers in the Notes tab only
-  const creatorName = iv.createdByName || localStorage.getItem('skoon_user_name') || localStorage.getItem('researcher_name') || (S.lang === 'ar' ? 'المستخدم' : 'User');
+  const creatorName = iv.createdByName || localStorage.getItem('skoon_user_name') || (S.lang === 'ar' ? 'مستخدم' : 'User');
   const notesHeader = `<div style="font-size:12px;font-weight:400;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">`
     + `<div>${esc(t('createdBy'))} <span style="color:var(--text);font-weight:500;">${esc(creatorName)}</span></div>`
     + `<div>${esc(t('dateLabel'))} ${fmt(iv.date)}</div>`
@@ -3314,9 +3314,18 @@ async function toggleIvCard(ivId) {
   body.style.display = opening ? '' : 'none';
   if (!opening) return;
 
-  // On expand: silently enforce language if stored analysis was in a different language.
   const iv = getAllInterviews().find(x => x.id === ivId);
-  if (!iv || !iv.analysis || !iv.analysis.summary) return;
+  if (!iv) return;
+
+  // If analysis exists, open on Summary tab so the user sees it immediately.
+  // If no analysis yet, keep Notes tab (the HTML default with class="iv-tab active").
+  if (iv.analysis && iv.analysis.summary) {
+    const tabs = document.querySelectorAll(`#iv-tabs-${ivId} .iv-tab`);
+    if (tabs.length >= 2) ivTab(tabs[1], ivId, 'summary');
+  }
+
+  // On expand: silently enforce language if stored analysis was in a different language.
+  if (!iv.analysis || !iv.analysis.summary) return;
   if (iv.analysisLang === S.lang) return; // already correct language
 
   const loadMsg = `<div style="font-size:12px;font-weight:400;color:var(--muted);font-style:italic;">${S.lang === 'ar' ? 'جارٍ الترجمة…' : 'Translating…'}</div>`;
