@@ -2505,8 +2505,8 @@ async function askQuestion() {
       S.mainAsked++;
       renderProg();
       inst = ar
-        ? `اطرح السؤال ${S.mainAsked} من ${S.numQ}. ابدأ بعبارة طبيعية قصيرة (1-3 كلمات) تُظهر الإصغاء للإجابة السابقة مثل: "آه واضح،"، "طيب،"، "ما شاء الله،"، "فاهم،"، "عجبني،" — ثم انتقل لسؤال جديد من محور لم يُغطَّ. غيّر العبارة في كل مرة ولا تكررها. جملة واحدة قصيرة. الرد بالعربية الخليجية فقط.`
-        : `Ask question ${S.mainAsked} of ${S.numQ}. Start with a brief natural phrase (1-3 words) acknowledging the last answer, like: "Interesting,", "Makes sense,", "Okay,", "Got it,", "Oh nice," — then move to a new uncovered topic. Rotate phrases — never repeat the same one twice in a row. One short sentence total. English only.`;
+        ? `اطرح السؤال ${S.mainAsked} من ${S.numQ}. ابدأ بجملة قصيرة تتفاعل فيها مع ما قاله المستخدم للتو — تعليق حقيقي على إجابته يُظهر أنك استمعت (مثل: "يبدو إنك واجهت كذا ..."، "مثير للاهتمام كيف ذكرت ..."، "منطقي إن ..."  — وليس فقط "آه واضح"). ثم انتقل بشكل طبيعي لسؤال جديد من محور لم يُغطَّ. السؤال جملة واحدة قصيرة. الرد بالعربية الخليجية فقط.`
+        : `Ask question ${S.mainAsked} of ${S.numQ}. Start with one sentence that genuinely engages with what the user just said — a real reaction to their specific answer that shows you listened (e.g. "It sounds like you found ...", "Interesting that you mentioned ...", "That makes sense given ..." — NOT a generic filler like "Got it,"). Then naturally transition to a new uncovered topic. Keep the question to one short sentence. English only.`;
     }
 
     const q = await callAI([...S.msgs, { role: 'user', content: inst }]);
