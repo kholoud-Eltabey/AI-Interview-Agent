@@ -895,6 +895,13 @@ a:focus-visible,
       <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-aud">Target Audience</div>
       <textarea class="inp" id="cxe-aud" rows="3" style="font-size:13px;font-weight:400;resize:vertical;min-height:66px;"></textarea>
     </div>
+    <!-- ANALYSIS PROMPT — content always English/LTR; only the label follows system language -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-prompt">Analysis Prompt</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.5;" id="cxe-desc">Full system prompt sent to GPT-4o. Always English — content never changes language.</div>
+      <textarea class="inp" id="cxe-prompt" rows="6" dir="ltr" lang="en"
+                style="font-size:11.5px;font-weight:400;resize:vertical;min-height:100px;font-family:inherit;line-height:1.6;direction:ltr;text-align:left;"></textarea>
+    </div>
     <!-- API KEY — leave blank to use server env key -->
     <div id="cxe-key-section" style="margin-bottom:18px;">
       <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-key">API KEY</div>
@@ -1584,7 +1591,7 @@ const TR = {
     dbAiInsights: 'استنتاجات مولّدة بالذكاء الاصطناعي', dbCrossDesc: 'اختر مقابلات لتحليلها معاً',
     dbTotal: 'المجموع', dbCompleted: 'مكتملة', dbIncomplete: 'غير مكتملة', dbRate: 'نسبة الإكمال',
     dbLatest: 'آخر المقابلات', dbRecent: 'الأخيرة', dbDeleteConfirm: 'حذف هذه المقابلة؟ لا يمكن التراجع عن هذا.',
-    dbNotes: 'ملاحظات', dbSummary: 'ملخص', dbInsightsTab: 'استنتاجات', dbQuotes: 'اقتباسات', dbUxIssues: 'مشاكل التجربة',
+    dbNotes: 'ملاحظات', dbSummary: 'ملخص', dbInsightsTab: 'استنتاجات', dbQuotes: 'اقتباسات', dbUxIssues: 'UX مشاكل',
     dbNoData: 'لا توجد مقابلات بعد', dbNoAnalysis: 'لا يوجد تحليل — المقابلة لم تُحلَّل بعد',
     dbSelectHint: 'اختر مقابلات أدناه لتشغيل التحليل المقارن',
     dbAnalyzeBtn: 'تحليل المختارة', dbSelCount: (n) => `${n} مقابلة مختارة`,
@@ -4148,6 +4155,8 @@ function openContextEditor() {
     set('cxe-lbl-biz',       'اسم الشركة');
     set('cxe-lbl-goal',      'هدف المقابلة');
     set('cxe-lbl-aud',       'الجمهور المستهدف');
+    set('cxe-lbl-prompt',    'موجّه التحليل');
+    set('cxe-desc',          'الموجّه الكامل المُرسَل إلى GPT-4o — يبقى بالإنجليزية دائماً.');
     set('cxe-lbl-key',       'مفتاح API');
     set('cxe-key-hint',      'اتركه فارغاً لاستخدام المفتاح المُعدّ على الخادم. يُحفظ محلياً في هذا المتصفح فقط.');
     set('cxe-reset-btn',     'إعادة للافتراضي');
@@ -4158,6 +4167,8 @@ function openContextEditor() {
     set('cxe-lbl-biz',    'Business Name');
     set('cxe-lbl-goal',   'Interview Goal');
     set('cxe-lbl-aud',    'Target Audience');
+    set('cxe-lbl-prompt', 'Analysis Prompt');
+    set('cxe-desc',       'Full system prompt sent to GPT-4o. Always English — content never changes language.');
     set('cxe-lbl-key',    'API KEY');
     set('cxe-key-hint',   'Leave blank to use the server-configured key. Stored locally in this browser only.');
     set('cxe-reset-btn',  'Reset to Default');
@@ -4165,13 +4176,16 @@ function openContextEditor() {
     set('cxe-lbl-api',    'API SETTINGS');
   }
 
-  // Pre-fill fields from saved values; fall back to default placeholder text
-  const bizEl  = document.getElementById('cxe-biz');
-  const goalEl = document.getElementById('cxe-goal');
-  const audEl  = document.getElementById('cxe-aud');
-  if (bizEl)  { bizEl.value  = getCtx('businessName') || _CTX_DEFS.businessName; bizEl.dir = dir; }
-  if (goalEl) { goalEl.value = getCtx('goal')         || t('goalPre');            goalEl.dir = dir; }
-  if (audEl)  { audEl.value  = getCtx('audience')     || t('audPre');             audEl.dir = dir; }
+  // Pre-fill fields — goal/audience follow system language; prompt is ALWAYS English default
+  const bizEl    = document.getElementById('cxe-biz');
+  const goalEl   = document.getElementById('cxe-goal');
+  const audEl    = document.getElementById('cxe-aud');
+  const promptEl = document.getElementById('cxe-prompt');
+  if (bizEl)    { bizEl.value    = getCtx('businessName') || _CTX_DEFS.businessName; bizEl.dir = dir; }
+  if (goalEl)   { goalEl.value   = getCtx('goal')         || t('goalPre');            goalEl.dir = dir; }
+  if (audEl)    { audEl.value    = getCtx('audience')     || t('audPre');             audEl.dir = dir; }
+  // Prompt: always load from saved or default _PROMPT_EN — never translate, always LTR
+  if (promptEl) { promptEl.value = getCtx('prompt') || _PROMPT_EN; promptEl.dir = 'ltr'; }
 
   // API key — load from localStorage if present
   const keyEl = document.getElementById('cxe-api-key');
@@ -4190,6 +4204,7 @@ function saveContext() {
   const biz    = (document.getElementById('cxe-biz')?.value    || '').trim();
   const goal   = (document.getElementById('cxe-goal')?.value   || '').trim();
   const aud    = (document.getElementById('cxe-aud')?.value    || '').trim();
+  const prompt = (document.getElementById('cxe-prompt')?.value || '').trim();
   const apiKey = (document.getElementById('cxe-api-key')?.value || '').trim();
 
   localStorage.setItem('interview.businessName', biz  || _CTX_DEFS.businessName);
@@ -4198,6 +4213,9 @@ function saveContext() {
   // Sync to legacy keys so setup page stays consistent
   localStorage.setItem('skoon_goal',     goal || _CTX_DEFS.goal);
   localStorage.setItem('skoon_audience', aud  || _CTX_DEFS.audience);
+  // Prompt — save if provided; clear if blank (blank → _PROMPT_EN default at runtime)
+  if (prompt && prompt !== _PROMPT_EN) localStorage.setItem('interview.prompt', prompt);
+  else localStorage.removeItem('interview.prompt');
   // API key — save if provided, remove if cleared
   if (apiKey) localStorage.setItem('skoon_api_key', apiKey);
   else        localStorage.removeItem('skoon_api_key');
@@ -4211,6 +4229,9 @@ function resetContext() {
   ['interview.businessName', 'interview.goal', 'interview.audience', 'interview.prompt', 'skoon_api_key'].forEach(k => localStorage.removeItem(k));
   const vals = { biz: _CTX_DEFS.businessName, goal: t('goalPre'), aud: t('audPre') };
   Object.entries(vals).forEach(([id, v]) => { const el = document.getElementById('cxe-' + id); if (el) el.value = v; });
+  // Prompt always resets to the English default
+  const pEl = document.getElementById('cxe-prompt');
+  if (pEl) { pEl.value = _PROMPT_EN; pEl.dir = 'ltr'; }
   const keyEl = document.getElementById('cxe-api-key');
   if (keyEl) keyEl.value = '';
 }
