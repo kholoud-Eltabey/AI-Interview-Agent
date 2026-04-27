@@ -497,6 +497,8 @@ a:focus-visible,
 .ov { position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; }
 .ov.show { display: flex; }
 .ov-card { background: var(--surface); border-radius: var(--r); padding: 36px 32px; text-align: center; max-width: 280px; width: 90%; box-shadow: var(--shlg); }
+/* Edit Context only — allow full vertical scroll so no content is ever cut off */
+#context-editor-ov.show { align-items: flex-start; overflow-y: auto; padding: 28px 0; }
 .spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 18px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .ov-ttl { font-size:14px; font-weight: 500; margin-bottom: 4px; }
