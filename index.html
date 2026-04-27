@@ -902,10 +902,11 @@ a:focus-visible,
       <textarea class="inp" id="cxe-prompt" rows="6" dir="ltr" lang="en"
                 style="font-size:11.5px;font-weight:400;resize:vertical;min-height:100px;font-family:inherit;line-height:1.6;direction:ltr;text-align:left;"></textarea>
     </div>
-    <!-- API KEY — leave blank to use server env key -->
+    <!-- API SETTINGS — key input + status merged into one card -->
     <div id="cxe-key-section" style="margin-bottom:18px;">
-      <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-key">API KEY</div>
-      <div style="position:relative;">
+      <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-api">API إعدادات</div>
+      <div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:6px;" id="cxe-lbl-key">OpenAI API مفتاح</div>
+      <div style="position:relative;margin-bottom:6px;">
         <input type="password" class="inp" id="cxe-api-key" autocomplete="off"
                style="font-size:13px;font-weight:400;padding-inline-end:40px;" placeholder="sk-…">
         <button type="button" onclick="toggleCxeKeyVis()" id="cxe-key-eye"
@@ -915,12 +916,13 @@ a:focus-visible,
           </svg>
         </button>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5;" id="cxe-key-hint">Leave blank to use the server-configured key. Stored locally in this browser only.</div>
-    </div>
-    <!-- API STATUS -->
-    <div id="cxe-api-section" style="margin-bottom:18px;">
-      <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;" id="cxe-lbl-api">API SETTINGS</div>
-      <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;" id="cxe-key-hint">يحفظ محليًا في متصفحك ولا يُرسل إلا إلى OpenAI.</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button type="button" class="btn btn-p" onclick="saveCxeKey()" id="cxe-key-save-btn" style="flex:1;font-size:13px;">حفظ المفتاح</button>
+        <button type="button" class="btn btn-s" onclick="deleteCxeKey()" id="cxe-key-del-btn" style="flex:1;font-size:13px;">حذف المفتاح</button>
+      </div>
+      <!-- Connection status below the buttons -->
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);">
         <span id="cxe-api-dot" style="width:7px;height:7px;border-radius:50%;background:#9ca3af;flex-shrink:0;display:inline-block;"></span>
         <div>
           <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;" id="api-status-lbl">Checking…</div>
@@ -4157,11 +4159,13 @@ function openContextEditor() {
     set('cxe-lbl-aud',       'الجمهور المستهدف');
     set('cxe-lbl-prompt',    'موجّه التحليل');
     set('cxe-desc',          'الموجّه الكامل المُرسَل إلى GPT-4o — يبقى بالإنجليزية دائماً.');
-    set('cxe-lbl-key',       'مفتاح API');
-    set('cxe-key-hint',      'اتركه فارغاً لاستخدام المفتاح المُعدّ على الخادم. يُحفظ محلياً في هذا المتصفح فقط.');
+    set('cxe-lbl-api',       'API إعدادات');
+    set('cxe-lbl-key',       'OpenAI API مفتاح');
+    set('cxe-key-hint',      'يحفظ محليًا في متصفحك ولا يُرسل إلا إلى OpenAI.');
+    set('cxe-key-save-btn',  'حفظ المفتاح');
+    set('cxe-key-del-btn',   'حذف المفتاح');
     set('cxe-reset-btn',     'إعادة للافتراضي');
     set('cxe-save-btn',      'حفظ');
-    set('cxe-lbl-api',       'إعدادات API');
   } else {
     set('cxe-title',      'Edit Context');
     set('cxe-lbl-biz',    'Business Name');
@@ -4169,11 +4173,13 @@ function openContextEditor() {
     set('cxe-lbl-aud',    'Target Audience');
     set('cxe-lbl-prompt', 'Analysis Prompt');
     set('cxe-desc',       'Full system prompt sent to GPT-4o. Always English — content never changes language.');
-    set('cxe-lbl-key',    'API KEY');
-    set('cxe-key-hint',   'Leave blank to use the server-configured key. Stored locally in this browser only.');
-    set('cxe-reset-btn',  'Reset to Default');
-    set('cxe-save-btn',   'Save');
-    set('cxe-lbl-api',    'API SETTINGS');
+    set('cxe-lbl-api',       'API SETTINGS');
+    set('cxe-lbl-key',       'OpenAI API Key');
+    set('cxe-key-hint',      'Stored locally in your browser and only sent to OpenAI.');
+    set('cxe-key-save-btn',  'Save Key');
+    set('cxe-key-del-btn',   'Delete Key');
+    set('cxe-reset-btn',     'Reset to Default');
+    set('cxe-save-btn',      'Save');
   }
 
   // Pre-fill fields — goal/audience follow system language; prompt is ALWAYS English default
@@ -4243,10 +4249,38 @@ function toggleCxeKeyVis() {
   inp.type = showing ? 'password' : 'text';
   const icon = document.getElementById('cxe-eye-icon');
   if (!icon) return;
-  // Closed eye when showing (click to hide), open eye when hidden (click to show)
   icon.innerHTML = showing
     ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
     : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+}
+
+function saveCxeKey() {
+  const key = (document.getElementById('cxe-api-key')?.value || '').trim();
+  if (!key) return;
+  localStorage.setItem('skoon_api_key', key);
+  checkApiStatus();
+  const btn = document.getElementById('cxe-key-save-btn');
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = S.lang === 'ar' ? '✓ تم الحفظ' : '✓ Saved';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  }
+}
+
+function deleteCxeKey() {
+  localStorage.removeItem('skoon_api_key');
+  const inp = document.getElementById('cxe-api-key');
+  if (inp) { inp.value = ''; inp.type = 'password'; }
+  // Reset eye icon to closed
+  const icon = document.getElementById('cxe-eye-icon');
+  if (icon) icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  checkApiStatus();
+  const btn = document.getElementById('cxe-key-del-btn');
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = S.lang === 'ar' ? '✓ تم الحذف' : '✓ Deleted';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  }
 }
 
 
