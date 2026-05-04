@@ -1349,6 +1349,14 @@ a:focus-visible,
       <!-- Recent -->
       <div class="px-2 flex-1 overflow-y-auto" id="sb-recent"></div>
 
+      <!-- Sidebar action buttons — New Interview / Edit Context / Home -->
+      <div class="h-px bg-[var(--border)] mx-4 shrink-0"></div>
+      <div class="px-2 py-2 shrink-0 flex flex-wrap gap-1.5" id="sb-action-btns">
+        <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
+        <button class="btn btn-s" onclick="openContextEditor()" id="edit-ctx-btn"><span id="edit-ctx-btn-lbl">Edit Context</span></button>
+        <button class="btn btn-s" onclick="goHome()" id="s-home-btn">Home</button>
+      </div>
+
     </nav>
 
     <!-- MAIN CONTENT -->
@@ -1412,11 +1420,6 @@ a:focus-visible,
         <div id="res-history" style="display:none;"></div>
         <div id="res-notes"   style="display:none;"></div>
 
-        <div class="flex justify-center gap-2.5 mt-8 pb-2" id="db-bottom-btns">
-          <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
-          <button class="btn btn-s" onclick="openContextEditor()" id="edit-ctx-btn"><span id="edit-ctx-btn-lbl">Edit Context</span></button>
-          <button class="btn btn-s" onclick="goHome()" id="s-home-btn">Home</button>
-        </div>
       </div>
     </div>
 
@@ -3062,10 +3065,6 @@ function dbTab(tab) {
     if (pane) pane.classList.toggle('active', s === tab);
     if (btn)  btn.classList.toggle('active',  s === tab);
   });
-  // "New Interview" + "Home" buttons visible only on Dashboard (overview)
-  const btns = document.getElementById('db-bottom-btns');
-  if (btns) btns.style.display = (tab === 'overview') ? '' : 'none';
-
   // Re-render count/list tabs from _ivCache on every switch so all views stay
   // consistent — no stale stats or missing cards after delete / analysis / lang change.
   if (tab === 'overview')   { renderSbRecent(); renderOverview(); }
