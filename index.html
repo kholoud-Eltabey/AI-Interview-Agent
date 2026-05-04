@@ -1345,9 +1345,6 @@ a:focus-visible,
 
       <!-- Action items -->
       <div class="px-2 pt-1 pb-1 shrink-0">
-        <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" onclick="restart()" id="s-new-btn">
-          <span class="w-4 text-center shrink-0 text-[12px]">⊕</span><span id="s-new-btn-lbl">New Interview</span>
-        </button>
         <button class="sb-nav-item flex items-center gap-2 w-full text-start px-2.5 py-1.5 rounded-sm text-[12px] font-medium text-muted transition-colors" onclick="openContextEditor()" id="edit-ctx-btn">
           <span class="w-4 text-center shrink-0 text-[12px]">✎</span><span id="edit-ctx-btn-lbl">Edit Context</span>
         </button>
@@ -1866,7 +1863,6 @@ function renderTR() {
   set('s-nq-note',  t('nqNote'));
   set('s-start-txt',t('startBtn'));
   set('s-end-txt',  t('endBtn'));
-  set('s-new-btn-lbl',  t('newBtn'));
   set('s-home-btn-lbl', t('homeBtn'));
   set('res-ttl',    t('resTitle'));
   set('res-sub',    t('resSub'));
