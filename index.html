@@ -60,8 +60,8 @@ tailwind.config = {
   --plight:  rgba(26,165,183,0.10);
   --phlight: rgba(26,165,183,0.05);
   --accent:  #3B82F6;
-  --cta:     #1AA5B7;
-  --cta-hover: #00465F;
+  --cta:     #00465F;
+  --cta-hover: #003143;
   --stat-num: #1F2937;
   --danger:  #9D7982;
   --sh:  0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04);
@@ -84,8 +84,8 @@ tailwind.config = {
   --phlight: rgba(26,165,183,0.07);
   --accent:  #60A5FA;
   --danger:  #c8aaaf;
-  --cta:     #003143;
-  --cta-hover: #00465F;
+  --cta:     #00465F;
+  --cta-hover: #003143;
   --stat-num: #FFFFFF;
   --sh:  0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3);
   --shlg: 0 12px 48px rgba(0,0,0,0.6);
@@ -232,7 +232,7 @@ input[type="checkbox"] {
   transition: all var(--tr);
 }
 .btn-p { background: var(--cta); color: #fff; width: 100%; }
-.btn-p:hover { background: var(--cta-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,165,183,0.35); }
+.btn-p:hover { background: var(--cta-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,70,95,0.40); }
 .btn-p:active { transform: none; }
 .btn-p:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 .btn-s {
@@ -247,7 +247,7 @@ input[type="checkbox"] {
 }
 #ca-run-btn:not(:disabled):hover {
   background: var(--cta-hover) !important; border-color: var(--cta-hover) !important;
-  box-shadow: 0 4px 16px rgba(26,165,183,0.35);
+  box-shadow: 0 4px 16px rgba(0,70,95,0.40);
 }
 #s-new-btn, #edit-ctx-btn, #edit-ctx-btn-analysis, #s-home-btn {
   background: var(--cta); color: #fff; border: none;
@@ -258,7 +258,7 @@ input[type="checkbox"] {
 #edit-ctx-btn-analysis:hover, #edit-ctx-btn-analysis:focus-visible,
 #s-home-btn:hover, #s-home-btn:focus-visible {
   outline: none; background: var(--cta-hover) !important; color: #fff !important;
-  box-shadow: 0 4px 16px rgba(26,165,183,0.35) !important; transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,70,95,0.40) !important; transform: translateY(-1px);
 }
 #s-new-btn:active, #edit-ctx-btn:active, #edit-ctx-btn-analysis:active, #s-home-btn:active {
   transform: none; box-shadow: none !important;
