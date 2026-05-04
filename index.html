@@ -1529,7 +1529,7 @@ const TR = {
     emThinks:  'Thinks', emFeels: 'Feels', emSays: 'Says', emDoes: 'Does',
     sentPos:   'Positive', sentNeu: 'Neutral', sentNeg: 'Negative',
     pAge:      'Age', pGoal: 'Goal', pPain: 'Pain', pMotivation: 'Motivation',
-    pCity:     'City', pJob: 'Job', pEmotion: 'Emotional State', pRentalPref: 'Rental Preference',
+    pCity:     'City', pJob: 'Job', pEmotion: 'Emotional State', pRentalPref: 'Booking Preference',
     pGender:   'Gender', pMale: 'Male', pFemale: 'Female',
     pStaleHint: 'Personas in this analysis use generic role labels. Re-analyze to generate real named personas.',
     ieAction:  'Action', ieImpact: 'Impact', ieEffort: 'Effort', iePriority: 'Priority',
@@ -1574,7 +1574,7 @@ const TR = {
     errAi:     'Something went wrong. Please try again.',
     errAnalysis: 'Analysis failed. Please try again.',
     introTagline: 'Your experience shapes what we build',
-    introDesc: "We'd love to hear about your experience renting in Saudi Arabia. It's a short, friendly chat — no right or wrong answers.",
+    introDesc: "We'd love to hear about your travel booking experience with Almosafer. It's a short, friendly chat — no right or wrong answers.",
     introStart: 'Get Started',
     prestartTitle: 'Just a quick heads up before you start',
     prestartSub: 'User Interview Powered by AI',
@@ -1655,7 +1655,7 @@ const TR = {
     emThinks:  'يفكر', emFeels: 'يشعر', emSays: 'يقول', emDoes: 'يفعل',
     sentPos:   'إيجابي', sentNeu: 'محايد', sentNeg: 'سلبي',
     pAge:      'العمر', pGoal: 'الهدف', pPain: 'نقطة الألم', pMotivation: 'الدافع',
-    pCity:     'المدينة', pJob: 'الوظيفة', pEmotion: 'الحالة العاطفية', pRentalPref: 'تفضيل طريقة الإيجار',
+    pCity:     'المدينة', pJob: 'الوظيفة', pEmotion: 'الحالة العاطفية', pRentalPref: 'تفضيل طريقة الحجز',
     pGender:   'النوع', pMale: 'ذكر', pFemale: 'أنثى',
     pStaleHint: 'الشخصيات في هذا التحليل تستخدم ألقاب عامة. أعد التحليل لتوليد شخصيات بأسماء حقيقية.',
     ieAction:  'الإجراء', ieImpact: 'التأثير', ieEffort: 'الجهد', iePriority: 'الأولوية',
@@ -1700,7 +1700,7 @@ const TR = {
     errAi:     'صار خطأ، جرّب مرة ثانية.',
     errAnalysis: 'ما قدرنا نحلل، جرّب مرة ثانية.',
     introTagline: 'تجربتك تُشكّل ما نبنيه',
-    introDesc: 'يسعدنا نسمع تجربتك في البحث عن عقار للإيجار في السعودية. هي محادثة قصيرة وودية — ما في إجابة صح أو غلط.',
+    introDesc: 'يسعدنا نسمع تجربتك في حجز السفر مع Almosafer. هي محادثة قصيرة وودية — ما في إجابة صح أو غلط.',
     introStart: 'ابدأ',
     prestartTitle: 'تنبيه سريع قبل ما تبدأ',
     prestartSub: 'مقابلة مستخدم مدعومة بالذكاء الاصطناعي',
@@ -1744,6 +1744,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Restore in-progress session if one exists
   restoreSession();
+
+  // ── One-time migration: clear any old Skoon/rental interview data ──
+  if (!localStorage.getItem('_almosafer_v1')) {
+    try {
+      // Remove interviews that contain rental-context signatures
+      const raw = localStorage.getItem('skoon_interviews');
+      if (raw) {
+        const all = JSON.parse(raw);
+        const clean = all.filter(iv => {
+          const text = JSON.stringify(iv).toLowerCase();
+          return !(text.includes('rental') || text.includes('إيجار') || text.includes('عقار') || text.includes('مستأجر'));
+        });
+        if (clean.length !== all.length) {
+          localStorage.setItem('skoon_interviews', JSON.stringify(clean));
+          // Sync in-memory cache
+          if (typeof _ivCache !== 'undefined') _ivCache.length = 0, clean.forEach(iv => _ivCache.push(iv));
+        }
+      }
+      // Remove any in-progress rental session
+      const sess = localStorage.getItem('skoon_session');
+      if (sess) {
+        const s = JSON.parse(sess);
+        const text = JSON.stringify(s).toLowerCase();
+        if (text.includes('rental') || text.includes('إيجار') || text.includes('عقار') || text.includes('مستأجر')) {
+          localStorage.removeItem('skoon_session');
+        }
+      }
+    } catch(e) { /* silent */ }
+    localStorage.setItem('_almosafer_v1', '1');
+  }
 
   // If researcher, open dashboard directly on load
   if (S.isResearcher) {
@@ -2077,10 +2107,10 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
 // _buildAnalysisSys() uses these when no custom prompt is saved.
 const _PROMPT_AR = `استجب باللغة العربية الخليجية فقط في كل كلمة. ممنوع استخدام أي كلمة إنجليزية في القيم النصية — هذا شرط مطلق.
 
-أنت محلل أبحاث UX محترف. حلل محادثة المقابلة بدقة وأخرج JSON صحيح فقط يطابق الهيكل المعطى تماماً. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة المسموح بها بالإنجليزية: "Almosafer"، وقيم sentiment (positive/neutral/negative)، وقيم impact وeffort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop)، وقيم gender (male/female). قواعد الشخصيات المطلقة: (أ) كل شخصية في هذا التحليل هي بالتعريف مستخدم/مستأجر — لذلك كلمات مثل "المستخدم" و"المستأجر" و"الباحث" و"طالب عقار" مرفوضة تماماً لأنها لا تميّز شخصية عن أخرى. الاسم يجب أن يكون اسم أول حقيقي محدد من القائمة التالية فقط: سارة، أحمد، ليلى، خالد، نور، فاطمة، محمد، عبدالله، عائشة، عمر، ريم، حسن، مايا، يوسف، هند، فيصل، هدى، تركي، مريم، سعود، دانة، رائد، ملاك، ماجد، سلمى. (ب) إذا كانت شخصيتان مختلفتين، يجب أن يكون لكل واحدة اسم مختلف — لا تكرار نفس الاسم. (ج) حقل gender إلزامي ويجب أن يطابق الاسم (male مع أحمد/خالد/عمر، female مع سارة/ليلى/نور). (د) كل شخصية يجب أن تحتوي على name وgender وcity وjob ورentalPreference — لا حقل فارغ. (هـ) اختر المدينة والوظيفة من مضمون المقابلة أو استنتجها منطقياً. قواعد رحلة المستخدم المطلقة (User Journey Matrix): (1) استخدم 4 إلى 6 مراحل متتابعة بأسماء مختلفة تماماً. حاول استخدام المجموعة المعتمدة: الوعي، الاستكشاف، المقارنة، التفاوض، الاختيار، التسليم. ممنوع تكرار نفس الكلمة في مرحلتين. (2) كل مرحلة يجب أن تحتوي على: actions (2-4 إجراءات)، goals (1-3 أهداف)، feelings (1-3 مشاعر مع sentiment)، pains (0-3 نقاط ألم)، opportunities (0-3 فرص تحسين). (3) كل عنصر في actions يبدأ بفعل مختلف عن بقية الرحلة. (4) كل feeling يجب أن يكون بصياغة مختلفة. (5) opportunities اكتبها كحلول عملية لـ Almosafer تعالج نقاط الألم. قواعد uxIssues المطلقة: (أ) كل مشكلة لها frequency (1-5) وseverity (1-5) كأرقام صحيحة فقط. (ب) severityCategory يجب أن يطابق severity بدقة: 5=Usability Catastrophe، 4=Major Problem، 3=Minor Problem، 2=Cosmetic Problem، 1=Observation. (ج) costToFix يجب أن تكون Low أو Medium أو High فقط. (د) قيم severityCategory وcostToFix تبقى بالإنجليزية (enum)، أما issue وdescription وrecommendation فبالعربية الخليجية. ممنوع أي شرح أو Markdown — JSON خام فقط.`;
+أنت محلل أبحاث UX محترف. حلل محادثة المقابلة بدقة وأخرج JSON صحيح فقط يطابق الهيكل المعطى تماماً. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة المسموح بها بالإنجليزية: "Almosafer"، وقيم sentiment (positive/neutral/negative)، وقيم impact وeffort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop)، وقيم gender (male/female). قواعد الشخصيات المطلقة: (أ) كل شخصية في هذا التحليل هي بالتعريف مستخدم تطبيق سفر — لذلك كلمات مثل "المستخدم" و"المسافر" و"الباحث" و"العميل" مرفوضة تماماً لأنها لا تميّز شخصية عن أخرى. الاسم يجب أن يكون اسم أول حقيقي محدد من القائمة التالية فقط: سارة، أحمد، ليلى، خالد، نور، فاطمة، محمد، عبدالله، عائشة، عمر، ريم، حسن، مايا، يوسف، هند، فيصل، هدى، تركي، مريم، سعود، دانة، رائد، ملاك، ماجد، سلمى. (ب) إذا كانت شخصيتان مختلفتين، يجب أن يكون لكل واحدة اسم مختلف — لا تكرار نفس الاسم. (ج) حقل gender إلزامي ويجب أن يطابق الاسم (male مع أحمد/خالد/عمر، female مع سارة/ليلى/نور). (د) كل شخصية يجب أن تحتوي على name وgender وcity وjob وbookingPreference — لا حقل فارغ. (هـ) اختر المدينة والوظيفة من مضمون المقابلة أو استنتجها منطقياً. قواعد رحلة المستخدم المطلقة (User Journey Matrix): (1) استخدم 4 إلى 6 مراحل متتابعة بأسماء مختلفة تماماً. حاول استخدام المجموعة المعتمدة: الوعي، الاستكشاف، المقارنة، التفاوض، الاختيار، التسليم. ممنوع تكرار نفس الكلمة في مرحلتين. (2) كل مرحلة يجب أن تحتوي على: actions (2-4 إجراءات)، goals (1-3 أهداف)، feelings (1-3 مشاعر مع sentiment)، pains (0-3 نقاط ألم)، opportunities (0-3 فرص تحسين). (3) كل عنصر في actions يبدأ بفعل مختلف عن بقية الرحلة. (4) كل feeling يجب أن يكون بصياغة مختلفة. (5) opportunities اكتبها كحلول عملية لـ Almosafer تعالج نقاط الألم. قواعد uxIssues المطلقة: (أ) كل مشكلة لها frequency (1-5) وseverity (1-5) كأرقام صحيحة فقط. (ب) severityCategory يجب أن يطابق severity بدقة: 5=Usability Catastrophe، 4=Major Problem، 3=Minor Problem، 2=Cosmetic Problem، 1=Observation. (ج) costToFix يجب أن تكون Low أو Medium أو High فقط. (د) قيم severityCategory وcostToFix تبقى بالإنجليزية (enum)، أما issue وdescription وrecommendation فبالعربية الخليجية. ممنوع أي شرح أو Markdown — JSON خام فقط.`;
 const _PROMPT_EN = `Respond ONLY in English. Do not use any Arabic words in text values — this is absolute and non-negotiable.
 
-You are a senior UX research analyst. Analyze the interview conversation thoroughly and output ONLY a valid JSON object matching the provided schema exactly. Language rule is absolute: every text value in the JSON must be in professional English only, with zero Arabic words or code-switching. ABSOLUTE persona rules: (a) Every persona in this analysis is BY DEFINITION a rental user — therefore labels like "User", "The User", "Rental User", "Rental Seeker", "Tenant", "Customer", "Participant", "Searcher" are FORBIDDEN because they do not distinguish one persona from another. \`name\` MUST be a specific real first name from this pool ONLY: Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, Dana, Raed, Malak, Majed, Salma. (b) If there are multiple personas, each MUST have a distinct name — never repeat. (c) \`gender\` is REQUIRED and MUST match the chosen name (male for Ahmed/Khalid/Omar, female for Sara/Layla/Noor, etc.). (d) Every persona MUST include name, gender, city, job, and rentalPreference — no empty field. (e) Pick city and job from interview content or infer logically. ABSOLUTE user-journey matrix rules: (1) Produce 4-6 sequential phases with DISTINCT names. Prefer the canonical set: Awareness, Explore, Compare, Negotiate, Select, Delivery. Never repeat the same key word across phases. (2) Each phase MUST include: actions (2-4 concrete actions), goals (1-3 goals/experiences), feelings (1-3 feeling objects with \`text\` + \`sentiment\`), pains (0-3 pain points), opportunities (0-3 improvement ideas for Almosafer). (3) Every action starts with a different verb from every other action in the whole journey. (4) Vary feeling wording across phases. (5) Write opportunities as concrete product improvements that address the pains. ABSOLUTE uxIssues rules: (a) Each issue has integer frequency (1-5) and integer severity (1-5). (b) severityCategory MUST match severity score exactly: 5=Usability Catastrophe, 4=Major Problem, 3=Minor Problem, 2=Cosmetic Problem, 1=Observation. (c) costToFix MUST be exactly 'Low', 'Medium', or 'High'. (d) severityCategory and costToFix stay in English as enum values; issue/description/recommendation are in the target content language. No explanations, no markdown — raw JSON only.`;
+You are a senior UX research analyst. Analyze the interview conversation thoroughly and output ONLY a valid JSON object matching the provided schema exactly. Language rule is absolute: every text value in the JSON must be in professional English only, with zero Arabic words or code-switching. ABSOLUTE persona rules: (a) Every persona in this analysis is BY DEFINITION a travel app user — therefore labels like "User", "The User", "Traveler", "Travel User", "Customer", "Participant", "Searcher" are FORBIDDEN because they do not distinguish one persona from another. \`name\` MUST be a specific real first name from this pool ONLY: Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, Dana, Raed, Malak, Majed, Salma. (b) If there are multiple personas, each MUST have a distinct name — never repeat. (c) \`gender\` is REQUIRED and MUST match the chosen name (male for Ahmed/Khalid/Omar, female for Sara/Layla/Noor, etc.). (d) Every persona MUST include name, gender, city, job, and bookingPreference — no empty field. (e) Pick city and job from interview content or infer logically. ABSOLUTE user-journey matrix rules: (1) Produce 4-6 sequential phases with DISTINCT names. Prefer the canonical set: Awareness, Explore, Compare, Negotiate, Select, Delivery. Never repeat the same key word across phases. (2) Each phase MUST include: actions (2-4 concrete actions), goals (1-3 goals/experiences), feelings (1-3 feeling objects with \`text\` + \`sentiment\`), pains (0-3 pain points), opportunities (0-3 improvement ideas for Almosafer). (3) Every action starts with a different verb from every other action in the whole journey. (4) Vary feeling wording across phases. (5) Write opportunities as concrete product improvements that address the pains. ABSOLUTE uxIssues rules: (a) Each issue has integer frequency (1-5) and integer severity (1-5). (b) severityCategory MUST match severity score exactly: 5=Usability Catastrophe, 4=Major Problem, 3=Minor Problem, 2=Cosmetic Problem, 1=Observation. (c) costToFix MUST be exactly 'Low', 'Medium', or 'High'. (d) severityCategory and costToFix stay in English as enum values; issue/description/recommendation are in the target content language. No explanations, no markdown — raw JSON only.`;
 
 function _buildAnalysisSys(lang) {
   const L = lang || S.lang || 'en';
@@ -2097,7 +2127,7 @@ function _buildAnalysisSchema() {
     quotes: ["verbatim participant quote 1","verbatim quote 2"],
     patterns: ["recurring behaviour or attitude 1","pattern 2","pattern 3"],
     recommendations: ["concrete actionable recommendation 1","recommendation 2","recommendation 3"],
-    personas: [{name:"REQUIRED specific human first name. CONTEXT: every persona here is already a rental user — labels like 'User' or 'Rental Seeker' are redundant and forbidden. Pick a specific real first name that DIFFERENTIATES this persona from others. Use ONLY names from this pool: Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, سارة, أحمد, ليلى, خالد, نور, فاطمة, محمد, عبدالله, عائشة, عمر, ريم, حسن, مايا, يوسف, هند, فيصل, هدى, تركي, مريم, سعود. NEVER output: 'User', 'The User', 'Rental User', 'Rental Seeker', 'Tenant', 'Participant', 'Customer', 'المستخدم', 'المستأجر', 'الباحث'",gender:"REQUIRED — must be exactly 'male' OR 'female' (English lowercase, enum value) — must match the chosen first name",age:"age range like 25-32",city:"REQUIRED Saudi city of residence like Riyadh, Jeddah, Dammam, الرياض, جدة, الدمام — never empty",job:"REQUIRED specific occupation like Marketing Manager, Teacher, Software Engineer, Nurse, Accountant, مهندس, معلمة, محاسب — never empty, never a generic label like 'Employee' or 'Worker'",emotion:"emotional state expressed during the interview like frustrated, anxious, hopeful, confident, قلقة, متفائل",rentalPreference:"REQUIRED — preferred rental channel: 'online' OR 'real-estate office' OR 'both' (translate to Arabic if needed)",goal:"main goal when searching for a rental",pain:"main pain point in the rental process",motivation:"key motivation behind their behavior"}],
+    personas: [{name:"REQUIRED specific human first name. CONTEXT: every persona here is already a travel app user — labels like 'User' or 'Traveler' are redundant and forbidden. Pick a specific real first name that DIFFERENTIATES this persona from others. Use ONLY names from this pool: Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, سارة, أحمد, ليلى, خالد, نور, فاطمة, محمد, عبدالله, عائشة, عمر, ريم, حسن, مايا, يوسف, هند, فيصل, هدى, تركي, مريم, سعود. NEVER output: 'User', 'The User', 'Traveler', 'Travel User', 'Participant', 'Customer', 'المستخدم', 'المسافر', 'الباحث'",gender:"REQUIRED — must be exactly 'male' OR 'female' (English lowercase, enum value) — must match the chosen first name",age:"age range like 25-32",city:"REQUIRED Saudi city of residence like Riyadh, Jeddah, Dammam, الرياض, جدة, الدمام — never empty",job:"REQUIRED specific occupation like Marketing Manager, Teacher, Software Engineer, Nurse, Accountant, مهندس, معلمة, محاسب — never empty, never a generic label like 'Employee' or 'Worker'",emotion:"emotional state expressed during the interview like frustrated, anxious, hopeful, confident, قلقة, متفائل",bookingPreference:"REQUIRED — preferred booking channel: 'online' OR 'travel agency' OR 'both' (translate to Arabic if needed)",goal:"main goal when booking travel",pain:"main pain point in the booking process",motivation:"key motivation behind their behavior"}],
     empathy: {thinks:["thought 1"],feels:["feeling 1"],says:["says 1"],does:["does 1"]},
     journey: [{phase:"Phase name — REQUIRED: each phase name MUST use a DIFFERENT key verb/noun. Use phases from this canonical set when applicable: Awareness, Explore, Compare, Negotiate, Select, Delivery (or Arabic equivalents: الوعي، الاستكشاف، المقارنة، التفاوض، الاختيار، التسليم). Never reuse the same significant word across phases.",actions:["REQUIRED 2-4 concrete actions the user takes in this phase — each action starts with a different verb, no repeated verbs across the whole journey"],goals:["REQUIRED 1-3 goals or experiences the user is trying to accomplish in this phase — vary wording across phases"],feelings:[{text:"feeling/thought in this phase — 3-8 words",sentiment:"positive|neutral|negative"}],pains:["0-3 pain points or frictions encountered in this phase — empty array if none"],opportunities:["0-3 opportunities to improve this phase — how might Almosafer solve the pain points? Empty array if none."]}],
     impactEffort: [{action:"action item",impact:"High|Medium|Low",effort:"High|Medium|Low",priority:"Do First|Schedule|Delegate|Drop"}],
@@ -2197,24 +2227,27 @@ function _isFakePersonaName(name) {
 
   // 1) Exact-match role labels
   const roleLabels = new Set([
-    'user','the user','rental user','primary user','rental seeker','seeker',
+    'user','the user','travel user','primary user','traveler','traveller','seeker',
     'tenant','property seeker','property searcher','searcher',
     'participant','interviewee','respondent','customer','client','renter',
-    'buyer','applicant','persona','persona name','a user','a tenant',
-    'the tenant','the renter',
+    'buyer','applicant','persona','persona name','a user','a traveler',
+    'the traveler','the traveller',
+    // legacy rental labels — kept to catch any stale GPT output
+    'rental user','rental seeker','the renter','a tenant','the tenant',
     'المستأجر','المستخدم','الباحث','مستخدم','باحث','باحثة',
     'مشارك','مشاركة','طالب عقار','طالب إيجار','العميل','عميل',
     'باحث عن إيجار','باحثة عن إيجار','شخصية','اسم الشخصية',
+    'المسافر','المسافرة','مسافر','مسافرة',
   ]);
   if (roleLabels.has(n)) return true;
 
-  // 2) Any name CONTAINING a role word is fake. E.g. "User seeking a rental property",
-  //    "Rental Seeker", "Property Searcher", "Tenant looking for apartment" all get caught.
-  //    Every persona is by definition a rental user — so these words never appear in a
+  // 2) Any name CONTAINING a role word is fake. E.g. "User booking a flight",
+  //    "Traveler", "Travel Seeker", "Customer looking for hotel" all get caught.
+  //    Every persona is by definition a travel app user — so these words never appear in a
   //    real first name anyway. Safe substring check.
-  const enRoleWords = /\b(user|users|tenant|tenants|renter|renters|seeker|seekers|seeking|searcher|searching|search|customer|customers|client|clients|participant|participants|applicant|applicants|interviewee|respondent|respondents|buyer|buyers|lessee|occupant|persona|personas|rental|rentals|property|properties|apartment|housing|accommodation)\b/i;
+  const enRoleWords = /\b(user|users|tenant|tenants|renter|renters|seeker|seekers|seeking|searcher|searching|search|customer|customers|client|clients|participant|participants|applicant|applicants|interviewee|respondent|respondents|buyer|buyers|traveler|travellers|traveller|lessee|occupant|persona|personas|rental|rentals|property|properties|apartment|housing|accommodation|travel|booking|flight|hotel)\b/i;
   if (enRoleWords.test(n)) return true;
-  const arRoleWords = /(مستخدم|مستأجر|مستاجر|باحث|باحثة|مشارك|مشاركة|عميل|طالب|شخصية|إيجار|ايجار|عقار|سكن|شقة|مستفيد)/;
+  const arRoleWords = /(مستخدم|مستأجر|مستاجر|مسافر|مسافرة|باحث|باحثة|مشارك|مشاركة|عميل|طالب|شخصية|إيجار|ايجار|عقار|سكن|شقة|مستفيد|حجز|سفر)/;
   if (arRoleWords.test(raw)) return true;
 
   // 3) Real first names are 1-3 words. Anything longer is a description, not a name.
@@ -2254,11 +2287,11 @@ async function _fixPersonaNames(personas, lang) {
   const namePoolEn = 'Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, Dana, Raed, Malak, Majed, Salma';
   const namePoolAr = 'سارة، أحمد، ليلى، خالد، نور، فاطمة، محمد، عبدالله، عائشة، عمر، ريم، حسن، مايا، يوسف، هند، فيصل، هدى، تركي، مريم، سعود، دانة، رائد، ملاك، ماجد، سلمى';
 
-  const sysAr = `أنت محرر شخصيات UX. قاعدة مطلقة: كل شخصية في هذا البيانات هي بالفعل مستخدم/مستأجر — لذلك كلمات مثل "المستخدم" أو "المستأجر" أو "الباحث" أو "طالب عقار" مرفوضة تماماً كأسماء لأنها لا تميّز شخصية عن أخرى. مهمتك: استبدل كل اسم غير حقيقي بأسم أول حقيقي من هذه القائمة فقط: ${namePoolAr}. يجب أن يطابق الاسم حقل gender (ذكر مع أحمد/خالد، أنثى مع سارة/ليلى). لا تكرر نفس الاسم لشخصيتين مختلفتين. احتفظ بكل الحقول الأخرى كما هي تماماً. أخرج JSON array فقط.`;
-  const sysEn = `You are a UX persona editor. ABSOLUTE rule: every persona in this data is already a user/renter — therefore words like "User", "The User", "Rental Seeker", "Tenant", "Participant", "Customer" are FORBIDDEN as names because they do not distinguish personas. Your task: replace any fake name with a specific real first name from this pool ONLY: ${namePoolEn}. The name MUST match the gender field (male for Ahmed/Khalid, female for Sara/Layla). Never repeat the same name for two different personas. Keep every other field exactly as-is. Output a JSON array only.`;
+  const sysAr = `أنت محرر شخصيات UX. قاعدة مطلقة: كل شخصية في هذا البيانات هي بالفعل مستخدم تطبيق سفر — لذلك كلمات مثل "المستخدم" أو "المسافر" أو "الباحث" أو "العميل" مرفوضة تماماً كأسماء لأنها لا تميّز شخصية عن أخرى. مهمتك: استبدل كل اسم غير حقيقي بأسم أول حقيقي من هذه القائمة فقط: ${namePoolAr}. يجب أن يطابق الاسم حقل gender (ذكر مع أحمد/خالد، أنثى مع سارة/ليلى). لا تكرر نفس الاسم لشخصيتين مختلفتين. احتفظ بكل الحقول الأخرى كما هي تماماً. أخرج JSON array فقط.`;
+  const sysEn = `You are a UX persona editor. ABSOLUTE rule: every persona in this data is already a travel app user — therefore words like "User", "The User", "Traveler", "Travel User", "Participant", "Customer" are FORBIDDEN as names because they do not distinguish personas. Your task: replace any fake name with a specific real first name from this pool ONLY: ${namePoolEn}. The name MUST match the gender field (male for Ahmed/Khalid, female for Sara/Layla). Never repeat the same name for two different personas. Keep every other field exactly as-is. Output a JSON array only.`;
 
-  const promptAr = `استبدل الأسماء الوهمية (مثل "المستأجر"، "المستخدم"، "Rental Seeker"، "User") بأسماء حقيقية من القائمة المحددة. احتفظ بكل الحقول الأخرى. أخرج JSON array فقط:\n${JSON.stringify(personas)}`;
-  const promptEn = `Replace fake names (like "Rental Seeker", "User", "Tenant", "المستأجر") with specific real names from the approved pool. Keep every other field. Output a JSON array only:\n${JSON.stringify(personas)}`;
+  const promptAr = `استبدل الأسماء الوهمية (مثل "المسافر"، "المستخدم"، "Traveler"، "User") بأسماء حقيقية من القائمة المحددة. احتفظ بكل الحقول الأخرى. أخرج JSON array فقط:\n${JSON.stringify(personas)}`;
+  const promptEn = `Replace fake names (like "Traveler", "User", "Travel User", "المسافر") with specific real names from the approved pool. Keep every other field. Output a JSON array only:\n${JSON.stringify(personas)}`;
 
   const runRepair = async (src) => {
     const raw = await callAI(
@@ -3929,7 +3962,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null, statsOver
         ${(p.city||'').trim()             ? `<div class="persona-row">${t('pCity')}: <span>${esc(p.city)}</span></div>` : ''}
         ${(p.job||'').trim()              ? `<div class="persona-row">${t('pJob')}: <span>${esc(p.job)}</span></div>` : ''}
         ${(p.emotion||'').trim()          ? `<div class="persona-row">${t('pEmotion')}: <span>${esc(p.emotion)}</span></div>` : ''}
-        ${(p.rentalPreference||'').trim() ? `<div class="persona-row">${t('pRentalPref')}: <span>${esc(p.rentalPreference)}</span></div>` : ''}
+        ${(p.bookingPreference||'').trim() ? `<div class="persona-row">${t('pRentalPref')}: <span>${esc(p.bookingPreference)}</span></div>` : ''}
         ${(p.goal||'').trim()             ? `<div class="persona-row">${t('pGoal')}: <span>${esc(p.goal)}</span></div>` : ''}
         ${(p.pain||'').trim()             ? `<div class="persona-row">${t('pPain')}: <span>${esc(p.pain)}</span></div>` : ''}
         ${(p.motivation||'').trim()       ? `<div class="persona-row">${t('pMotivation')}: <span>${esc(p.motivation)}</span></div>` : ''}
