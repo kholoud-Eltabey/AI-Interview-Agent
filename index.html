@@ -1293,6 +1293,10 @@ a:focus-visible,
 
         <!-- Actions -->
         <div class="border-t border-[var(--border)] mt-auto shrink-0">
+          <button class="w-full text-start px-4 py-2.5 text-[12px] text-app-text hover:bg-app-bg transition-colors" onclick="restart()" id="s-new-btn">New Interview</button>
+          <button class="w-full text-start px-4 py-2.5 text-[12px] text-app-text hover:bg-app-bg transition-colors" onclick="openContextEditor()" id="edit-ctx-btn"><span id="edit-ctx-btn-lbl">Edit Context</span></button>
+          <button class="w-full text-start px-4 py-2.5 text-[12px] text-app-text hover:bg-app-bg transition-colors" onclick="goHome()" id="s-home-btn">Home</button>
+          <div class="h-px bg-[var(--border)] mx-4"></div>
           <button class="w-full text-start px-4 py-2.5 text-[12px] text-danger hover:bg-app-bg transition-colors" onclick="if(confirm(S.lang==='ar'?'تسجيل الخروج؟':'Sign out?')){localStorage.removeItem('researcher_access');location.reload();}" id="spp-signout">Sign Out</button>
         </div>
 
@@ -1349,13 +1353,6 @@ a:focus-visible,
       <!-- Recent -->
       <div class="px-2 flex-1 overflow-y-auto" id="sb-recent"></div>
 
-      <!-- Sidebar action buttons — New Interview / Edit Context / Home -->
-      <div class="h-px bg-[var(--border)] mx-4 shrink-0"></div>
-      <div class="px-2 py-2 shrink-0 flex flex-wrap gap-1.5" id="sb-action-btns">
-        <button class="btn btn-s" onclick="restart()" id="s-new-btn">New Interview</button>
-        <button class="btn btn-s" onclick="openContextEditor()" id="edit-ctx-btn"><span id="edit-ctx-btn-lbl">Edit Context</span></button>
-        <button class="btn btn-s" onclick="goHome()" id="s-home-btn">Home</button>
-      </div>
 
     </nav>
 
