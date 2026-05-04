@@ -101,6 +101,9 @@ html { scroll-behavior: smooth; }
   --fs-body:  12px;   --fw-body:  400;  --lh-body:  1.6;
 }
 
+/* Arabic mode — prioritise Arabic typeface */
+[dir="rtl"] { --font: 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif; }
+
 /* Single font declaration for the whole product */
 *, *::before, *::after { font-family: var(--font); }
 body {
@@ -340,9 +343,9 @@ input[type="checkbox"] {
 .msg.ai  .av { background: var(--plight); color: var(--primary); }
 .msg.usr .av { background: var(--border); color: var(--muted); }
 .msg-inner { display: flex; flex-direction: column; gap: 3px; }
-.bbl { padding: 9px 13px; border-radius: 16px; line-height: 1.6; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
-.msg.ai  .bbl { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 3px; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
-.msg.usr .bbl { background: rgba(233,75,75,0.10); color: var(--text); border-top-right-radius: 3px; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+.bbl { padding: 9px 13px; border-radius: 16px; line-height: 1.6; font-size:12px; font-weight: 400; font-family: var(--font); }
+.msg.ai  .bbl { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 3px; font-size:12px; font-weight: 400; font-family: var(--font); }
+.msg.usr .bbl { background: rgba(233,75,75,0.10); color: var(--text); border-top-right-radius: 3px; font-size:12px; font-weight: 400; font-family: var(--font); }
 [data-theme="dark"] .msg.usr .bbl { background: rgba(233,75,75,0.18); color: var(--text); }
 .msg-t { font-size:12px; font-weight: 400; color: var(--muted); padding: 0 2px; }
 .msg.usr .msg-t { text-align: right; }
@@ -377,7 +380,7 @@ input[type="checkbox"] {
 .chat-ta {
   width: 100%; padding: 10px 68px 10px 14px; border: 1.5px solid var(--border);
   border-radius: var(--rsm); background: var(--bg); color: var(--text);
-  font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; resize: none; outline: none; box-sizing: border-box;
+  font-size:12px; font-weight: 400; font-family: var(--font); resize: none; outline: none; box-sizing: border-box;
   min-height: 44px; max-height: 140px; line-height: 1.5; transition: border-color var(--tr);
 }
 [dir="rtl"] .chat-ta { direction: rtl; text-align: right; padding-inline-start: 14px; padding-inline-end: 68px; }
@@ -616,7 +619,7 @@ a:focus-visible,
   font-size: var(--fs-body); font-weight: var(--fw-body); line-height: 1.75; color: var(--muted);
   white-space: pre-line; margin-bottom: 32px;
 }
-[dir="rtl"] .done-body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+
 .done-close {
   display: inline-block; margin: 0 auto;
   background: var(--surface); color: var(--muted);
@@ -835,7 +838,7 @@ a:focus-visible,
 .badge-completed,
 .badge-partial,
 .badge-early {
-  font-family: 'IBM Plex Sans','IBM Plex Sans Arabic',sans-serif;
+  font-family: var(--font);
   font-size: 12px; font-weight: 400;
   color: var(--text);
 }
@@ -3383,7 +3386,7 @@ function ivRowHtml(iv, fmt, expandable) {
       <div class="flex-1 min-w-0">
         <!-- Title row: name + date/time on one side, badge on the other -->
         <div class="flex items-center gap-2">
-          <span class="text-app-text shrink-0" style="font-size:12px;font-weight:500;font-family:'IBM Plex Sans','IBM Plex Sans Arabic',sans-serif;">${t('dbInterviewLabel')} ${num}</span>
+          <span class="text-app-text shrink-0" style="font-size:12px;font-weight:500;">${t('dbInterviewLabel')} ${num}</span>
           <span class="text-muted truncate" style="font-size:12px;font-weight:400;">${fmt(iv.date)}</span>
           <span class="ms-auto shrink-0">${badge}</span>
         </div>
