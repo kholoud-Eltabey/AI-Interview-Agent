@@ -21,18 +21,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Skoon Interview Agent** — an AI-powered user interview tool for Skoon, a Saudi rental property platform.
+**Almosafer Interview Agent** — an AI-powered user interview tool for Almosafer, a Saudi travel booking platform.
 
 | | |
 |---|---|
 | **Single file** | `index.html` — all HTML, CSS, and JS inline in one file |
 | **No tooling** | No build step, no framework, no package.json, no dependencies |
-| **AI model** | OpenAI GPT-4o — called directly from the browser |
+| **AI model** | OpenAI GPT-4o — proxied via Cloudflare Pages Function `/api/chat` (key never in browser) |
 | **Languages** | Gulf Arabic / English — switchable at any time |
 | **Run** | Open `index.html` directly in a browser, or `npx serve .` |
 
 **Other files:**
 - `_headers` — Cloudflare Pages cache-control headers (no-cache for `/` and `/index.html`)
+- `functions/api/chat.js` — Cloudflare Pages Function; holds `env.OPENAI_API_KEY` server-side; accepts optional `body.clientKey` fallback from browser; model chain `gpt-4o → gpt-4o-mini`
 
 ---
 
@@ -45,7 +46,7 @@ page-setup  →  page-chat  →  page-results  (researcher only)
 
 | Page | ID | Purpose |
 |------|----|---------|
-| Setup | `page-setup` | API key entry + interview config |
+| Setup | `page-setup` | Interview config (Goal, Audience, Questions) — pre-filled from `getCtx()` |
 | Chat | `page-chat` | Live interview conversation |
 | Results | `page-results` | Researcher dashboard — passcode protected |
 | Done | `page-done` | Thank-you screen for regular users |
@@ -84,7 +85,7 @@ const S = {
 
 | Key | Stores |
 |-----|--------|
-| `skoon_api_key` | OpenAI API key |
+| `skoon_api_key` | Client-side OpenAI API key override — only used when `env.OPENAI_API_KEY` is absent on the server |
 | `skoon_theme` | `light` / `dark` |
 | `skoon_lang` | `en` / `ar` |
 | `researcher_access` | `'true'` when passcode entered |
@@ -98,7 +99,7 @@ const S = {
 | `interview.businessName` | Business name for GPT prompts (overrides default `Skoon`) |
 | `interview.goal` | Interview goal — read by `getCtx('goal')` |
 | `interview.audience` | Target audience — read by `getCtx('audience')` |
-| `interview.prompt` | Custom analysis instructions appended to `_buildAnalysisSys()` |
+| `interview.prompt` | Full custom analysis system prompt — **replaces** the default `_PROMPT_EN`/`_PROMPT_AR` entirely when set; cleared if value equals the default |
 
 **Legacy keys still supported via `getCtx()` fallback:**
 - `skoon_goal` → falls back to `interview.goal`
@@ -125,7 +126,7 @@ function getCtx(field) { ... }
 
 `getCtx()` is the single source of truth for all dynamic interview context:
 - `startInterview()` calls `getCtx('goal')`, `getCtx('audience')`, `getCtx('businessName')`
-- `_buildAnalysisSys(lang)` appends `getCtx('prompt')` when set
+- `_buildAnalysisSys(lang)` uses `getCtx('prompt')` as the **entire** system prompt when set (not appended)
 - Setup prefill fields read from `getCtx()` on page load
 
 ---
@@ -152,7 +153,7 @@ function getCtx(field) { ... }
 ```
 
 - `saveInterview(analysis)` checks `S._iid` to prevent duplicates
-- `analyzeStoredInterview(id)` — re-runs GPT analysis on any stored interview and saves the result back
+- `analyzeStoredInterview(id, silent=false)` — re-runs GPT analysis on any stored interview and saves the result back; `silent=true` skips overlay and alerts (used by background queue)
 - `getInterviewNumber(id)` — returns sequential 1-based number (oldest = #1)
 - `_ivCache` — in-memory mirror of `skoon_interviews`; synced to localStorage on every write
 
@@ -179,12 +180,12 @@ function getCtx(field) { ... }
 | Tab | ID | Content |
 |-----|----|---------|
 | Overview | `db-pane-overview` | Greeting, stat cards (total/done/incomplete/rate), latest 5 interviews |
-| Interviews | `db-pane-interviews` | All interviews as expandable cards with tabs (Notes, Summary, Insights, Quotes, UX Issues) |
+| Interviews | `db-pane-interviews` | All interviews as expandable cards with tabs (Notes, Summary, Insights, Quotes, UX مشاكل) |
 | Analysis | `db-pane-analysis` | Full GPT analysis for selected interview (see §9) |
 | Cross Analysis | `db-pane-insights` | Analyze multiple/all completed interviews together |
 
 **Sidebar UI:**
-- Brand area: Skoon logo + lang/theme `ic-btn` icons (32×32px, 16×16px SVG)
+- Brand area: Almosafer logo + lang/theme `ic-btn` icons (32×32px, 16×16px SVG)
 - Profile row below brand → opens `sb-profile-panel` overlay
 - Nav items: `.sb-nav-item` — hover/active use `--plight` background + `--primary` color
 - Recent interviews: `.sb-rc-item` — name only + date only
@@ -201,8 +202,11 @@ function getCtx(field) { ... }
 concludeInterview()
     └── finishMsg() → page-done   (always — no live analysis shown to users)
 
-analyzeStoredInterview(id)        (researcher triggers manually from dashboard)
+analyzeStoredInterview(id, silent)   (researcher triggers manually, or background queue)
     └── GPT-4o → saves result back to localStorage → renderAnalysis()
+
+_autoAnalyzeAll()                 (called on dashboard open — background silent queue)
+    └── iterates all unanalyzed interviews → analyzeStoredInterview(id, true)
 ```
 
 **`renderResults(d)`** — smart routing:
@@ -284,13 +288,23 @@ Dark mode chips follow deep palette-family backgrounds.
 ## 13. CSS Variables & Design Tokens
 
 ```css
---primary: #0B5E57        /* teal */
---phover:  #094D47
---plight:  rgba(11,94,87,0.08)   /* active/selected bg */
---phlight: rgba(11,94,87,0.04)   /* hover bg (lighter) */
+--primary: #1AA5B7        /* teal */
+--phover:  #00465F
+--plight:  rgba(26,165,183,0.10)   /* active/selected bg — brand-100 */
+--phlight: rgba(26,165,183,0.05)   /* hover bg (lighter) */
+--cta:     #1AA5B7        /* light mode CTA background */
+--cta:     #003143        /* dark mode CTA background */
+--cta-hover: #00465F
+--stat-num: #1F2937       /* light mode — stat numbers */
+--stat-num: #FFFFFF       /* dark mode  — stat numbers */
 --bg, --surface, --border, --text, --muted, --accent
 
---danger: #9D7982   /* light mode — dusty rose (replaces red) */
+/* Dark mode layer depths */
+--bg:      #00162A        /* dark — main content area */
+--surface: #00121F        /* dark — cards/panels */
+/* Sidebar always: #000B14 (darkest) via [data-theme="dark"] #res-panel */
+
+--danger: #9D7982   /* light mode — dusty rose */
 --danger: #c8aaaf   /* dark mode */
 ```
 
@@ -309,22 +323,24 @@ Used for all semantic chips and status indicators — **no yellow, no blue, no r
 | Sage | `#DDE8E4` | Low chip, `.ie-lo` |
 | Pale mint | `#F9FAEA` | Early badge, `.badge-early` |
 
-### Botanical Palette (Journey Map phase headers only)
+### Teal Palette (Journey Map phase header columns)
 
-5-colour palette for `.jm-head-cell` phase title cells:
+6-colour teal progression for `.jm-col-N.jm-head-cell` phase title cells:
 
 | Col | Light bg | Dark bg |
 |-----|----------|---------|
-| 0 | `#E3DBD3` / text `#3a2e28` | `#322e2a` / text `#ede8e2` |
-| 1 | `#9CB2A5` / text `#1a3228` | `#1e2e26` / text `#c8ddd6` |
-| 2 | `#8BA4B3` / text `#162535` | `#1a2530` / text `#b8d0de` |
-| 3 | `#C8B7C9` / text `#3a1f42` | `#2a2030` / text `#dccee0` |
-| 4 | `#9D7982` / text `#fff`    | `#2e2028` / text `#e0c8cc` |
+| 0 | `#E6F4F6` / text `#003143` | `#001E2B` / text `#7EC9D4` |
+| 1 | `#C2E5EA` / text `#003143` | `#001B26` / text `#72C2CE` |
+| 2 | `#9AD4DC` / text `#003143` | `#001821` / text `#65BBC8` |
+| 3 | `#60BDC9` / text `#fff`    | `#00151D` / text `#58B4C2` |
+| 4 | `#1AA5B7` / text `#fff`    | `#001219` / text `#4BADB7` |
 | 5+ | repeats col 0 pattern | |
+
+**Journey section header is clickable** — `secHd()` registers it in `_raDetails` and clicking opens the `#sec-ov` panel overlay (same as Empathy Map). The matrix's `overflow-x: auto` on `.jm-wrap` handles wide tables inside the modal.
 
 **Journey note cards** (`.jm-note`): always `background: var(--surface)`, `border: 1px solid var(--border)` — no column colour.
 
-**Row labels** (`.jm-row-label`) and base head cells (`.jm-head-cell`): `background: #EAF3EE` (light mint). Dark: `rgba(26, 48, 40, 0.55)`.
+**Row labels** (`.jm-row-label`) and base head cells (`.jm-head-cell`): `background: rgba(0,49,67,0.06)`. Dark: `rgba(0,49,67,0.28–0.30)`.
 
 ### Progress bars — uniform `3px` height everywhere
 - Chat: `.prog-track { height: 3px }`
@@ -364,19 +380,20 @@ All badges: `min-width: 52px`, uniform size.
 
 ## 15. Interview Card Tabs — Language Enforcement
 
-Cards in the Interviews tab have 4 content panes: Summary, Insights, Quotes, UX Issues.
+Cards in the Interviews tab have 5 content panes: **Notes** (always first), Summary, Insights, Quotes, UX مشاكل.
 
 Each pane has two IDs:
 - Outer: `ivp-{id}-{tab}` — the tab pane container
 - Inner: `ivp-{id}-{tab}-body` — the content div (updated by `_updateCardContent`)
 
-**`toggleIvCard(ivId)`** is **async**. On expand, if `iv.analysisLang !== S.lang`:
-1. Shows "Translating…" placeholder in all 4 body divs
-2. Calls `_enforceAnalysisLang(iv.analysis, S.lang, true)` silently
-3. Saves translated analysis back to `_ivCache` + localStorage with `analysisLang` set
-4. Calls `_updateCardContent(ivId, analysis)` to replace placeholders
+**Cards always open on the Notes tab.** There are no auto-switches to Summary after analysis runs.
 
-**`_updateCardContent(ivId, analysis)`** — updates all 4 body divs from an analysis object without re-rendering the entire card.
+**`toggleIvCard(ivId)`** is **async**. On expand:
+1. Opens on Notes tab (always)
+2. If analysis is missing, silently calls `analyzeStoredInterview(ivId, true)` in background — stays on Notes tab while it runs
+3. If `iv.analysisLang !== S.lang`, shows "Translating…" placeholder in all body divs, calls `_enforceAnalysisLang(iv.analysis, S.lang, true)`, saves translated analysis back to `_ivCache` + localStorage, then calls `_updateCardContent(ivId, analysis)` to replace placeholders
+
+**`_updateCardContent(ivId, analysis)`** — updates all 5 body divs from an analysis object without re-rendering the entire card.
 
 ---
 
@@ -449,9 +466,18 @@ All GPT-4o system prompts enforce strict language consistency. **Never weaken th
 
 All analysis calls (`analyze()`, `analyzeStoredInterview()`, `_doCrossAnalysis()`) use `_buildAnalysisSys(lang)`:
 
-- **Arabic:** Opens with: *"استجب باللغة العربية الخليجية فقط في كل كلمة. ممنوع استخدام أي كلمة إنجليزية في القيم النصية — هذا شرط مطلق."*
-- **English:** Opens with: *"Respond ONLY in English. Do not use any Arabic words in text values — this is absolute and non-negotiable."*
-- If `getCtx('prompt')` is set, it is **appended** at the end as additional researcher instructions.
+**Default prompts** are stored in module-level template literal constants:
+- `_PROMPT_AR` — full Arabic Gulf analysis system prompt
+- `_PROMPT_EN` — full English analysis system prompt (contains escaped backticks for JSON field names)
+
+**Behavior:**
+- If `getCtx('prompt')` is set (non-empty), it is used as the **entire** system prompt — no wrapping, no appending. This is the researcher's full custom prompt.
+- Otherwise: falls back to `_PROMPT_AR` (when `lang === 'ar'`) or `_PROMPT_EN`
+
+**Never weaken the language enforcement headers** inside `_PROMPT_AR` / `_PROMPT_EN`.
+
+- **Arabic default opens with:** *"استجب باللغة العربية الخليجية فقط في كل كلمة. ممنوع استخدام أي كلمة إنجليزية في القيم النصية — هذا شرط مطلق."*
+- **English default opens with:** *"Respond ONLY in English. Do not use any Arabic words in text values — this is absolute and non-negotiable."*
 
 ### Post-generation translation — `_enforceAnalysisLang(data, targetLang, quiet)`
 - Called when a stored interview's `analysisLang` does not match `S.lang`
@@ -464,7 +490,64 @@ All analysis calls (`analyze()`, `analyzeStoredInterview()`, `_doCrossAnalysis()
 
 ---
 
-## 20. Key Functions Reference
+## 20. API / Cloudflare Worker Architecture
+
+All OpenAI calls go through the Cloudflare Pages Function at `/api/chat` — the key is **never** in the browser.
+
+**Key priority (in `functions/api/chat.js`):**
+1. `env.OPENAI_API_KEY` — set in the Cloudflare dashboard, server-side only
+2. `body.clientKey` — sent from browser when the researcher has stored a key in `skoon_api_key` localStorage
+
+The browser sends `clientKey` only when `skoon_api_key` is set in localStorage. The server uses the env key first and only falls back to `clientKey` when the env key is absent.
+
+**Model fallback chain:** `gpt-4o` → `gpt-4o-mini` (on 404 / 403 / `model_not_found` / timeout / network error).
+
+**`checkApiStatus()`** — probes `/api/chat` by sending `messages: []`:
+- Response `code === 'bad_request'` → connected (server reached OpenAI but rejected the empty array)
+- Response `code === 'config_missing'` → no key configured anywhere
+- Network error → unknown
+
+**Git push workaround** (if `140.82.121.4` is blocked):
+```
+git -c http.curloptResolve="github.com:443:20.201.28.151" push origin main
+```
+
+---
+
+## 21. Edit Context Modal
+
+Researcher-only modal opened via the "Edit Context" button in the dashboard sidebar.
+
+**Fields:**
+
+| Field | ID | Stored in |
+|-------|----|-----------|
+| Business Name | `cxe-biz` | `interview.businessName` |
+| Goal | `cxe-goal` | `interview.goal` |
+| Audience | `cxe-audience` | `interview.audience` |
+| Analysis Prompt | `cxe-prompt` | `interview.prompt` (cleared if equal to default) |
+| API Key | `cxe-api-key` | `skoon_api_key` |
+
+**Analysis Prompt rules:**
+- Always displayed in English, always `dir="ltr"` — forced in JS even in Arabic mode
+- Pre-filled with `getCtx('prompt') || _PROMPT_EN`
+- Saved only if the value differs from `_PROMPT_EN`; otherwise the localStorage key is removed (reverts to built-in default)
+- Label in English: `"Analysis Prompt"` / Arabic: `"موجّه التحليل"`
+
+**API section (`#cxe-key-section`):**
+- Section label: `"API إعدادات"` (both languages)
+- Field label: `"OpenAI API مفتاح"` (both languages)
+- Input: `type="password"`, eye toggle button (`toggleCxeKeyVis()`)
+- Buttons: `"حفظ المفتاح"` (`saveCxeKey()`) and `"حذف المفتاح"` (`deleteCxeKey()`) — with ✓ feedback on click
+- Helper text: `"يحفظ محليًا في متصفحك ولا يُرسل إلا إلى OpenAI."`
+- Connection status dot + label rendered below buttons by `_renderApiStatus()`
+
+**Scroll behaviour:**
+- Overlay selector `#context-editor-ov.show` has `align-items: flex-start; overflow-y: auto; padding: 28px 0` so tall content doesn't clip at viewport edges. Other overlays are unaffected.
+
+---
+
+## 22. Key Functions Reference
 
 | Function | Purpose |
 |----------|---------|
@@ -474,7 +557,8 @@ All analysis calls (`analyze()`, `analyzeStoredInterview()`, `_doCrossAnalysis()
 | `startInterview()` | Build system prompt, begin chat |
 | `concludeInterview()` | End session → always routes to page-done |
 | `analyze()` | GPT-4o analysis of current session |
-| `analyzeStoredInterview(id)` | GPT-4o analysis of any stored interview |
+| `analyzeStoredInterview(id, silent)` | GPT-4o analysis of any stored interview; `silent=true` skips overlays |
+| `_autoAnalyzeAll()` | Background queue — silently analyzes all unanalyzed stored interviews on dashboard open |
 | `renderResults(d)` | Navigate to results page, smart-route analysis |
 | `renderAnalysis(d, iv, targetId, rawIv)` | Render analysis content |
 | `renderOverview()` | Render dashboard Overview tab |
@@ -494,8 +578,16 @@ All analysis calls (`analyze()`, `analyzeStoredInterview()`, `_doCrossAnalysis()
 | `getAllInterviews()` | Read + number all interviews from localStorage |
 | `getInterviewNumber(id)` | Sequential 1-based number for an interview |
 | `getCtx(field)` | Read context with fallback chain (see §5) |
-| `_buildAnalysisSys(lang)` | Build analysis system prompt with language header + custom instructions |
+| `_buildAnalysisSys(lang)` | Build analysis system prompt — returns custom prompt if set, else `_PROMPT_AR`/`_PROMPT_EN` |
 | `_enforceAnalysisLang(data, lang, quiet)` | Post-generate translation of analysis JSON |
+| `openContextEditor()` | Open Edit Context modal (researcher only) — pre-fills all fields from `getCtx()` + localStorage |
+| `saveContext()` | Save Goal, Audience, Business Name, Analysis Prompt, API key from Edit Context modal |
+| `resetContext()` | Clear all `interview.*` + `skoon_api_key` keys; restore `_PROMPT_EN` in prompt field |
+| `saveCxeKey()` | Save API key from Edit Context key field to `skoon_api_key`; shows ✓ feedback; calls `checkApiStatus()` |
+| `deleteCxeKey()` | Remove `skoon_api_key`; clears input; calls `checkApiStatus()` |
+| `toggleCxeKeyVis()` | Toggle password/text visibility on the API key input in Edit Context |
+| `checkApiStatus()` | Probe `/api/chat` with empty messages; `bad_request` = connected, `config_missing` = not connected |
+| `_renderApiStatus(status)` | Update dot + label in Edit Context and Profile Panel based on connection result |
 | `scrollBtm()` | Scroll chat to bottom |
 | `toggleMic()` | Start/stop speech-to-text |
 | `buildSys()` | Build interview system prompt (AR/EN) |

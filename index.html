@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Skoon — AI Interview Agent</title>
+<title>Almosafer — AI Interview Agent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
@@ -49,16 +49,20 @@ tailwind.config = {
 <style>
 
 :root {
-  --bg:      #F7F7FA;
+  --bg:      #FFFFFF;
   --surface: #FFFFFF;
-  --border:  #ECECF2;
-  --text:    #2C2B3B;
+  --border:  #B8D5D9;
+  --text:    #333333;
+  --heading: #111111;
   --muted:   #6B7280;
-  --primary: #0B5E57;
-  --phover:  #094D47;
-  --plight:  rgba(11,94,87,0.08);
-  --phlight: rgba(11,94,87,0.04);
-  --accent:  #7C3AED;
+  --primary: #1AA5B7;
+  --phover:  #00465F;
+  --plight:  rgba(26,165,183,0.10);
+  --phlight: rgba(26,165,183,0.05);
+  --accent:  #3B82F6;
+  --cta:     #1AA5B7;
+  --cta-hover: #00465F;
+  --stat-num: #1F2937;
   --danger:  #9D7982;
   --sh:  0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04);
   --shlg: 0 12px 48px rgba(0,0,0,0.10);
@@ -68,17 +72,21 @@ tailwind.config = {
   --tr: 0.18s ease;
 }
 [data-theme="dark"] {
-  --bg:      #0F1414;
-  --surface: #121717;
-  --border:  #1F2A2A;
-  --text:    #E5E7EB;
-  --muted:   rgba(229,231,235,0.7);
-  --primary: #0F766E;
-  --phover:  #0D6560;
-  --plight:  rgba(15,118,110,0.12);
-  --phlight: rgba(15,118,110,0.06);
-  --accent:  #BC8CFF;
+  --bg:      #00162A;
+  --surface: #00121F;
+  --border:  #002240;
+  --text:    #FFFFFF;
+  --heading: #FFFFFF;
+  --muted:   rgba(229,231,235,0.6);
+  --primary: #1AA5B7;
+  --phover:  #00465F;
+  --plight:  rgba(26,165,183,0.15);
+  --phlight: rgba(26,165,183,0.07);
+  --accent:  #60A5FA;
   --danger:  #c8aaaf;
+  --cta:     #003143;
+  --cta-hover: #00465F;
+  --stat-num: #FFFFFF;
   --sh:  0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3);
   --shlg: 0 12px 48px rgba(0,0,0,0.6);
 }
@@ -89,7 +97,7 @@ html { scroll-behavior: smooth; }
 /* ── GLOBAL TYPOGRAPHY TOKENS ── */
 :root {
   --font: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif;
-  --fs-title: 14px;   --fw-title: 500;  --lh-title: 1.5;
+  --fs-title: 14px;   --fw-title: 400;  --lh-title: 1.5;
   --fs-body:  12px;   --fw-body:  400;  --lh-body:  1.6;
 }
 
@@ -135,19 +143,20 @@ button, input, textarea, select, table, th, td {
 
 .ic-btn {
   width: 32px; height: 32px; border-radius: 50%;
-  border: 1.5px solid var(--border); background: var(--surface);
-  color: var(--text); cursor: pointer;
+  border: 1.5px solid transparent; background: var(--plight);
+  color: var(--primary); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all var(--tr); font-size:14px; position: relative; flex-shrink: 0;
 }
-.ic-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--plight); }
-.ic-btn:focus { outline: none; border-color: var(--primary); color: var(--primary); background: var(--plight); box-shadow: 0 0 0 3px var(--plight); }
+.ic-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(26,165,183,0.18); }
+.ic-btn:focus { outline: none; border-color: var(--primary); color: var(--primary); background: rgba(26,165,183,0.18); box-shadow: 0 0 0 3px var(--plight); }
 
 /* Card */
 .card {
-  background: var(--surface); border: 1px solid var(--border);
+  background: var(--surface); border: 1px solid #1AA5B7;
   border-radius: var(--r); padding: 24px; box-shadow: var(--sh); margin-bottom: 14px;
 }
+[data-theme="dark"] .card { border-color: var(--border); }
 .card-lbl {
   font-size:12px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
   color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 7px;
@@ -166,7 +175,7 @@ button, input, textarea, select, table, th, td {
   font-family: inherit; outline: none;
   transition: border-color var(--tr), box-shadow var(--tr);
 }
-.inp:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--plight); }
+.inp:focus { border-color: #00465F; box-shadow: 0 0 0 3px rgba(0,70,95,0.15); }
 .inp::placeholder { color: var(--muted); }
 textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 /* Context fields locked for regular users — display-only panel look */
@@ -186,6 +195,10 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .inp[type="range"] {
   flex: 1; padding: 0; height: 5px; border: none; box-shadow: none; background: transparent;
   accent-color: var(--primary); cursor: pointer;
+}
+input[type="checkbox"] {
+  accent-color: #003143;
+  border-color: #D1D5DB;
 }
 .nq-count {
   font-size:12px; font-weight: 500; color: var(--primary);
@@ -218,15 +231,38 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
   cursor: pointer; border: none; font-family: inherit; white-space: nowrap;
   transition: all var(--tr);
 }
-.btn-p { background: var(--primary); color: #fff; width: 100%; }
-.btn-p:hover { background: var(--phover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(11,94,87,0.30); }
+.btn-p { background: var(--cta); color: #fff; width: 100%; }
+.btn-p:hover { background: var(--cta-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,165,183,0.35); }
 .btn-p:active { transform: none; }
 .btn-p:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 .btn-s {
-  background: var(--bg); color: var(--muted);
-  border: 1.5px solid var(--border); font-size:12px; font-weight: 400; padding: 7px 14px;
+  background: transparent; color: var(--primary);
+  border: 1.5px solid var(--primary); font-size:12px; font-weight: 400; padding: 7px 14px;
 }
-.btn-s:hover { border-color: var(--primary); color: var(--primary); }
+.btn-s:hover { background: var(--plight); color: var(--primary); border-color: var(--phover); }
+/* Analyze Selected button — neutral when disabled, primary when active */
+#ca-run-btn:not(:disabled) {
+  background: var(--cta) !important; color: #fff !important;
+  border-color: var(--cta) !important;
+}
+#ca-run-btn:not(:disabled):hover {
+  background: var(--cta-hover) !important; border-color: var(--cta-hover) !important;
+  box-shadow: 0 4px 16px rgba(26,165,183,0.35);
+}
+#s-new-btn, #edit-ctx-btn, #edit-ctx-btn-analysis, #s-home-btn {
+  background: var(--cta); color: #fff; border: none;
+  font-size: 12px; font-weight: 500;
+}
+#s-new-btn:hover, #s-new-btn:focus-visible,
+#edit-ctx-btn:hover, #edit-ctx-btn:focus-visible,
+#edit-ctx-btn-analysis:hover, #edit-ctx-btn-analysis:focus-visible,
+#s-home-btn:hover, #s-home-btn:focus-visible {
+  outline: none; background: var(--cta-hover) !important; color: #fff !important;
+  box-shadow: 0 4px 16px rgba(26,165,183,0.35) !important; transform: translateY(-1px);
+}
+#s-new-btn:active, #edit-ctx-btn:active, #edit-ctx-btn-analysis:active, #s-home-btn:active {
+  transform: none; box-shadow: none !important;
+}
 
 .start-err { font-size:12px; font-weight: 400; color: var(--danger); text-align: center; margin-bottom: 10px; display: none; }
 
@@ -242,12 +278,28 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .hdr-icons { display: flex; gap: 10px; margin-bottom: 8px; align-self: flex-end; }
 .tb-brand {
   display: inline-block; text-align: center;
-  font-size: 18px; font-weight: 600; letter-spacing: -0.3px;
-  color: var(--primary); line-height: 1;
+  font-size: 20px; font-weight: 600; letter-spacing: -0.3px;
+  color: #1F2937; line-height: 1;
   position: static; transform: none; transition: color var(--tr);
   cursor: pointer; user-select: none; padding: 6px 4px;
 }
-.tb-brand:hover { color: var(--phover); }
+[data-theme="dark"] .tb-brand { color: #FFFFFF; }
+.tb-brand:hover { color: #111111; }
+[data-theme="dark"] .tb-brand:hover { color: rgba(255,255,255,0.85); }
+.brand-m {
+  background: linear-gradient(90deg, #1AA5B7 50%, #EF4550 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.tb-brand .brand-accent, #sb-brand-name-el .brand-accent {
+  background: linear-gradient(90deg, #1AA5B7 50%, #EF4550 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+#sb-brand-name-el { color: #1F2937; }
+[data-theme="dark"] #sb-brand-name-el { color: #FFFFFF; }
 .hdr-sub  { display: block; width: 100%; text-align: center; font-size:13px; font-weight: 400; color: var(--muted); margin-top: 6px; }
 .tb-right { display: none; }
 
@@ -283,8 +335,8 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 .msg-inner { display: flex; flex-direction: column; gap: 3px; }
 .bbl { padding: 9px 13px; border-radius: 16px; line-height: 1.6; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
 .msg.ai  .bbl { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 3px; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
-.msg.usr .bbl { background: rgba(11,94,87,0.13); color: var(--text); border-top-right-radius: 3px; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
-[data-theme="dark"] .msg.usr .bbl { background: rgba(15,118,110,0.22); color: var(--text); }
+.msg.usr .bbl { background: rgba(233,75,75,0.10); color: var(--text); border-top-right-radius: 3px; font-size:12px; font-weight: 400; font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif; }
+[data-theme="dark"] .msg.usr .bbl { background: rgba(233,75,75,0.18); color: var(--text); }
 .msg-t { font-size:12px; font-weight: 400; color: var(--muted); padding: 0 2px; }
 .msg.usr .msg-t { text-align: right; }
 
@@ -360,26 +412,26 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 /* Sidebar nav items */
 .sb-nav-item { border: 1.5px solid transparent !important; transition: background var(--tr), color var(--tr), border-color var(--tr); }
 .sb-nav-item:hover {
-  background: #fff !important; color: #0B5E57 !important;
-  border-color: #0B5E57 !important;
+  background: transparent !important; color: #1AA5B7 !important;
+  border-color: #1AA5B7 !important;
 }
 .sb-nav-item:focus,
 .sb-nav-item:focus-visible {
-  outline: none !important; background: #fff !important; color: #0B5E57 !important;
-  border-color: #0B5E57 !important;
+  outline: none !important; background: transparent !important; color: #1AA5B7 !important;
+  border-color: #1AA5B7 !important;
 }
 .sb-nav-item.active {
-  background: rgba(11, 94, 87, 0.1) !important; color: #0B5E57 !important; font-weight: 500;
+  background: var(--plight) !important; color: var(--primary) !important; font-weight: 500;
   border-color: transparent !important;
 }
 [data-theme="dark"] .sb-nav-item:hover,
 [data-theme="dark"] .sb-nav-item:focus,
 [data-theme="dark"] .sb-nav-item:focus-visible {
-  background: var(--surface) !important; color: var(--primary) !important;
+  background: var(--plight) !important; color: var(--primary) !important;
   border-color: var(--primary) !important;
 }
 [data-theme="dark"] .sb-nav-item.active {
-  background: rgba(15, 118, 110, 0.12) !important; color: var(--primary) !important;
+  background: var(--plight) !important; color: var(--primary) !important;
   border-color: transparent !important;
 }
 
@@ -395,7 +447,7 @@ textarea.inp { resize: vertical; min-height: 72px; line-height: 1.55; }
 button:focus-visible,
 a:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid var(--primary) !important;
+  outline: 2px solid #00465F !important;
   outline-offset: 2px;
   background: var(--phlight) !important;
   color: var(--primary) !important;
@@ -404,9 +456,11 @@ a:focus-visible,
 
 /* Interview cards — hover, focus, active */
 .iv-card-row {
+  border-color: #1AA5B7 !important;
   transition: background var(--tr), border-color var(--tr);
   cursor: pointer;
 }
+[data-theme="dark"] .iv-card-row { border-color: rgba(255,255,255,0.07) !important; }
 .iv-card-row:hover,
 .iv-card-row:focus-visible {
   background: var(--phlight) !important;
@@ -419,16 +473,18 @@ a:focus-visible,
 }
 
 /* Sidebar recent items */
-.sb-rc-item { border-radius: var(--rxs); cursor: pointer; transition: background var(--tr), color var(--tr), border-color var(--tr); border: 1.5px solid transparent; position: relative; }
+.sb-rc-item { border-radius: var(--rxs); cursor: pointer; transition: background var(--tr), color var(--tr), border-color var(--tr); border: 1px solid transparent; background: #FFFFFF; color: #1F2937; position: relative; }
+[data-theme="dark"] .sb-rc-item { background: transparent; color: var(--text); }
 .iv-del-btn { opacity: 1; transition: color 0.15s, background 0.15s; background: transparent; border: none; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--muted); flex-shrink: 0; }
 .iv-del-btn:hover { color: var(--danger) !important; background: rgba(157,121,130,0.12); }
 [data-theme="dark"] .iv-del-btn:hover { background: rgba(200,170,175,0.12); }
 .sb-rc-item:hover,
-.sb-rc-item:focus-visible { outline: none; background: #fff; color: #0B5E57; border-color: #0B5E57; }
-.sb-rc-item.active { background: rgba(11, 94, 87, 0.1); color: #0B5E57; font-weight: 500; border-color: transparent; }
+.sb-rc-item:focus-visible { outline: none; background: #FFFFFF; color: #111111; border-color: #1AA5B7; }
+.sb-rc-item.active { background: var(--plight); color: var(--primary); font-weight: 500; border-color: var(--primary); }
 [data-theme="dark"] .sb-rc-item:hover,
-[data-theme="dark"] .sb-rc-item:focus-visible { background: var(--surface); color: var(--primary); border-color: var(--primary); }
-[data-theme="dark"] .sb-rc-item.active { background: rgba(15, 118, 110, 0.12); color: var(--primary); border-color: transparent; }
+[data-theme="dark"] .sb-rc-item:focus-visible { background: var(--plight); color: var(--primary); border-color: var(--primary); }
+[data-theme="dark"] .sb-rc-item.active { background: var(--plight); color: var(--primary); border-color: transparent; }
+[data-theme="dark"] #res-panel { background: #000B14 !important; }
 
 /* IV bullet prefix */
 .iv-bullet { padding-inline-start: 14px; position: relative; }
@@ -457,13 +513,14 @@ a:focus-visible,
 /* Accent-colored quotes border — border-inline-start auto-flips to right in RTL */
 .ra-quote { border-inline-start: 3px solid var(--primary); }
 
-.res-ttl { font-size:14px; font-weight: 500; letter-spacing: -0.2px; margin-bottom: 4px; }
+.res-ttl { font-size:14px; font-weight: 400; letter-spacing: -0.2px; color: var(--heading); margin-bottom: 4px; }
 .res-sub { font-size:12px; font-weight: 400; color: var(--muted); margin-bottom: 28px; }
 .grid2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 16px; }
-.rc      { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; box-shadow: var(--sh); }
+.rc      { background: var(--surface); border: 1px solid #1AA5B7; border-radius: var(--r); padding: 20px; box-shadow: var(--sh); }
+[data-theme="dark"] .rc { border-color: var(--border); }
 .rc-hd   { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
 .rc-ico  { width: 34px; height: 34px; border-radius: var(--rxs); display: flex; align-items: center; justify-content: center; font-size:14px; flex-shrink: 0; }
-.rc-ttl  { font-size:14px; font-weight: 500; }
+.rc-ttl  { font-size:14px; font-weight: 400; color: var(--heading); }
 .rc-items { display: flex; flex-direction: column; gap: 8px; }
 .ri      { display: flex; gap: 8px; font-size:12px; font-weight: 400; line-height: 1.65; }
 .rbul    { width: 5px; height: 5px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
@@ -487,10 +544,10 @@ a:focus-visible,
 .ci-r { background:#F5D7CD; color:#7a3a42; } [data-theme="dark"] .ci-r { background:#3d1e22; color:#f0c0c4; }
 .ci-b { background:#DDE8E4; color:#1a5a52; } [data-theme="dark"] .ci-b { background:#1a2e2a; color:#9ad0c4; }
 .ci-o { background:#FAF4E6; color:#8a6820; } [data-theme="dark"] .ci-o { background:#2e2a1a; color:#e4d4a0; }
-.ci-g { background:#EAF3EE; color:#0B5E57; } [data-theme="dark"] .ci-g { background:#1a3028; color:#7dccba; }
+.ci-g { background:#EAF3EE; color:#1a5a52; } [data-theme="dark"] .ci-g { background:#1a3028; color:#7dccba; }
 .ci-p { background:#F9FAEA; color:#5a5a6a; } [data-theme="dark"] .ci-p { background:#2a2a32; color:#c8c8d8; }
 .ci-y { background:#FAF4E6; color:#8a6820; } [data-theme="dark"] .ci-y { background:#2e2a1a; color:#e4d4a0; }
-.cb-r { background:#9D7982; } .cb-b { background:#0B5E57; }
+.cb-r { background:#9D7982; } .cb-b { background:#E94B4B; }
 .cb-o { background:#C8B7C9; } .cb-g { background:#9CB2A5; } .cb-p { background:#C6C5CA; }
 
 /* Overlay */
@@ -501,7 +558,7 @@ a:focus-visible,
 #context-editor-ov.show { align-items: flex-start; overflow-y: auto; padding: 28px 0; }
 .spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 18px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.ov-ttl { font-size:14px; font-weight: 500; margin-bottom: 4px; }
+.ov-ttl { font-size:14px; font-weight: 400; color: var(--heading); margin-bottom: 4px; }
 .ov-sub { font-size:12px; font-weight: 400; color: var(--muted); }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -609,12 +666,12 @@ a:focus-visible,
   cursor: pointer; gap: 8px; transition: color var(--tr);
 }
 .ra-sec-hd:hover .ra-sec-ttl { color: var(--primary); }
-.ra-sec-ttl { font-size:14px; font-weight: 500; color: var(--text); }
+.ra-sec-ttl { font-size:14px; font-weight: 400; color: var(--heading); }
 .ra-sec-chev { color: var(--muted); display: flex; align-items: center; flex-shrink: 0; transition: color var(--tr); }
 .ra-sec-hd:hover .ra-sec-chev { color: var(--primary); }
 
 /* rc-ttl override for analysis cards */
-#res-inner .rc-ttl { font-size:14px; font-weight: 500; }
+#res-inner .rc-ttl { font-size:14px; font-weight: 400; color: var(--heading); }
 
 /* Section detail overlay */
 .sec-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 180; align-items: center; justify-content: center; padding: 16px; }
@@ -648,14 +705,16 @@ a:focus-visible,
 
 /* Persona cards */
 .persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px; }
-.persona-card { border: 1px solid var(--border); border-radius: var(--r); padding: 18px; background: var(--bg); }
+.persona-card { border: 1px solid #1AA5B7; border-radius: var(--r); padding: 18px; background: var(--bg); }
+[data-theme="dark"] .persona-card { border-color: var(--border); }
 .persona-name { font-size:12px; font-weight: 500; color: var(--primary); margin-bottom: 10px; }
 .persona-row  { font-size:12px; color: var(--muted); line-height: 1.7; margin-bottom: 3px; }
 .persona-row span { color: var(--text); font-weight: 400; }
 
 /* Empathy map */
 .empathy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.empathy-cell { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rsm); padding: 15px 16px; }
+.empathy-cell { background: var(--bg); border: 1px solid #1AA5B7; border-radius: var(--rsm); padding: 15px 16px; }
+[data-theme="dark"] .empathy-cell { border-color: var(--border); }
 .empathy-lbl  { font-size:12px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
 .empathy-items { font-size:12px; line-height: 1.75; color: var(--text); }
 
@@ -671,7 +730,7 @@ a:focus-visible,
 }
 .jm-head-cell {
   padding: 12px 10px;
-  background: #EAF3EE;
+  background: rgba(0,49,67,0.06);
   border-inline-end: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   font-size: 12px; font-weight: 600;
@@ -680,16 +739,16 @@ a:focus-visible,
   letter-spacing: 0.3px;
   text-transform: uppercase;
 }
-[data-theme="dark"] .jm-head-cell { background: rgba(26, 48, 40, 0.55); }
+[data-theme="dark"] .jm-head-cell { background: rgba(0,49,67,0.30); }
 .jm-head-cell:last-child { border-inline-end: none; }
 .jm-row-label {
   padding: 14px 12px;
-  background: #EAF3EE;
+  background: rgba(0,49,67,0.06);
   border-inline-end: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   min-height: 92px;
 }
-[data-theme="dark"] .jm-row-label { background: rgba(26, 48, 40, 0.55); }
+[data-theme="dark"] .jm-row-label { background: rgba(0,49,67,0.28); }
 .jm-row-title {
   font-size: 13px; font-weight: 600; color: var(--text);
   margin-bottom: 6px;
@@ -718,20 +777,20 @@ a:focus-visible,
   border: 1px solid var(--border);
   word-break: break-word;
 }
-/* Phase title head cells — palette colours (العنوان only) */
-.jm-col-0.jm-head-cell { background: #E3DBD3; color: #3a2e28; }
-.jm-col-1.jm-head-cell { background: #9CB2A5; color: #1a3228; }
-.jm-col-2.jm-head-cell { background: #8BA4B3; color: #162535; }
-.jm-col-3.jm-head-cell { background: #C8B7C9; color: #3a1f42; }
-.jm-col-4.jm-head-cell { background: #9D7982; color: #fff;    }
-.jm-col-5.jm-head-cell { background: #E3DBD3; color: #3a2e28; }
-/* Dark mode — head cell reflections */
-[data-theme="dark"] .jm-col-0.jm-head-cell { background: #322e2a; color: #ede8e2; }
-[data-theme="dark"] .jm-col-1.jm-head-cell { background: #243028; color: #c0d1c8; }
-[data-theme="dark"] .jm-col-2.jm-head-cell { background: #202c36; color: #b2c5d1; }
-[data-theme="dark"] .jm-col-3.jm-head-cell { background: #2e2632; color: #dcc5de; }
-[data-theme="dark"] .jm-col-4.jm-head-cell { background: #2c2024; color: #c8aaaf; }
-[data-theme="dark"] .jm-col-5.jm-head-cell { background: #322e2a; color: #ede8e2; }
+/* Phase title head cells — Almosafer teal palette */
+.jm-col-0.jm-head-cell { background: #E6F4F6; color: #003143; }
+.jm-col-1.jm-head-cell { background: #C2E5EA; color: #003143; }
+.jm-col-2.jm-head-cell { background: #9AD4DC; color: #003143; }
+.jm-col-3.jm-head-cell { background: #60BDC9; color: #fff;    }
+.jm-col-4.jm-head-cell { background: #1AA5B7; color: #fff;    }
+.jm-col-5.jm-head-cell { background: #E6F4F6; color: #003143; }
+/* Dark mode — teal reflections */
+[data-theme="dark"] .jm-col-0.jm-head-cell { background: #001E2B; color: #7EC9D4; }
+[data-theme="dark"] .jm-col-1.jm-head-cell { background: #001B26; color: #72C2CE; }
+[data-theme="dark"] .jm-col-2.jm-head-cell { background: #001821; color: #65BBC8; }
+[data-theme="dark"] .jm-col-3.jm-head-cell { background: #00151D; color: #58B4C2; }
+[data-theme="dark"] .jm-col-4.jm-head-cell { background: #001219; color: #4BADB7; }
+[data-theme="dark"] .jm-col-5.jm-head-cell { background: #001E2B; color: #7EC9D4; }
 /* Feeling note variants keep column color but add emoji */
 .jm-feel { display: flex; align-items: flex-start; gap: 6px; }
 .jm-feel-emo { font-size: 14px; line-height: 1.2; }
@@ -747,9 +806,9 @@ a:focus-visible,
 .journey-action { font-size:12px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
 .journey-emotion { font-size:12px; font-weight: 400; color: var(--muted); line-height: 1.55; }
 .journey-sentiment { display: inline-block; margin-top: 9px; font-size:12px; font-weight: 400; padding: 3px 10px; border-radius: 8px; }
-.js-pos { background:#EAF3EE; color:#0B5E57; } [data-theme="dark"] .js-pos { background:#1a3028; color:#7dccba; }
+.js-pos { background:#E0F5F7; color:#003143; } [data-theme="dark"] .js-pos { background:rgba(26,165,183,0.20); color:#7EC9D4; }
 .js-neu { background:#FAF4E6; color:#8a6820; } [data-theme="dark"] .js-neu { background:#2e2a1a; color:#e4d4a0; }
-.js-neg { background:#F5D7CD; color:#7a3a42; } [data-theme="dark"] .js-neg { background:#3d1e22; color:#f0c0c4; }
+.js-neg { background:#FDEAEA; color:#9a2020; } [data-theme="dark"] .js-neg { background:rgba(232,69,69,0.22); color:#f0a0a0; }
 
 /* Impact vs Effort */
 .ie-table { width: 100%; border-collapse: collapse; font-size:12px; font-family: inherit; }
@@ -762,9 +821,9 @@ a:focus-visible,
 .ie-table td { padding: 12px 14px; border-bottom: 1px solid var(--primary); line-height: 1.55; vertical-align: middle; }
 .ie-table tr:last-child td { border-bottom: none; }
 .ie-chip { display: inline-block; font-size:12px; font-weight: 400; padding: 3px 10px; border-radius: 8px; white-space: nowrap; font-family: inherit; }
-.ie-hi { background:#F5D7CD; color:#7a3a42; } [data-theme="dark"] .ie-hi { background:#3d1e22; color:#f0c0c4; }
+.ie-hi { background:#FDEAEA; color:#9a2020; } [data-theme="dark"] .ie-hi { background:rgba(232,69,69,0.22); color:#f0a0a0; }
 .ie-md { background:#FAF4E6; color:#8a6820; } [data-theme="dark"] .ie-md { background:#2e2a1a; color:#e4d4a0; }
-.ie-lo { background:#DDE8E4; color:#1a5a52; } [data-theme="dark"] .ie-lo { background:#1a2e2a; color:#9ad0c4; }
+.ie-lo { background:#E0F5F7; color:#003143; } [data-theme="dark"] .ie-lo { background:rgba(26,165,183,0.20); color:#7EC9D4; }
 /* Status badges — soft background, dashboard text colour */
 .badge-completed,
 .badge-partial,
@@ -773,12 +832,12 @@ a:focus-visible,
   font-size: 12px; font-weight: 400;
   color: var(--text);
 }
-.badge-completed { background:#EAF3EE; }
-.badge-partial   { background:#F5D7CD; }
-.badge-early     { background:#F9FAEA; }
-[data-theme="dark"] .badge-completed { background:#1a3028; }
-[data-theme="dark"] .badge-partial   { background:#3d1e22; }
-[data-theme="dark"] .badge-early     { background:#2a2a32; }
+.badge-completed { background:#E0F5F7; }
+.badge-partial   { background:#FDEAEA; }
+.badge-early     { background:#EDF8FA; }
+[data-theme="dark"] .badge-completed { background:rgba(26,165,183,0.22); }
+[data-theme="dark"] .badge-partial   { background:rgba(232,69,69,0.22); }
+[data-theme="dark"] .badge-early     { background:rgba(26,165,183,0.10); }
 
 /* User Flow */
 .flow-steps { display: flex; flex-direction: column; gap: 0; }
@@ -966,7 +1025,7 @@ a:focus-visible,
       </div>
       <div class="prestart-row">
         <span class="prestart-bul">•</span>
-        <span class="prestart-row-txt" id="prestart-p3-lbl">Your answers help us make Skoon better for everyone</span>
+        <span class="prestart-row-txt" id="prestart-p3-lbl">Your answers help us make Almosafer better for everyone</span>
       </div>
       <div class="prestart-row">
         <span class="prestart-bul">•</span>
@@ -999,7 +1058,7 @@ a:focus-visible,
       <button class="ic-btn" onclick="toggleTheme()" title="Toggle theme"><span id="theme-icon-setup"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button>
     </div>
     <div class="tb-center">
-      <div class="tb-brand" onclick="onBrandClick()" title="Skoon">Skoon</div>
+      <div class="tb-brand" onclick="onBrandClick()" title="Almosafer">Alm<span class="brand-accent">o</span>safer</div>
       <div class="hdr-sub tagline-lbl">AI-Powered User Interview</div>
     </div>
   </div>
@@ -1011,7 +1070,7 @@ a:focus-visible,
 
       <div class="fg">
         <div class="fl"><span id="s-biz-lbl">Business Name</span></div>
-        <input class="inp" id="inp-biz" value="Skoon" readonly>
+        <input class="inp" id="inp-biz" value="Almosafer App" readonly>
       </div>
 
       <div class="fg">
@@ -1063,7 +1122,7 @@ a:focus-visible,
       <button class="ic-btn" onclick="toggleTheme()" title="Toggle theme"><span id="theme-icon-chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button>
     </div>
     <div class="tb-center">
-      <div class="tb-brand">Skoon</div>
+      <div class="tb-brand">Alm<span class="brand-accent">o</span>safer</div>
     </div>
     <div class="prog-row">
       <div class="prog-wrap">
@@ -1219,7 +1278,7 @@ a:focus-visible,
       <div class="px-4 pt-4 pb-2 shrink-0">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-primary" style="font-size:18px;font-weight:600;letter-spacing:-0.3px;" id="sb-brand-name-el">Skoon</div>
+            <div style="font-size:20px;font-weight:600;letter-spacing:-0.3px;" id="sb-brand-name-el">Alm<span class="brand-accent">o</span>safer</div>
             <div class="text-[12px] text-muted font-medium" id="sb-tag">Research Dashboard</div>
           </div>
           <!-- Small lang + theme icons -->
@@ -1364,12 +1423,12 @@ a:focus-visible,
 <script>
 // ─── VERSION ──────────────────────────────────────────────
 const APP_VERSION = 'SAME-SOURCE-001';
-console.log('%c APP_VERSION = ' + APP_VERSION + ' ', 'background:#0B5E57;color:#fff;font-weight:600;padding:2px 6px;border-radius:3px;');
+console.log('%c APP_VERSION = ' + APP_VERSION + ' ', 'background:#0B3C43;color:#fff;font-weight:600;padding:2px 6px;border-radius:3px;');
 
 // ─── STATE ────────────────────────────────────────────────
 const S = {
   lang: 'en', theme: 'light',
-  apiKey: '', numQ: 10, goal: '', audience: '', biz: 'Skoon',
+  apiKey: '', numQ: 10, goal: '', audience: '', biz: 'Almosafer App',
   msgs: [], mainAsked: 0, followUps: 0, maxFollowUps: 0,
   waitingForAnswer: false, done: false,
   isResearcher: localStorage.getItem('researcher_access') === 'true',
@@ -1383,8 +1442,8 @@ const TR = {
     bizLbl:    'Business Name',
     goalLbl:   'Interview Goal',
     audLbl:    'Target Audience',
-    goalPre:   'Understand user behavior while searching for rental property and how it influences their decision-making.',
-    audPre:    'People searching for rental property in Saudi Arabia who face difficulty comparing options and choosing the most suitable one.',
+    goalPre:   'Understand user behavior during the booking journey to identify usability issues and improve the overall experience.',
+    audPre:    'Saudi and GCC users who book travel online, including frequent travelers, families, and business travelers.',
     nqNote:    'This interview contains 10 questions.',
     apiLbl:    'API SETTINGS',
     keyLbl:    'OpenAI API Key',
@@ -1496,7 +1555,7 @@ const TR = {
     prestartSub: 'User Interview Powered by AI',
     prestartP1: 'This is a friendly conversation — about 15 minutes',
     prestartP2: 'No right or wrong answers — just be yourself',
-    prestartP3: 'Your answers help us make Skoon better for everyone',
+    prestartP3: 'Your answers help us make Almosafer better for everyone',
     prestartP4: 'You can stop at any time',
     prestartBtn: 'Start Interview',
     prestartBack: '← Back',
@@ -1509,8 +1568,8 @@ const TR = {
     bizLbl:    'اسم المنتج',
     goalLbl:   'هدف المقابلة',
     audLbl:    'الجمهور المستهدف',
-    goalPre:   'فهم سلوك المستخدم أثناء البحث عن عقار للإيجار وتأثير ذلك على قراراته',
-    audPre:    'أشخاص يبحثون عن عقارات للإيجار في السعودية ويواجهون صعوبة في مقارنة الخيارات واختيار الأنسب',
+    goalPre:   'فهم سلوك المستخدم خلال رحلة الحجز لتحديد مشكلات الاستخدام وتحسين التجربة الكلية',
+    audPre:    'مستخدمون من السعودية ودول الخليج يحجزون السفر عبر الإنترنت، بما يشمل المسافرين المتكررين والعائلات ورجال الأعمال',
     nqNote:    'تحتوي هذه المقابلة على 10 أسئلة.',
     apiLbl:    'إعدادات API',
     keyLbl:    'مفتاح OpenAI API',
@@ -1595,7 +1654,7 @@ const TR = {
     dbAiInsights: 'استنتاجات مولّدة بالذكاء الاصطناعي', dbCrossDesc: 'اختر مقابلات لتحليلها معاً',
     dbTotal: 'المجموع', dbCompleted: 'مكتملة', dbIncomplete: 'غير مكتملة', dbRate: 'نسبة الإكمال',
     dbLatest: 'آخر المقابلات', dbRecent: 'الأخيرة', dbDeleteConfirm: 'حذف هذه المقابلة؟ لا يمكن التراجع عن هذا.',
-    dbNotes: 'ملاحظات', dbSummary: 'ملخص', dbInsightsTab: 'استنتاجات', dbQuotes: 'اقتباسات', dbUxIssues: 'UX مشاكل',
+    dbNotes: 'ملاحظات', dbSummary: 'ملخص', dbInsightsTab: 'استنتاجات', dbQuotes: 'اقتباسات', dbUxIssues: 'مشاكل تجربة المستخدم',
     dbNoData: 'لا توجد مقابلات بعد', dbNoAnalysis: 'لا يوجد تحليل — المقابلة لم تُحلَّل بعد',
     dbSelectHint: 'اختر مقابلات أدناه لتشغيل التحليل المقارن',
     dbAnalyzeBtn: 'تحليل المختارة', dbSelCount: (n) => `${n} مقابلة مختارة`,
@@ -1622,7 +1681,7 @@ const TR = {
     prestartSub: 'مقابلة مستخدم مدعومة بالذكاء الاصطناعي',
     prestartP1: 'هي محادثة ودية — تقريباً 15 دقيقة',
     prestartP2: 'ما في إجابة صح أو غلط، شارك اللي يجيك طبيعي',
-    prestartP3: 'إجاباتك تساعدنا نطوّر Skoon لي أحسن للجميع',
+    prestartP3: 'إجاباتك تساعدنا نطوّر Almosafer لي أحسن للجميع',
     prestartP4: 'تقدر توقف في أي وقت تبي',
     prestartBtn: 'ابدأ المقابلة',
     prestartBack: 'رجوع →',
@@ -1712,6 +1771,14 @@ function renderTR() {
   const nameInp = document.getElementById('prestart-name-inp');
   if (nameInp && !nameInp.value && savedName) nameInp.value = savedName;
 
+  // Logo text: Arabic → المسافر (م = gradient), English → Almosafer (o = split)
+  const _brandHtml = S.lang === 'ar'
+    ? 'ال<span class="brand-m">م</span>سافر'
+    : 'Alm<span class="brand-accent">o</span>safer';
+  document.querySelectorAll('.tb-brand').forEach(el => el.innerHTML = _brandHtml);
+  const _sbBrand = document.getElementById('sb-brand-name-el');
+  if (_sbBrand) _sbBrand.innerHTML = _brandHtml;
+
   document.querySelectorAll('.tagline-lbl').forEach(el => el.textContent = t('tagline'));
   // API status cards (setup page + Edit Context modal)
   const _apiSub = S.lang === 'ar' ? 'مدعوم بـ OpenAI GPT-4o' : 'Powered by OpenAI GPT-4o';
@@ -1793,7 +1860,7 @@ async function startInterview() {
   S.numQ     = 10;
   S.goal     = document.getElementById('inp-goal').value.trim() || getCtx('goal');
   S.audience = document.getElementById('inp-aud').value.trim()  || getCtx('audience');
-  S.biz      = getCtx('businessName') || 'Skoon';
+  S.biz      = getCtx('businessName') || 'Almosafer App';
 
   S.msgs = []; S.mainAsked = 0; S.followUps = 0;
   S.waitingForAnswer = false; S.done = false;
@@ -1813,10 +1880,10 @@ async function startInterview() {
 // ─── SYSTEM PROMPT ────────────────────────────────────────
 function buildSys() {
   const ar = S.lang === 'ar';
-  if (ar) return `أنت باحث UX محترف تجري مقابلة بحثية مع شخص عن تجربته في البحث عن عقار للإيجار في السعودية.
+  if (ar) return `أنت باحث UX محترف تجري مقابلة بحثية مع شخص عن تجربته في حجز السفر (طيران أو فنادق أو رحلات) عبر الإنترنت.
 
 قاعدة اللغة — مطلقة وغير قابلة للنقض:
-استجب بالعربية الخليجية فقط في كل رسالة بدون استثناء. ممنوع أي كلمة إنجليزية أو عبارة أجنبية في ردودك عدا اسم "Skoon" فقط. إذا رد المستخدم بالإنجليزية، واصل بالعربية الخليجية.
+استجب بالعربية الخليجية فقط في كل رسالة بدون استثناء. ممنوع أي كلمة إنجليزية أو عبارة أجنبية في ردودك عدا اسم "Almosafer" فقط. إذا رد المستخدم بالإنجليزية، واصل بالعربية الخليجية.
 
 سياق المقابلة:
 - الموضوع: ${S.goal}
@@ -1824,18 +1891,18 @@ function buildSys() {
 - عدد الأسئلة: ${S.numQ}
 
 المحاور التي تريد استكشافها — اطرحها بشكل طبيعي حسب سياق المحادثة:
-1. كيف يبحث حالياً عن عقار — وين يدور وش يستخدم
-2. أكثر شيء يضايقه في تجربة البحث
-3. كيف يقارن الخيارات ويتخذ قراره
-4. وش الذي يخليه يقرر يتواصل أو يأجر
-5. مدى ثقته في الصور والأوصاف على الإنترنت
-6. تجربته في التواصل مع الملاك أو الوسطاء
-7. لو بيده يغير شيء في التجربة — وش كان يغير
-8. كيف يحس أثناء رحلة البحث — هادي أو متوتر أو محتار
+1. آخر تجربة حجز سفر — طيران أو فندق أو رحلة
+2. مدى سهولة البحث وإيجاد ما يريده
+3. هل استخدم الفلاتر أو المقارنة بين الخيارات
+4. كيف قارن الأسعار والخيارات وتوصّل لقراره
+5. مدى وضوح الأسعار والمعلومات وثقته بها
+6. مستوى اطمئنانه قبل إتمام الحجز
+7. مدى سلاسة عملية الدفع والإنهاء
+8. أكثر شيء أحبطه وما الذي يتمنى تحسينه
 
 قواعد المقابلة:
 - عربية خليجية طبيعية دافئة مناسبة للسعودية والخليج — لا مصرية ولا فصحى رسمية.
-- اسم "Skoon" بالإنجليزية دائماً ولا يُترجم أبداً.
+- اسم "Almosafer" بالإنجليزية دائماً ولا يُترجم أبداً.
 - سؤال واحد فقط في كل رسالة — ممنوع تجمع أسئلة.
 - أسئلة مفتوحة فقط — لا نعم/لا.
 - جملة قصيرة لا تتجاوز 12 كلمة.
@@ -1845,10 +1912,10 @@ function buildSys() {
 - ابدأ كل سؤال من الثاني بعبارة قصيرة طبيعية (1-3 كلمات) مثل: "آه واضح،" أو "طيب،" أو "فاهم،" أو "ما شاء الله،" — غيّر العبارة في كل مرة.
 - لا مديح مطوّل — فقط العبارة القصيرة ثم سؤالك مباشرة.`;
 
-  return `You are a professional UX researcher conducting a research interview about someone's personal experience searching for a rental property in Saudi Arabia.
+  return `You are a professional UX researcher conducting a research interview about someone's personal experience booking travel (flights, hotels, or trips) online.
 
 Language rule — absolute, no exceptions:
-Respond in English ONLY in every single message. Never switch to Arabic or any other language, even if the participant writes in Arabic. Every word you produce must be English, except the product name "Skoon" which stays as-is.
+Respond in English ONLY in every single message. Never switch to Arabic or any other language, even if the participant writes in Arabic. Every word you produce must be English, except the product name "Almosafer" which stays as-is.
 
 Interview context:
 - Topic: ${S.goal}
@@ -1856,17 +1923,17 @@ Interview context:
 - Number of questions: ${S.numQ}
 
 Areas to explore naturally as the conversation unfolds:
-1. How they currently search for a rental — where they look and what they use
-2. What frustrates them most during the search process
-3. How they compare options and arrive at a decision
-4. What triggers them to reach out or commit to a place
-5. How much they trust photos and descriptions they find online
-6. Their experience communicating with landlords or agents
-7. What they would change about the overall experience if they could
-8. How they feel emotionally throughout the search — calm, stressed, overwhelmed?
+1. Their last travel booking experience — flight, hotel, or trip
+2. How easy or hard it was to search and find what they needed
+3. Whether they used filters, sorting, or comparisons between options
+4. How they compared prices and options and arrived at a decision
+5. Whether pricing and information were clear and trustworthy
+6. How confident they felt before completing the booking
+7. How smooth the checkout and payment process was
+8. What frustrated them most and what they would improve
 
 Interview rules:
-- English ONLY — every word. Product name is always "Skoon", never translated.
+- English ONLY — every word. Product name is always "Almosafer", never translated.
 - ONE question per message — never stack two questions together.
 - Open-ended questions only — no yes/no, no closed questions.
 - One short sentence per question, under 15 words.
@@ -1976,10 +2043,10 @@ async function callAI(messages, temp = 0.85, maxTok = 700) {
 // _buildAnalysisSys() uses these when no custom prompt is saved.
 const _PROMPT_AR = `استجب باللغة العربية الخليجية فقط في كل كلمة. ممنوع استخدام أي كلمة إنجليزية في القيم النصية — هذا شرط مطلق.
 
-أنت محلل أبحاث UX محترف. حلل محادثة المقابلة بدقة وأخرج JSON صحيح فقط يطابق الهيكل المعطى تماماً. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة المسموح بها بالإنجليزية: "Skoon"، وقيم sentiment (positive/neutral/negative)، وقيم impact وeffort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop)، وقيم gender (male/female). قواعد الشخصيات المطلقة: (أ) كل شخصية في هذا التحليل هي بالتعريف مستخدم/مستأجر — لذلك كلمات مثل "المستخدم" و"المستأجر" و"الباحث" و"طالب عقار" مرفوضة تماماً لأنها لا تميّز شخصية عن أخرى. الاسم يجب أن يكون اسم أول حقيقي محدد من القائمة التالية فقط: سارة، أحمد، ليلى، خالد، نور، فاطمة، محمد، عبدالله، عائشة، عمر، ريم، حسن، مايا، يوسف، هند، فيصل، هدى، تركي، مريم، سعود، دانة، رائد، ملاك، ماجد، سلمى. (ب) إذا كانت شخصيتان مختلفتين، يجب أن يكون لكل واحدة اسم مختلف — لا تكرار نفس الاسم. (ج) حقل gender إلزامي ويجب أن يطابق الاسم (male مع أحمد/خالد/عمر، female مع سارة/ليلى/نور). (د) كل شخصية يجب أن تحتوي على name وgender وcity وjob ورentalPreference — لا حقل فارغ. (هـ) اختر المدينة والوظيفة من مضمون المقابلة أو استنتجها منطقياً. قواعد رحلة المستخدم المطلقة (User Journey Matrix): (1) استخدم 4 إلى 6 مراحل متتابعة بأسماء مختلفة تماماً. حاول استخدام المجموعة المعتمدة: الوعي، الاستكشاف، المقارنة، التفاوض، الاختيار، التسليم. ممنوع تكرار نفس الكلمة في مرحلتين. (2) كل مرحلة يجب أن تحتوي على: actions (2-4 إجراءات)، goals (1-3 أهداف)، feelings (1-3 مشاعر مع sentiment)، pains (0-3 نقاط ألم)، opportunities (0-3 فرص تحسين). (3) كل عنصر في actions يبدأ بفعل مختلف عن بقية الرحلة. (4) كل feeling يجب أن يكون بصياغة مختلفة. (5) opportunities اكتبها كحلول عملية لـ Skoon تعالج نقاط الألم. قواعد uxIssues المطلقة: (أ) كل مشكلة لها frequency (1-5) وseverity (1-5) كأرقام صحيحة فقط. (ب) severityCategory يجب أن يطابق severity بدقة: 5=Usability Catastrophe، 4=Major Problem، 3=Minor Problem، 2=Cosmetic Problem، 1=Observation. (ج) costToFix يجب أن تكون Low أو Medium أو High فقط. (د) قيم severityCategory وcostToFix تبقى بالإنجليزية (enum)، أما issue وdescription وrecommendation فبالعربية الخليجية. ممنوع أي شرح أو Markdown — JSON خام فقط.`;
+أنت محلل أبحاث UX محترف. حلل محادثة المقابلة بدقة وأخرج JSON صحيح فقط يطابق الهيكل المعطى تماماً. قاعدة اللغة مطلقة: كل قيمة نصية في الـ JSON يجب أن تكون بالعربية الخليجية الطبيعية فقط، بدون أي كلمة إنجليزية أو خلط لغوي. الاستثناءات الوحيدة المسموح بها بالإنجليزية: "Almosafer"، وقيم sentiment (positive/neutral/negative)، وقيم impact وeffort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop)، وقيم gender (male/female). قواعد الشخصيات المطلقة: (أ) كل شخصية في هذا التحليل هي بالتعريف مستخدم/مستأجر — لذلك كلمات مثل "المستخدم" و"المستأجر" و"الباحث" و"طالب عقار" مرفوضة تماماً لأنها لا تميّز شخصية عن أخرى. الاسم يجب أن يكون اسم أول حقيقي محدد من القائمة التالية فقط: سارة، أحمد، ليلى، خالد، نور، فاطمة، محمد، عبدالله، عائشة، عمر، ريم، حسن، مايا، يوسف، هند، فيصل، هدى، تركي، مريم، سعود، دانة، رائد، ملاك، ماجد، سلمى. (ب) إذا كانت شخصيتان مختلفتين، يجب أن يكون لكل واحدة اسم مختلف — لا تكرار نفس الاسم. (ج) حقل gender إلزامي ويجب أن يطابق الاسم (male مع أحمد/خالد/عمر، female مع سارة/ليلى/نور). (د) كل شخصية يجب أن تحتوي على name وgender وcity وjob ورentalPreference — لا حقل فارغ. (هـ) اختر المدينة والوظيفة من مضمون المقابلة أو استنتجها منطقياً. قواعد رحلة المستخدم المطلقة (User Journey Matrix): (1) استخدم 4 إلى 6 مراحل متتابعة بأسماء مختلفة تماماً. حاول استخدام المجموعة المعتمدة: الوعي، الاستكشاف، المقارنة، التفاوض، الاختيار، التسليم. ممنوع تكرار نفس الكلمة في مرحلتين. (2) كل مرحلة يجب أن تحتوي على: actions (2-4 إجراءات)، goals (1-3 أهداف)، feelings (1-3 مشاعر مع sentiment)، pains (0-3 نقاط ألم)، opportunities (0-3 فرص تحسين). (3) كل عنصر في actions يبدأ بفعل مختلف عن بقية الرحلة. (4) كل feeling يجب أن يكون بصياغة مختلفة. (5) opportunities اكتبها كحلول عملية لـ Almosafer تعالج نقاط الألم. قواعد uxIssues المطلقة: (أ) كل مشكلة لها frequency (1-5) وseverity (1-5) كأرقام صحيحة فقط. (ب) severityCategory يجب أن يطابق severity بدقة: 5=Usability Catastrophe، 4=Major Problem، 3=Minor Problem، 2=Cosmetic Problem، 1=Observation. (ج) costToFix يجب أن تكون Low أو Medium أو High فقط. (د) قيم severityCategory وcostToFix تبقى بالإنجليزية (enum)، أما issue وdescription وrecommendation فبالعربية الخليجية. ممنوع أي شرح أو Markdown — JSON خام فقط.`;
 const _PROMPT_EN = `Respond ONLY in English. Do not use any Arabic words in text values — this is absolute and non-negotiable.
 
-You are a senior UX research analyst. Analyze the interview conversation thoroughly and output ONLY a valid JSON object matching the provided schema exactly. Language rule is absolute: every text value in the JSON must be in professional English only, with zero Arabic words or code-switching. ABSOLUTE persona rules: (a) Every persona in this analysis is BY DEFINITION a rental user — therefore labels like "User", "The User", "Rental User", "Rental Seeker", "Tenant", "Customer", "Participant", "Searcher" are FORBIDDEN because they do not distinguish one persona from another. \`name\` MUST be a specific real first name from this pool ONLY: Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, Dana, Raed, Malak, Majed, Salma. (b) If there are multiple personas, each MUST have a distinct name — never repeat. (c) \`gender\` is REQUIRED and MUST match the chosen name (male for Ahmed/Khalid/Omar, female for Sara/Layla/Noor, etc.). (d) Every persona MUST include name, gender, city, job, and rentalPreference — no empty field. (e) Pick city and job from interview content or infer logically. ABSOLUTE user-journey matrix rules: (1) Produce 4-6 sequential phases with DISTINCT names. Prefer the canonical set: Awareness, Explore, Compare, Negotiate, Select, Delivery. Never repeat the same key word across phases. (2) Each phase MUST include: actions (2-4 concrete actions), goals (1-3 goals/experiences), feelings (1-3 feeling objects with \`text\` + \`sentiment\`), pains (0-3 pain points), opportunities (0-3 improvement ideas for Skoon). (3) Every action starts with a different verb from every other action in the whole journey. (4) Vary feeling wording across phases. (5) Write opportunities as concrete product improvements that address the pains. ABSOLUTE uxIssues rules: (a) Each issue has integer frequency (1-5) and integer severity (1-5). (b) severityCategory MUST match severity score exactly: 5=Usability Catastrophe, 4=Major Problem, 3=Minor Problem, 2=Cosmetic Problem, 1=Observation. (c) costToFix MUST be exactly 'Low', 'Medium', or 'High'. (d) severityCategory and costToFix stay in English as enum values; issue/description/recommendation are in the target content language. No explanations, no markdown — raw JSON only.`;
+You are a senior UX research analyst. Analyze the interview conversation thoroughly and output ONLY a valid JSON object matching the provided schema exactly. Language rule is absolute: every text value in the JSON must be in professional English only, with zero Arabic words or code-switching. ABSOLUTE persona rules: (a) Every persona in this analysis is BY DEFINITION a rental user — therefore labels like "User", "The User", "Rental User", "Rental Seeker", "Tenant", "Customer", "Participant", "Searcher" are FORBIDDEN because they do not distinguish one persona from another. \`name\` MUST be a specific real first name from this pool ONLY: Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, Dana, Raed, Malak, Majed, Salma. (b) If there are multiple personas, each MUST have a distinct name — never repeat. (c) \`gender\` is REQUIRED and MUST match the chosen name (male for Ahmed/Khalid/Omar, female for Sara/Layla/Noor, etc.). (d) Every persona MUST include name, gender, city, job, and rentalPreference — no empty field. (e) Pick city and job from interview content or infer logically. ABSOLUTE user-journey matrix rules: (1) Produce 4-6 sequential phases with DISTINCT names. Prefer the canonical set: Awareness, Explore, Compare, Negotiate, Select, Delivery. Never repeat the same key word across phases. (2) Each phase MUST include: actions (2-4 concrete actions), goals (1-3 goals/experiences), feelings (1-3 feeling objects with \`text\` + \`sentiment\`), pains (0-3 pain points), opportunities (0-3 improvement ideas for Almosafer). (3) Every action starts with a different verb from every other action in the whole journey. (4) Vary feeling wording across phases. (5) Write opportunities as concrete product improvements that address the pains. ABSOLUTE uxIssues rules: (a) Each issue has integer frequency (1-5) and integer severity (1-5). (b) severityCategory MUST match severity score exactly: 5=Usability Catastrophe, 4=Major Problem, 3=Minor Problem, 2=Cosmetic Problem, 1=Observation. (c) costToFix MUST be exactly 'Low', 'Medium', or 'High'. (d) severityCategory and costToFix stay in English as enum values; issue/description/recommendation are in the target content language. No explanations, no markdown — raw JSON only.`;
 
 function _buildAnalysisSys(lang) {
   const L = lang || S.lang || 'en';
@@ -1998,9 +2065,9 @@ function _buildAnalysisSchema() {
     recommendations: ["concrete actionable recommendation 1","recommendation 2","recommendation 3"],
     personas: [{name:"REQUIRED specific human first name. CONTEXT: every persona here is already a rental user — labels like 'User' or 'Rental Seeker' are redundant and forbidden. Pick a specific real first name that DIFFERENTIATES this persona from others. Use ONLY names from this pool: Sara, Ahmed, Layla, Khalid, Noor, Fatima, Mohammed, Abdullah, Aisha, Omar, Reem, Hassan, Maya, Yousef, Hind, Faisal, Huda, Turki, Mariam, Saud, سارة, أحمد, ليلى, خالد, نور, فاطمة, محمد, عبدالله, عائشة, عمر, ريم, حسن, مايا, يوسف, هند, فيصل, هدى, تركي, مريم, سعود. NEVER output: 'User', 'The User', 'Rental User', 'Rental Seeker', 'Tenant', 'Participant', 'Customer', 'المستخدم', 'المستأجر', 'الباحث'",gender:"REQUIRED — must be exactly 'male' OR 'female' (English lowercase, enum value) — must match the chosen first name",age:"age range like 25-32",city:"REQUIRED Saudi city of residence like Riyadh, Jeddah, Dammam, الرياض, جدة, الدمام — never empty",job:"REQUIRED specific occupation like Marketing Manager, Teacher, Software Engineer, Nurse, Accountant, مهندس, معلمة, محاسب — never empty, never a generic label like 'Employee' or 'Worker'",emotion:"emotional state expressed during the interview like frustrated, anxious, hopeful, confident, قلقة, متفائل",rentalPreference:"REQUIRED — preferred rental channel: 'online' OR 'real-estate office' OR 'both' (translate to Arabic if needed)",goal:"main goal when searching for a rental",pain:"main pain point in the rental process",motivation:"key motivation behind their behavior"}],
     empathy: {thinks:["thought 1"],feels:["feeling 1"],says:["says 1"],does:["does 1"]},
-    journey: [{phase:"Phase name — REQUIRED: each phase name MUST use a DIFFERENT key verb/noun. Use phases from this canonical set when applicable: Awareness, Explore, Compare, Negotiate, Select, Delivery (or Arabic equivalents: الوعي، الاستكشاف، المقارنة، التفاوض، الاختيار، التسليم). Never reuse the same significant word across phases.",actions:["REQUIRED 2-4 concrete actions the user takes in this phase — each action starts with a different verb, no repeated verbs across the whole journey"],goals:["REQUIRED 1-3 goals or experiences the user is trying to accomplish in this phase — vary wording across phases"],feelings:[{text:"feeling/thought in this phase — 3-8 words",sentiment:"positive|neutral|negative"}],pains:["0-3 pain points or frictions encountered in this phase — empty array if none"],opportunities:["0-3 opportunities to improve this phase — how might Skoon solve the pain points? Empty array if none."]}],
+    journey: [{phase:"Phase name — REQUIRED: each phase name MUST use a DIFFERENT key verb/noun. Use phases from this canonical set when applicable: Awareness, Explore, Compare, Negotiate, Select, Delivery (or Arabic equivalents: الوعي، الاستكشاف، المقارنة، التفاوض، الاختيار، التسليم). Never reuse the same significant word across phases.",actions:["REQUIRED 2-4 concrete actions the user takes in this phase — each action starts with a different verb, no repeated verbs across the whole journey"],goals:["REQUIRED 1-3 goals or experiences the user is trying to accomplish in this phase — vary wording across phases"],feelings:[{text:"feeling/thought in this phase — 3-8 words",sentiment:"positive|neutral|negative"}],pains:["0-3 pain points or frictions encountered in this phase — empty array if none"],opportunities:["0-3 opportunities to improve this phase — how might Almosafer solve the pain points? Empty array if none."]}],
     impactEffort: [{action:"action item",impact:"High|Medium|Low",effort:"High|Medium|Low",priority:"Do First|Schedule|Delegate|Drop"}],
-    uxIssues: [{issue:"short UX issue title (3-6 words)",description:"REQUIRED 1-2 sentence description of the usability problem observed in the interview",frequency:"REQUIRED integer 1-5 based on how often this was observed across the interview: 5=>90% of the time, 4=70-90%, 3=41-69%, 2=11-40%, 1=<10%",severity:"REQUIRED integer 1-5 based on impact: 5=Usability Catastrophe (blocks task), 4=Major Problem (significantly slows user), 3=Minor Problem (minor slowdown), 2=Cosmetic Problem (no effect on task), 1=Observation (research required)",severityCategory:"REQUIRED one of: 'Usability Catastrophe'|'Major Problem'|'Minor Problem'|'Cosmetic Problem'|'Observation' — MUST match severity score",costToFix:"REQUIRED one of: 'Low'|'Medium'|'High'. Low=internal team can fix, Medium=maintenance/sustaining work, High=larger dev project",recommendation:"REQUIRED concrete fix suggestion for Skoon in 1-2 sentences"}]
+    uxIssues: [{issue:"short UX issue title (3-6 words)",description:"REQUIRED 1-2 sentence description of the usability problem observed in the interview",frequency:"REQUIRED integer 1-5 based on how often this was observed across the interview: 5=>90% of the time, 4=70-90%, 3=41-69%, 2=11-40%, 1=<10%",severity:"REQUIRED integer 1-5 based on impact: 5=Usability Catastrophe (blocks task), 4=Major Problem (significantly slows user), 3=Minor Problem (minor slowdown), 2=Cosmetic Problem (no effect on task), 1=Observation (research required)",severityCategory:"REQUIRED one of: 'Usability Catastrophe'|'Major Problem'|'Minor Problem'|'Cosmetic Problem'|'Observation' — MUST match severity score",costToFix:"REQUIRED one of: 'Low'|'Medium'|'High'. Low=internal team can fix, Medium=maintenance/sustaining work, High=larger dev project",recommendation:"REQUIRED concrete fix suggestion for Almosafer in 1-2 sentences"}]
   });
 }
 
@@ -2014,8 +2081,8 @@ async function _enforceAnalysisLang(data, targetLang, _quiet = false) {
   if (!data || !data.summary) return data;
   const lang = targetLang || S.lang;
 
-  const sysAr = 'أنت مترجم متخصص في أبحاث UX. مهمتك الوحيدة: ترجم كل قيمة نصية في هذا الـ JSON إلى العربية الخليجية الطبيعية تماماً — بلا أي استثناء في المحتوى. قواعد صارمة لا تُكسر: (1) لا تغيّر هيكل JSON أبداً — نفس المفاتيح، نفس الأنواع، نفس العدد. (2) هذه القيم الثابتة لا تُترجم أبداً: "Skoon"، وقيم sentiment (positive/neutral/negative)، وقيم impact وeffort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop)، وقيم gender (male/female). (3) أنتج JSON فقط — ممنوع تماماً أي نص أو تعليق أو شرح خارج كائن JSON. (4) القيم الفارغة أو null تبقى كما هي دون تغيير. (5) لا تترك أي كلمة إنجليزية في المحتوى — حتى لو كانت موجودة في المصدر، يجب ترجمتها.';
-  const sysEn = 'You are a UX research translator. Your sole task: translate every text value in this JSON to natural professional English — no exceptions in content. Strict rules that must never be broken: (1) Never alter the JSON structure — same keys, same types, same count. (2) Never translate these fixed enum values: "Skoon", sentiment (positive/neutral/negative), impact/effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop), gender (male/female). (3) Output JSON only — absolutely no text, comment, or explanation outside the JSON object. (4) Empty or null values stay as-is. (5) Leave no Arabic word in the content — if source has Arabic, translate it all.';
+  const sysAr = 'أنت مترجم متخصص في أبحاث UX. مهمتك الوحيدة: ترجم كل قيمة نصية في هذا الـ JSON إلى العربية الخليجية الطبيعية تماماً — بلا أي استثناء في المحتوى. قواعد صارمة لا تُكسر: (1) لا تغيّر هيكل JSON أبداً — نفس المفاتيح، نفس الأنواع، نفس العدد. (2) هذه القيم الثابتة لا تُترجم أبداً: "Almosafer"، وقيم sentiment (positive/neutral/negative)، وقيم impact وeffort (High/Medium/Low)، وقيم priority (Do First/Schedule/Delegate/Drop)، وقيم gender (male/female). (3) أنتج JSON فقط — ممنوع تماماً أي نص أو تعليق أو شرح خارج كائن JSON. (4) القيم الفارغة أو null تبقى كما هي دون تغيير. (5) لا تترك أي كلمة إنجليزية في المحتوى — حتى لو كانت موجودة في المصدر، يجب ترجمتها.';
+  const sysEn = 'You are a UX research translator. Your sole task: translate every text value in this JSON to natural professional English — no exceptions in content. Strict rules that must never be broken: (1) Never alter the JSON structure — same keys, same types, same count. (2) Never translate these fixed enum values: "Almosafer", sentiment (positive/neutral/negative), impact/effort (High/Medium/Low), priority (Do First/Schedule/Delegate/Drop), gender (male/female). (3) Output JSON only — absolutely no text, comment, or explanation outside the JSON object. (4) Empty or null values stay as-is. (5) Leave no Arabic word in the content — if source has Arabic, translate it all.';
 
   const promptAr = (src) => `ترجم جميع القيم النصية في هذا JSON إلى العربية الخليجية — بلا استثناء. أخرج JSON فقط بدون أي نص خارجه:\n${JSON.stringify(src)}`;
   const promptEn = (src) => `Translate all text values in this JSON to English — no exceptions. Output JSON only, with no text outside the object:\n${JSON.stringify(src)}`;
@@ -2044,13 +2111,13 @@ async function _enforceAnalysisLang(data, targetLang, _quiet = false) {
 }
 
 // Detect residual cross-language content in analysis JSON.
-// Ignores the fixed enum whitelist (Skoon, sentiment/impact/effort/priority values)
+// Ignores the fixed enum whitelist (Almosafer, sentiment/impact/effort/priority values)
 // and any numeric / null / very-short values. Conservative — prefers false negatives
 // over false positives to avoid infinite retry loops.
 function _hasLangLeak(data, targetLang) {
   if (!data || typeof data !== 'object') return false;
   const WHITELIST = new Set([
-    'skoon',
+    'almosafer',
     'positive','neutral','negative',
     'high','medium','low',
     'do first','schedule','delegate','drop',
@@ -2073,7 +2140,7 @@ function _hasLangLeak(data, targetLang) {
     const norm = s.toLowerCase();
     if (WHITELIST.has(norm)) return;
     // Strip the enum words if they appear inside a sentence (don't count them)
-    const stripped = norm.replace(/\b(skoon|positive|neutral|negative|high|medium|low|do first|schedule|delegate|drop|male|female)\b/g, '');
+    const stripped = norm.replace(/\b(almosafer|positive|neutral|negative|high|medium|low|do first|schedule|delegate|drop|male|female)\b/g, '');
     if (targetLang === 'ar') {
       // Leak = Latin letters present in a string that should be Arabic
       if (latinRe.test(stripped) && !arabicRe.test(stripped)) leaks++;
@@ -2497,8 +2564,8 @@ async function sendIntro() {
   try {
     const ar = S.lang === 'ar';
     const introText = ar
-      ? 'مرحباً 👋 أنا مساعدك الذكي لمقابلات تجربة المستخدم. هدفي أفهم تجربتك في البحث عن عقار للإيجار. راح نبدأ بأسئلة بسيطة إذا تكرمت 👇'
-      : 'Hi 👋 I\'m an AI UX research interviewer. I\'m here to understand your experience searching for rental property. I\'ll start with a few simple questions if you have a moment 👇';
+      ? 'مرحباً 👋 أنا مساعدك الذكي لمقابلات تجربة المستخدم. هدفي أفهم تجربتك في حجز السفر (طيران أو فنادق أو رحلات). راح نبدأ بأسئلة بسيطة إذا تكرمت 👇'
+      : 'Hi 👋 I\'m an AI UX research interviewer. I\'m here to understand your experience booking travel (flights, hotels, or trips). I\'ll start with a few simple questions 👇';
     rmTyping();
     addMsg('assistant', introText);
     // Tag the intro bubble so we can re-translate it on language switch
@@ -2849,8 +2916,8 @@ async function analyzeStoredInterview(id, silent = false) {
     const convo = iv.answers.map(qa => `Researcher: ${qa.q}\nParticipant: ${qa.a}`).join('\n\n');
     const sysMsg = _buildAnalysisSys(S.lang);
     const schema = _buildAnalysisSchema();
-    const instrAr = 'حلل هذه المقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. كل القيم النصية بالعربية الخليجية فقط — بدون أي كلمة إنجليزية، باستثناء "Skoon" وقيم sentiment/impact/effort/priority الثابتة:';
-    const instrEn = 'Analyze this interview and output ONLY valid JSON matching this structure exactly. All text values in English only — no Arabic, no code-switching, except "Skoon" and fixed sentiment/impact/effort/priority enum values:';
+    const instrAr = 'حلل هذه المقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. كل القيم النصية بالعربية الخليجية فقط — بدون أي كلمة إنجليزية، باستثناء "Almosafer" وقيم sentiment/impact/effort/priority الثابتة:';
+    const instrEn = 'Analyze this interview and output ONLY valid JSON matching this structure exactly. All text values in English only — no Arabic, no code-switching, except "Almosafer" and fixed sentiment/impact/effort/priority enum values:';
     const prompt = `${S.lang === 'ar' ? instrAr : instrEn}\n${schema}\n\nConversation:\n${convo}`;
     const raw = await callAI([{role:'system',content:sysMsg},{role:'user',content:prompt}], 0, 3000);
     let data;
@@ -3196,10 +3263,10 @@ function renderOverview() {
   const statsEl = document.getElementById('db-stats');
   const sc = 'iv-card-row bg-surface border border-[var(--border)] rounded p-4 text-center flex flex-col items-center justify-center gap-0.5';
   if (statsEl) statsEl.innerHTML = `
-    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:14px;font-weight:500;">${all.length}</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbTotal')}</div></div>
-    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:14px;font-weight:500;">${done}</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbCompleted')}</div></div>
-    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:14px;font-weight:500;">${inc}</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbIncomplete')}</div></div>
-    <div class="${sc}" tabindex="0"><div class="text-app-text leading-none" style="font-size:14px;font-weight:500;">${rate}%</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbRate')}</div></div>`;
+    <div class="${sc}" tabindex="0"><div class="leading-none" style="font-size:14px;font-weight:500;color:var(--stat-num);">${all.length}</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbTotal')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="leading-none" style="font-size:14px;font-weight:500;color:var(--stat-num);">${done}</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbCompleted')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="leading-none" style="font-size:14px;font-weight:500;color:var(--stat-num);">${inc}</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbIncomplete')}</div></div>
+    <div class="${sc}" tabindex="0"><div class="leading-none" style="font-size:14px;font-weight:500;color:var(--stat-num);">${rate}%</div><div class="text-muted" style="font-size:12px;font-weight:400;">${t('dbRate')}</div></div>`;
 
   const fmtDT  = iso => new Date(iso).toLocaleString(S.lang === 'ar' ? 'ar-SA' : 'en-US', { dateStyle:'medium', timeStyle:'short' });
   const latest = all.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
@@ -3481,8 +3548,8 @@ async function _doCrossAnalysis(selected) {
   const schema = _buildAnalysisSchema();
   // Language-aware prompt: instruct GPT to emit target language directly.
   // _enforceAnalysisLang still runs afterwards as a second safety net.
-  const instrAr = `حلل هذه الـ ${valid.length} مقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. ركّز على الأنماط المشتركة بين المقابلات. كل القيم النصية بالعربية الخليجية فقط بدون أي كلمة إنجليزية — باستثناء القيم الثابتة في sentiment/impact/effort/priority و"Skoon":`;
-  const instrEn = `Analyze these ${valid.length} interview(s) and output ONLY valid JSON matching this structure exactly. Focus on shared patterns across interviews. All text values in English only — zero Arabic, zero code-switching — except fixed enum values in sentiment/impact/effort/priority and "Skoon":`;
+  const instrAr = `حلل هذه الـ ${valid.length} مقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. ركّز على الأنماط المشتركة بين المقابلات. كل القيم النصية بالعربية الخليجية فقط بدون أي كلمة إنجليزية — باستثناء القيم الثابتة في sentiment/impact/effort/priority و"Almosafer":`;
+  const instrEn = `Analyze these ${valid.length} interview(s) and output ONLY valid JSON matching this structure exactly. Focus on shared patterns across interviews. All text values in English only — zero Arabic, zero code-switching — except fixed enum values in sentiment/impact/effort/priority and "Almosafer":`;
   const prompt  = `${S.lang === 'ar' ? instrAr : instrEn}\n${schema}\n\nInterviews:\n${convo}`;
 
   try {
@@ -3579,8 +3646,8 @@ async function analyze() {
 
     const sysMsg = _buildAnalysisSys(S.lang);
     const schema = _buildAnalysisSchema();
-    const instrAr = 'حلل هذه المقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. كل القيم النصية بالعربية الخليجية فقط — بدون أي كلمة إنجليزية، باستثناء "Skoon" وقيم sentiment/impact/effort/priority الثابتة:';
-    const instrEn = 'Analyze this interview and output ONLY valid JSON matching this structure exactly. All text values in English only — no Arabic, no code-switching, except "Skoon" and fixed sentiment/impact/effort/priority enum values:';
+    const instrAr = 'حلل هذه المقابلة وأخرج JSON صحيح فقط يطابق هذا الهيكل تماماً. كل القيم النصية بالعربية الخليجية فقط — بدون أي كلمة إنجليزية، باستثناء "Almosafer" وقيم sentiment/impact/effort/priority الثابتة:';
+    const instrEn = 'Analyze this interview and output ONLY valid JSON matching this structure exactly. All text values in English only — no Arabic, no code-switching, except "Almosafer" and fixed sentiment/impact/effort/priority enum values:';
     const prompt = `${S.lang === 'ar' ? instrAr : instrEn}\n${schema}\n\nConversation:\n${convo}`;
 
     const raw = await callAI(
@@ -3915,7 +3982,7 @@ function renderAnalysis(d, iv, targetId = 'res-content', rawIv = null, statsOver
 
       journeyBody = `<div class="jm-wrap"><div class="jm-grid" style="${grid}">${cells}</div></div>`;
     }
-    html += `<div class="rc" style="margin-bottom:16px;"><div class="ra-sec-hd" style="pointer-events:none;cursor:default;"><span class="ra-sec-ttl">${t('journey')}</span></div>${journeyBody}</div>`;
+    html += `<div class="rc" style="margin-bottom:16px;">${secHd(t('journey'), 'journey', journeyBody)}${journeyBody}</div>`;
 
     // 9 — Impact vs Effort
     // Filter: skip rows where action is empty OR both impact and effort are missing
@@ -4131,7 +4198,7 @@ function submitResearcherPin() {
 
 // ─── CONTEXT EDITOR ──────────────────────────────────────
 const _CTX_DEFS = {
-  businessName: 'Skoon',
+  businessName: 'Almosafer App',
   goal:     '',   // language-aware default injected by renderTR() via t('goalPre')
   audience: '',   // language-aware default injected by renderTR() via t('audPre')
   prompt: '',
