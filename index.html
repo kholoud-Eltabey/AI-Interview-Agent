@@ -688,7 +688,8 @@ a:focus-visible,
 .sec-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 180; align-items: center; justify-content: center; padding: 16px; }
 .sec-ov.open { display: flex; }
 .sec-panel { background: var(--surface); border-radius: var(--r); width: min(700px,96vw); max-height: 88vh; overflow-y: auto; box-shadow: var(--shlg); display: flex; flex-direction: column; }
-.sec-panel.sec-wide { width: min(1280px, 98vw); max-height: 92vh; }
+.sec-panel.sec-wide { width: min(1280px, 99vw); max-height: 96vh; }
+.sec-ov:has(.sec-wide) { padding: 4px; }
 .sec-panel-hd { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; flex-shrink: 0; }
 .sec-panel-body { padding: 24px; }
 .sec-wide .sec-panel-body { padding: 16px 18px; }
@@ -773,11 +774,13 @@ a:focus-visible,
 }
 .jm-cell {
   padding: 8px;
+  background: var(--bg);
   border-inline-end: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   display: flex; flex-direction: column; gap: 5px;
   min-height: 72px;
 }
+[data-theme="dark"] .jm-cell { background: #011624; }
 .jm-cell:last-child { border-inline-end: none; }
 .jm-grid > .jm-cell:nth-last-child(-n+6),
 .jm-grid > .jm-row-label:last-of-type { border-bottom: none; }
@@ -791,6 +794,7 @@ a:focus-visible,
   border: 1px solid var(--border);
   word-break: break-word;
 }
+[data-theme="dark"] .jm-note { background: #002035; border-color: rgba(255,255,255,0.1); }
 /* Phase title head cells — distinct color per phase */
 .jm-col-0.jm-head-cell { background: #FEF9C3; color: #713F12; } /* Awareness  — yellow  */
 .jm-col-1.jm-head-cell { background: #D1FAE5; color: #064E3B; } /* Explore    — green   */
