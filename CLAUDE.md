@@ -164,7 +164,7 @@ function getCtx(field) { ... }
 **Hidden from regular users — completely absent from DOM.**
 
 **How to access:**
-1. **Triple-click** the "Skoon" brand name in the sidebar
+1. **Triple-click** the "Almosafer" brand name in the sidebar
 2. Passcode modal appears → enter passcode (default: `1589`)
 3. `renderResults({})` opens the researcher dashboard
 
@@ -185,7 +185,7 @@ function getCtx(field) { ... }
 | Cross Analysis | `db-pane-insights` | Analyze multiple/all completed interviews together |
 
 **Sidebar UI:**
-- Brand area: Almosafer logo + lang/theme `ic-btn` icons (32×32px, 16×16px SVG)
+- Brand area: Almosafer logo (`font-size:18px; font-weight:500`) + lang/theme `ic-btn` icons
 - Profile row below brand → opens `sb-profile-panel` overlay
 - Nav items: `.sb-nav-item` — hover/active use `--plight` background + `--primary` color
 - Recent interviews: `.sb-rc-item` — name only + date only
@@ -323,22 +323,26 @@ Used for all semantic chips and status indicators — **no yellow, no blue, no r
 | Sage | `#DDE8E4` | Low chip, `.ie-lo` |
 | Pale mint | `#F9FAEA` | Early badge, `.badge-early` |
 
-### Teal Palette (Journey Map phase header columns)
+### Journey Map Phase Header Colors
 
-6-colour teal progression for `.jm-col-N.jm-head-cell` phase title cells:
+Distinct color per phase — **not teal, not brand colors**:
 
-| Col | Light bg | Dark bg |
-|-----|----------|---------|
-| 0 | `#E6F4F6` / text `#003143` | `#001E2B` / text `#7EC9D4` |
-| 1 | `#C2E5EA` / text `#003143` | `#001B26` / text `#72C2CE` |
-| 2 | `#9AD4DC` / text `#003143` | `#001821` / text `#65BBC8` |
-| 3 | `#60BDC9` / text `#fff`    | `#00151D` / text `#58B4C2` |
-| 4 | `#1AA5B7` / text `#fff`    | `#001219` / text `#4BADB7` |
-| 5+ | repeats col 0 pattern | |
+| Col | Phase | Light bg / text | Dark bg / text |
+|-----|-------|-----------------|----------------|
+| 0 | Awareness | `#FEF9C3` / `#713F12` yellow | `#2D2500` / `#FDE68A` |
+| 1 | Explore | `#D1FAE5` / `#064E3B` green | `#022C1E` / `#6EE7B7` |
+| 2 | Compare | `#DBEAFE` / `#1E3A5F` blue | `#0C1E3A` / `#93C5FD` |
+| 3 | Negotiate | `#FFE4E6` / `#881337` red | `#2D0A10` / `#FCA5A5` |
+| 4 | Select | `#EDE9FE` / `#3B0764` purple | `#1A0B2E` / `#C4B5FD` |
+| 5+ | loops to col 0 | | |
 
-**Journey section header is clickable** — `secHd()` registers it in `_raDetails` and clicking opens the `#sec-ov` panel overlay (same as Empathy Map). The matrix's `overflow-x: auto` on `.jm-wrap` handles wide tables inside the modal.
+**Journey section header is clickable** — `secHd()` registers it in `_raDetails`. Clicking opens `#sec-ov` overlay with `.sec-panel.sec-wide` (`min(1280px,99vw)` / `96vh` / `4px` overlay padding) — wider than all other sections.
 
-**Journey note cards** (`.jm-note`): always `background: var(--surface)`, `border: 1px solid var(--border)` — no column colour.
+`openSecDetail(key)` toggles `.sec-wide` on `.sec-panel` only when `key === 'journey'`. `closeSecDetail()` always removes `.sec-wide`.
+
+**Journey note cards** (`.jm-note`): light `background: var(--surface)`; dark `background: #002035`, `border-color: rgba(255,255,255,0.1)`.
+
+**Journey cells** (`.jm-cell`): light `background: var(--bg)`; dark `background: #011624`.
 
 **Row labels** (`.jm-row-label`) and base head cells (`.jm-head-cell`): `background: rgba(0,49,67,0.06)`. Dark: `rgba(0,49,67,0.28–0.30)`.
 
@@ -347,7 +351,23 @@ Used for all semantic chips and status indicators — **no yellow, no blue, no r
 - Interview cards: `h-[3px]`
 - Analysis tracker: `height:3px` inline
 
-**Icon buttons** — `.ic-btn`: 32×32px circle, 16×16px SVG inside
+**Icon buttons** — `.ic-btn`: 28×28px circle, 14×14px SVG inside
+
+```css
+/* Light */
+.ic-btn          { bg:#FFFFFF; color:#9CA3AF; border:rgba(0,49,67,0.2) }
+.ic-btn:hover    { bg:#E6F0F2; color:#003143; border:rgba(0,49,67,0.3) }
+.ic-btn:focus-visible { bg:#E6F0F2; color:#003143; border:rgba(0,49,67,0.3); ring:rgba(0,49,67,0.15) }
+.ic-btn.ic-pressed    { bg:#00465F; color:#fff; border:#00465F }
+
+/* Dark — transparent bg inherits panel color */
+[data-theme="dark"] .ic-btn          { bg:transparent; color:rgba(255,255,255,0.55); border:rgba(255,255,255,0.15) }
+[data-theme="dark"] .ic-btn:hover    { bg:rgba(255,255,255,0.08); color:rgba(255,255,255,0.9); border:rgba(255,255,255,0.28) }
+[data-theme="dark"] .ic-btn:focus-visible { bg:rgba(26,165,183,0.18); color:#1AA5B7; border:#1AA5B7; ring:rgba(26,165,183,0.3) }
+[data-theme="dark"] .ic-btn.ic-pressed    { bg:#1AA5B7; color:#fff; border:#1AA5B7 }
+```
+
+`pointerdown` listener adds `.ic-pressed` class for 200ms for visible click feedback.
 
 **Interview cards** — `.iv-card-row`: hover/active use `--phlight` bg + `--primary` border
 
@@ -358,6 +378,10 @@ Used for all semantic chips and status indicators — **no yellow, no blue, no r
 **Journey steps** — `.journey-step`: `border: 1px solid var(--primary)`
 
 **Impact/Effort table** — `.ie-table th`: `border-bottom: 1.5px solid var(--primary)` / `.ie-table td`: `border-bottom: 1px solid var(--primary)`
+
+**Bottom action buttons** (`#s-new-btn`, `#edit-ctx-btn`, `#edit-ctx-btn-analysis`, `#s-home-btn`) and all `.btn-s`:
+- `font-size: 12px`, `font-weight: 500`
+- `.btn-s` base class owns these values — no ID-level override needed
 
 ---
 
@@ -404,6 +428,7 @@ Each pane has two IDs:
 - **Never**: `margin-left`, `padding-right`
 - `[dir="rtl"] .rtl-flip { transform: scaleX(-1); }` — for chevron/arrow icons
 - Arabic font: `IBM Plex Sans Arabic`, English: `IBM Plex Sans`
+- Font switching via CSS variable: `:root { --font: 'IBM Plex Sans', ... }` / `[dir="rtl"] { --font: 'IBM Plex Sans Arabic', ... }` — all elements use `var(--font)` or `inherit`, no hardcoded font-family strings anywhere
 - Arabic text: `line-height: 1.9` for readability
 
 ---
@@ -425,7 +450,7 @@ Each pane has two IDs:
       <button class="send-btn">    <!-- inset-inline-end:10px, 20×20px -->
 ```
 
-**Typography:** all chat elements use `font-size:14px`, `font-weight:400`, `font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif`
+**Typography:** all chat elements use `font-size:14px`, `font-weight:400`, `font-family: var(--font)`
 
 **Bubble colors:**
 - AI `.msg.ai .bbl`: `background: var(--surface)`, `border: 1px solid var(--border)`
