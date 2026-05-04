@@ -61,7 +61,7 @@ const S = {
   theme: 'light',        // 'light' or 'dark'
   apiKey: '',
   numQ: 10,
-  goal: '', audience: '', biz: 'Skoon',
+  goal: '', audience: '', biz: 'Almosafer App',
   msgs: [],
   mainAsked: 0, followUps: 0, maxFollowUps: 0,
   waitingForAnswer: false, done: false,
@@ -96,10 +96,11 @@ const S = {
 | `researcher_pw` | Legacy password field (mirrors `researcher_pin`) |
 | `skoon_session` | In-progress interview JSON — cleared on completion |
 | `skoon_interviews` | Append-only array of all interviews — never deleted |
-| `interview.businessName` | Business name for GPT prompts (overrides default `Skoon`) |
+| `interview.businessName` | Business name for GPT prompts (default `Almosafer App`) |
 | `interview.goal` | Interview goal — read by `getCtx('goal')` |
 | `interview.audience` | Target audience — read by `getCtx('audience')` |
 | `interview.prompt` | Full custom analysis system prompt — **replaces** the default `_PROMPT_EN`/`_PROMPT_AR` entirely when set; cleared if value equals the default |
+| `_almosafer_v1` | One-time migration flag — set after legacy rental/Skoon data is cleared on first load |
 
 **Legacy keys still supported via `getCtx()` fallback:**
 - `skoon_goal` → falls back to `interview.goal`
@@ -113,7 +114,7 @@ const S = {
 ```js
 // Default values when no localStorage entry exists
 const _CTX_DEFS = {
-  businessName: 'Skoon',
+  businessName: 'Almosafer App',
   goal: '',
   audience: '',
   prompt: '',
@@ -484,16 +485,16 @@ Absolute overlay inside `#res-panel` sidebar nav.
 All GPT-4o system prompts enforce strict language consistency. **Never weaken these rules.**
 
 ### Interview conductor — `buildSys()`
-- **Arabic:** Opens with an explicit block: *"استجب بالعربية الخليجية فقط في كل رسالة بدون استثناء. ممنوع أي كلمة إنجليزية عدا اسم 'Skoon'. إذا رد المستخدم بالإنجليزية، واصل بالعربية الخليجية."*
-- **English:** Opens with: *"Respond in English ONLY in every single message. Never switch to Arabic or any other language, even if the participant writes in Arabic."*
+- **Arabic:** Opens with: *"استجب بالعربية الخليجية فقط في كل رسالة بدون استثناء. ممنوع أي كلمة إنجليزية أو عبارة أجنبية في ردودك عدا اسم "Almosafer" فقط. إذا رد المستخدم بالإنجليزية، واصل بالعربية الخليجية."*
+- **English:** Opens with: *"Respond in English ONLY in every single message. Never switch to Arabic or any other language, even if the participant writes in Arabic. Every word you produce must be English, except the product name 'Almosafer' which stays as-is."*
 
 ### Analysis prompts — `_buildAnalysisSys(lang)`
 
 All analysis calls (`analyze()`, `analyzeStoredInterview()`, `_doCrossAnalysis()`) use `_buildAnalysisSys(lang)`:
 
 **Default prompts** are stored in module-level template literal constants:
-- `_PROMPT_AR` — full Arabic Gulf analysis system prompt
-- `_PROMPT_EN` — full English analysis system prompt (contains escaped backticks for JSON field names)
+- `_PROMPT_AR` — full Arabic Gulf analysis system prompt (travel/booking context)
+- `_PROMPT_EN` — full English analysis system prompt (travel/booking context)
 
 **Behavior:**
 - If `getCtx('prompt')` is set (non-empty), it is used as the **entire** system prompt — no wrapping, no appending. This is the researcher's full custom prompt.
@@ -509,7 +510,7 @@ All analysis calls (`analyze()`, `analyzeStoredInterview()`, `_doCrossAnalysis()
 - Silently re-translates the analysis JSON via GPT
 - `quiet = true` suppresses UI spinners (used by `toggleIvCard`)
 
-**Allowed English exceptions in Arabic mode:** `"Skoon"`, `sentiment`, `impact`, `effort`, `priority` enum values, `severity`, `frequency`, `criticality`, `costToFix` values only.
+**Allowed English exceptions in Arabic mode:** `"Almosafer"`, `sentiment`, `impact`, `effort`, `priority` enum values, `severity`, `frequency`, `criticality`, `costToFix` values only.
 
 **Tone:** Arabic = natural Gulf Arabic UX research. English = professional, concise, evidence-based.
 
@@ -572,7 +573,52 @@ Researcher-only modal opened via the "Edit Context" button in the dashboard side
 
 ---
 
-## 22. Key Functions Reference
+## 22. Persona Schema — `bookingPreference` field
+
+Personas use `bookingPreference` (not `rentalPreference` — that was the old Skoon/rental context).
+
+**Field definition in `_buildAnalysisSchema()`:**
+```
+bookingPreference: "REQUIRED — preferred booking channel: 'online' OR 'travel agency' OR 'both'"
+```
+
+**Display in persona card (`renderAnalysis`):**
+```js
+${(p.bookingPreference||'').trim() ? `<div class="persona-row">${t('pRentalPref')}: <span>${esc(p.bookingPreference)}</span></div>` : ''}
+```
+Note: the translation key `pRentalPref` still exists in `TR` but its label is now:
+- EN: `'Booking Preference'`
+- AR: `'تفضيل طريقة الحجز'`
+
+**`_isFakePersonaName(raw)`** — detects role labels that are not real first names. Catches both legacy rental labels (`Rental Seeker`, `مستأجر`) and new travel labels (`Traveler`, `مسافر`, `Travel User`). Real names from the approved pool always pass.
+
+---
+
+## 23. One-Time Data Migration (`_almosafer_v1`)
+
+On first `DOMContentLoaded` after deployment, a migration script runs once:
+
+```js
+if (!localStorage.getItem('_almosafer_v1')) {
+  // Filter skoon_interviews — remove any with rental/إيجار/عقار/مستأجر content
+  // Remove skoon_session if it contains rental context
+  localStorage.setItem('_almosafer_v1', '1');
+}
+```
+
+**To force a full wipe of all interviews** (start fresh), run in the browser console:
+```js
+localStorage.removeItem('skoon_interviews');
+localStorage.removeItem('skoon_session');
+localStorage.removeItem('_almosafer_v1');
+// then refresh
+```
+
+This is the only safe way to clear data — never add auto-wipe logic to the main code path.
+
+---
+
+## 24. Key Functions Reference
 
 | Function | Purpose |
 |----------|---------|
@@ -605,6 +651,7 @@ Researcher-only modal opened via the "Edit Context" button in the dashboard side
 | `getCtx(field)` | Read context with fallback chain (see §5) |
 | `_buildAnalysisSys(lang)` | Build analysis system prompt — returns custom prompt if set, else `_PROMPT_AR`/`_PROMPT_EN` |
 | `_enforceAnalysisLang(data, lang, quiet)` | Post-generate translation of analysis JSON |
+| `_isFakePersonaName(raw)` | Detect role labels masquerading as persona names |
 | `openContextEditor()` | Open Edit Context modal (researcher only) — pre-fills all fields from `getCtx()` + localStorage |
 | `saveContext()` | Save Goal, Audience, Business Name, Analysis Prompt, API key from Edit Context modal |
 | `resetContext()` | Clear all `interview.*` + `skoon_api_key` keys; restore `_PROMPT_EN` in prompt field |
@@ -615,5 +662,5 @@ Researcher-only modal opened via the "Edit Context" button in the dashboard side
 | `_renderApiStatus(status)` | Update dot + label in Edit Context and Profile Panel based on connection result |
 | `scrollBtm()` | Scroll chat to bottom |
 | `toggleMic()` | Start/stop speech-to-text |
-| `buildSys()` | Build interview system prompt (AR/EN) |
+| `buildSys()` | Build interview system prompt (AR/EN) — travel/booking context, Almosafer only |
 | `dbTab(tab)` | Switch researcher dashboard tab |
