@@ -191,9 +191,24 @@ function getCtx(field) { ... }
 - Nav items: `.sb-nav-item` — hover/active use `--plight` background + `--primary` color
 - Recent interviews: `.sb-rc-item` — name only + date only
 
+**Sidebar nav order (top → bottom):**
+```
+▦  Dashboard       (sb-nav-overview)
+◫  Interviews      (sb-nav-interviews)
+◎  Analysis        (sb-nav-analysis)   ← hidden until an interview is analysed
+◈  Cross Analysis  (sb-nav-insights)
+─────────────────
+✎  Edit Context    (edit-ctx-btn)      ← action item, sb-nav-item style
+⌂  Home            (s-home-btn)        ← action item, sb-nav-item style
+─────────────────
+   Recent          (sb-recent)
+```
+
+`dbInsights` translation key: `'Cross Analysis'` (EN) / `'التحليل المقارن'` (AR) — used for both the sidebar label and the tab heading.
+
 **`dbTab(tab)` — tab switching:**
 - Always sets `_dbTab = tab` (no toggle — clicking the active tab keeps it active)
-- Shows/hides `db-bottom-btns` only on Overview tab
+- No per-tab show/hide logic for action buttons — they live in the sidebar permanently
 
 ---
 
@@ -477,6 +492,27 @@ Absolute overlay inside `#res-panel` sidebar nav.
 **`saveProfile()`** — validates current password against `getResearcherPin()`, saves new pin to `researcher_pin`, refreshes sidebar identity row
 
 **`getDisplayName()`** — reads `researcher_name` from localStorage, falls back to "Researcher"
+
+### Profile Panel Color Tokens
+
+**Stat numbers** (`#spp-stat-total`, `#spp-stat-done`, `#spp-stat-rate`):
+- CSS rule: `color: var(--stat-num)` → `#1F2937` light / `#FFFFFF` dark
+- Never use `text-primary` (teal) for numeric values
+
+**Save button** (`#spp-save`):
+- `background: var(--cta)` → `#1AA5B7` light / `#003143` dark
+- `font-weight: 500` (medium), `color: #fff`
+- Hover: `background: var(--cta-hover)` → `#00465F`
+- Matches the CTA style used by `#edit-ctx-btn-analysis`
+
+**Avatar** (`#spp-avatar` large, `#sb-avatar` small in sidebar):
+- Background: `bg-plight` (`rgba(26,165,183,0.10)`) — brand-100
+- Text color: `#003143` light / `var(--primary)` (`#1AA5B7`) dark
+- Set via CSS ID rules — do **not** add `text-primary` class to avatar elements
+
+**Actions section** (bottom of panel):
+- Sign Out only — no icon, `text-danger`, `hover:bg-app-bg`
+- Edit Context and Home have been moved to the sidebar nav (see §8)
 
 ---
 
