@@ -144,16 +144,15 @@ button, input, textarea, select, table, th, td {
 .ic-btn {
   width: 32px; height: 32px; border-radius: 50%;
   border: 1px solid rgba(0,49,67,0.25); background: #FFFFFF;
-  color: var(--muted); cursor: pointer;
+  color: #9CA3AF; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all var(--tr); font-size:14px; position: relative; flex-shrink: 0;
 }
 .ic-btn:hover { border-color: #00465F; }
-.ic-btn:focus, .ic-btn:active { outline: none; background: var(--cta); color: #FFFFFF; border-color: var(--cta); box-shadow: 0 0 0 3px var(--plight); }
-/* Dark mode: bg stays white so icon must remain readable (same muted gray as light) */
-[data-theme="dark"] .ic-btn { background: #FFFFFF; color: #6B7280; border-color: rgba(0,49,67,0.25); }
+.ic-btn:focus, .ic-btn:active { outline: none; background: #E6F4F6; color: #003143; border-color: #003143; box-shadow: 0 0 0 3px rgba(0,49,67,0.10); }
+[data-theme="dark"] .ic-btn { background: #FFFFFF; color: #9CA3AF; border-color: rgba(0,49,67,0.25); }
 [data-theme="dark"] .ic-btn:hover { border-color: #00465F; }
-[data-theme="dark"] .ic-btn:focus, [data-theme="dark"] .ic-btn:active { background: var(--cta); color: #FFFFFF; border-color: var(--cta); }
+[data-theme="dark"] .ic-btn:focus, [data-theme="dark"] .ic-btn:active { background: #E6F4F6; color: #003143; border-color: #003143; }
 
 /* Card */
 .card {
