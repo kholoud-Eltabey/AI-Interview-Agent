@@ -149,18 +149,18 @@ button, input, textarea, select, table, th, td {
   border: 1px solid rgba(0,49,67,0.2); background: #FFFFFF;
   color: #9CA3AF; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: all var(--tr); font-size:14px; position: relative; flex-shrink: 0;
+  transition: all var(--tr); position: relative; flex-shrink: 0;
 }
+.ic-btn svg { width: 12px; height: 12px; }
 .ic-btn:hover { background: #E6F0F2; color: #003143; border-color: rgba(0,49,67,0.3); }
 .ic-btn:focus { outline: none; }
 .ic-btn:focus-visible { outline: none; background: #E6F0F2; color: #003143; border-color: rgba(0,49,67,0.3); box-shadow: 0 0 0 2px rgba(0,49,67,0.15); }
 .ic-btn.ic-pressed { background: #00465F !important; color: #FFFFFF !important; border-color: #00465F !important; }
-[data-theme="dark"] .ic-btn { background: rgba(255,255,255,0.07); color: #94A3B8; border-color: rgba(255,255,255,0.12); }
-[data-theme="dark"] .ic-btn:hover { background: rgba(255,255,255,0.13); color: #E2E8F0; border-color: rgba(255,255,255,0.22); }
+[data-theme="dark"] .ic-btn { background: #FFFFFF; color: #000B14; border-color: rgba(0,0,0,0.12); }
+[data-theme="dark"] .ic-btn:hover { background: #E6F0F2; color: #000B14; border-color: rgba(0,0,0,0.2); }
 [data-theme="dark"] .ic-btn:focus { outline: none; }
-[data-theme="dark"] .ic-btn:focus-visible { outline: none; background: rgba(255,255,255,0.13); color: #E2E8F0; border-color: rgba(255,255,255,0.22); box-shadow: 0 0 0 2px rgba(255,255,255,0.1); }
-[data-theme="dark"] .ic-btn.ic-pressed { background: #1AA5B7 !important; color: #FFFFFF !important; border-color: #1AA5B7 !important; }
-[data-theme="dark"] .ic-btn.ic-pressed { background: #00465F !important; color: #FFFFFF !important; border-color: #00465F !important; }
+[data-theme="dark"] .ic-btn:focus-visible { outline: none; background: #E6F0F2; color: #000B14; border-color: rgba(0,0,0,0.2); box-shadow: 0 0 0 2px rgba(255,255,255,0.15); }
+[data-theme="dark"] .ic-btn.ic-pressed { background: #000B14 !important; color: #FFFFFF !important; border-color: #1AA5B7 !important; }
 
 /* Card */
 .card {
