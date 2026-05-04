@@ -143,13 +143,16 @@ button, input, textarea, select, table, th, td {
 
 .ic-btn {
   width: 32px; height: 32px; border-radius: 50%;
-  border: 1.5px solid transparent; background: var(--plight);
-  color: var(--primary); cursor: pointer;
+  border: 1px solid #1AA5B7; background: #FFFFFF;
+  color: #1F2937; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all var(--tr); font-size:14px; position: relative; flex-shrink: 0;
 }
-.ic-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(26,165,183,0.18); }
-.ic-btn:focus { outline: none; border-color: var(--primary); color: var(--primary); background: rgba(26,165,183,0.18); box-shadow: 0 0 0 3px var(--plight); }
+.ic-btn:hover { border-color: #00465F; color: #1F2937; background: #FFFFFF; }
+.ic-btn:focus { outline: none; border-color: #00465F; color: #1F2937; background: #FFFFFF; box-shadow: 0 0 0 3px var(--plight); }
+[data-theme="dark"] .ic-btn { background: var(--surface); color: #FFFFFF; border-color: #1AA5B7; }
+[data-theme="dark"] .ic-btn:hover { border-color: #00465F; color: #FFFFFF; background: var(--surface); }
+[data-theme="dark"] .ic-btn:focus { border-color: #00465F; color: #FFFFFF; background: var(--surface); box-shadow: 0 0 0 3px var(--plight); }
 
 /* Card */
 .card {
