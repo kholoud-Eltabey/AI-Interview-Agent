@@ -1290,11 +1290,11 @@ a:focus-visible,
 
         <!-- Actions -->
         <div class="border-t border-[var(--border)] mt-auto shrink-0">
-          <button class="w-full text-start px-4 py-2.5 text-[12px] text-app-text hover:bg-app-bg transition-colors" onclick="restart()" id="s-new-btn">New Interview</button>
-          <button class="w-full text-start px-4 py-2.5 text-[12px] text-app-text hover:bg-app-bg transition-colors" onclick="openContextEditor()" id="edit-ctx-btn"><span id="edit-ctx-btn-lbl">Edit Context</span></button>
-          <button class="w-full text-start px-4 py-2.5 text-[12px] text-app-text hover:bg-app-bg transition-colors" onclick="goHome()" id="s-home-btn">Home</button>
+          <button class="flex items-center gap-2 w-full text-start px-4 py-2.5 text-[12px] text-app-text hover:bg-app-bg transition-colors" onclick="restart()" id="s-new-btn"><span class="w-4 text-center shrink-0 text-[12px]">⊕</span><span id="s-new-btn-lbl">New Interview</span></button>
+          <button class="flex items-center gap-2 w-full text-start px-4 py-2.5 text-[12px] text-app-text hover:bg-app-bg transition-colors" onclick="openContextEditor()" id="edit-ctx-btn"><span class="w-4 text-center shrink-0 text-[12px]">✎</span><span id="edit-ctx-btn-lbl">Edit Context</span></button>
+          <button class="flex items-center gap-2 w-full text-start px-4 py-2.5 text-[12px] text-app-text hover:bg-app-bg transition-colors" onclick="goHome()" id="s-home-btn"><span class="w-4 text-center shrink-0 text-[12px]">⌂</span><span id="s-home-btn-lbl">Home</span></button>
           <div class="h-px bg-[var(--border)] mx-4"></div>
-          <button class="w-full text-start px-4 py-2.5 text-[12px] text-danger hover:bg-app-bg transition-colors" onclick="if(confirm(S.lang==='ar'?'تسجيل الخروج؟':'Sign out?')){localStorage.removeItem('researcher_access');location.reload();}" id="spp-signout">Sign Out</button>
+          <button class="flex items-center gap-2 w-full text-start px-4 py-2.5 text-[12px] text-danger hover:bg-app-bg transition-colors" onclick="if(confirm(S.lang==='ar'?'تسجيل الخروج؟':'Sign out?')){localStorage.removeItem('researcher_access');location.reload();}" id="spp-signout"><span class="w-4 text-center shrink-0 text-[12px]">⎋</span><span id="spp-signout-lbl">Sign Out</span></button>
         </div>
 
       </div>
@@ -1855,8 +1855,8 @@ function renderTR() {
   set('s-nq-note',  t('nqNote'));
   set('s-start-txt',t('startBtn'));
   set('s-end-txt',  t('endBtn'));
-  set('s-new-btn',  t('newBtn'));
-  set('s-home-btn', t('homeBtn'));
+  set('s-new-btn-lbl',  t('newBtn'));
+  set('s-home-btn-lbl', t('homeBtn'));
   set('res-ttl',    t('resTitle'));
   set('res-sub',    t('resSub'));
   ph('chat-ta',     t('taPh'));
@@ -1900,7 +1900,7 @@ function renderTR() {
   set('spp-lbl-curpw', ar ? 'كلمة المرور الحالية' : 'Current Password');
   set('spp-lbl-newpw', ar ? 'كلمة المرور الجديدة' : 'New Password');
   set('spp-save',      ar ? 'حفظ'                 : 'Save');
-  set('spp-signout',   ar ? 'تسجيل الخروج'        : 'Sign Out');
+  set('spp-signout-lbl',   ar ? 'تسجيل الخروج'        : 'Sign Out');
 
   renderPanel(); // re-translate panel labels on lang switch
 }
@@ -3136,7 +3136,7 @@ function openProfilePanel() {
   setT('spp-lbl-curpw', ar ? 'كلمة المرور الحالية' : 'Current Password');
   setT('spp-lbl-newpw', ar ? 'كلمة المرور الجديدة' : 'New Password');
   setT('spp-save',      ar ? 'حفظ'                 : 'Save');
-  setT('spp-signout',   ar ? 'تسجيل الخروج'         : 'Sign Out');
+  setT('spp-signout-lbl',   ar ? 'تسجيل الخروج'         : 'Sign Out');
 
   // Field values (passwords always cleared on open)
   setV('spp-inp-name',  name);
