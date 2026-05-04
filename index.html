@@ -512,6 +512,17 @@ a:focus-visible,
 .sb-profile-panel        { display: none; position: absolute; inset: 0; background: var(--surface); z-index: 100; flex-direction: column; overflow-y: auto; }
 .sb-profile-panel.open   { display: flex; }
 
+/* Profile panel — stat numbers */
+#spp-stat-total, #spp-stat-done, #spp-stat-rate { color: var(--stat-num); }
+
+/* Profile panel — save button matches CTA style */
+#spp-save { background: var(--cta) !important; color: #fff; border: none; }
+#spp-save:hover, #spp-save:focus-visible { background: var(--cta-hover) !important; outline: none; }
+
+/* Avatar — brand palette */
+#spp-avatar, #sb-avatar { color: #003143; }
+[data-theme="dark"] #spp-avatar, [data-theme="dark"] #sb-avatar { color: var(--primary); }
+
 /* Profile input fields */
 .profile-inp {
   width: 100%; padding: 7px 10px; font-size: 12px;
@@ -1210,7 +1221,7 @@ a:focus-visible,
         <!-- Avatar -->
         <div class="flex flex-col items-center gap-2 px-4 pt-5 pb-3 shrink-0">
           <div class="relative">
-            <div class="w-[56px] h-[56px] rounded-full bg-plight flex items-center justify-center text-[14px] font-bold text-primary" id="spp-avatar">U</div>
+            <div class="w-[56px] h-[56px] rounded-full bg-plight flex items-center justify-center text-[14px] font-bold" id="spp-avatar">U</div>
             <button onclick="editAvatarLetter()" class="absolute bottom-0 end-0 w-[20px] h-[20px] rounded-full bg-primary flex items-center justify-center border-2 border-surface" title="Edit">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
@@ -1237,15 +1248,15 @@ a:focus-visible,
           </div>
           <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
             <span class="text-[12px] text-muted font-medium" id="spp-lbl-total">Total</span>
-            <span class="text-[12px] font-semibold text-primary" id="spp-stat-total">0</span>
+            <span class="text-[12px] font-semibold" id="spp-stat-total">0</span>
           </div>
           <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
             <span class="text-[12px] text-muted font-medium" id="spp-lbl-done">Completed</span>
-            <span class="text-[12px] font-semibold text-primary" id="spp-stat-done">0</span>
+            <span class="text-[12px] font-semibold" id="spp-stat-done">0</span>
           </div>
           <div class="flex items-center justify-between py-2 border-b border-[var(--border)]">
             <span class="text-[12px] text-muted font-medium" id="spp-lbl-rate">Rate</span>
-            <span class="text-[12px] font-semibold text-primary" id="spp-stat-rate">—</span>
+            <span class="text-[12px] font-semibold" id="spp-stat-rate">—</span>
           </div>
           <div class="flex items-center justify-between py-2" id="spp-last-row">
             <span class="text-[12px] text-muted font-medium" id="spp-lbl-last">Last</span>
@@ -1285,7 +1296,7 @@ a:focus-visible,
             <input class="profile-inp" id="spp-inp-newpw" type="password" autocomplete="new-password" />
           </div>
 
-          <button onclick="saveProfile()" class="w-full bg-primary hover:bg-phover text-white text-[12px] font-semibold py-2 rounded-[var(--rxs)] transition-colors mt-1" id="spp-save">حفظ</button>
+          <button onclick="saveProfile()" class="w-full text-white text-[12px] font-medium py-2 rounded-[var(--rxs)] transition-colors mt-1" id="spp-save">حفظ</button>
         </div>
 
         <!-- Actions -->
@@ -1314,7 +1325,7 @@ a:focus-visible,
 
         <!-- Profile row — below brand, clickable → opens profile panel -->
         <div class="flex items-center gap-2 mt-3 px-1.5 py-1.5 -mx-1.5 rounded-[var(--rxs)] cursor-pointer hover:bg-app-bg transition-colors group" onclick="openProfilePanel()">
-          <div class="w-[32px] h-[32px] rounded-full bg-plight flex items-center justify-center text-[12px] font-bold text-primary shrink-0" id="sb-avatar">U</div>
+          <div class="w-[32px] h-[32px] rounded-full bg-plight flex items-center justify-center text-[12px] font-bold shrink-0" id="sb-avatar">U</div>
           <div class="flex-1 min-w-0">
             <div class="text-[12px] font-semibold text-app-text truncate leading-tight" id="sb-uname">Researcher</div>
             <div class="text-[12px] text-muted truncate" id="sb-urole">UX Researcher</div>
