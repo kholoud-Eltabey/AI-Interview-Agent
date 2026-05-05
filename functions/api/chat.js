@@ -13,21 +13,31 @@ const MODEL_CHAIN    = [PRIMARY_MODEL, FALLBACK_MODEL];
 const REQUEST_TIMEOUT_MS = 45_000;
 
 // ─── CORS ─────────────────────────────────────────────────
-// Allow the production deployment and local dev origins.
+// Allow the production deployment, all preview deployments, and local dev.
 // The OpenAI key is never sent to the browser — it lives in env.OPENAI_API_KEY.
-// CORS only controls which browser origins may call this endpoint;
-// server-to-server calls (curl, etc.) bypass CORS entirely.
+const PRODUCTION_ORIGIN = 'https://almosafer-pages.pages.dev';
+
 const ALLOWED_ORIGINS = new Set([
-  'https://skoon-interview-agent.pages.dev',
+  PRODUCTION_ORIGIN,
+  'https://skoon-interview-agent.pages.dev', // legacy
   'http://localhost:4000',
+  'http://localhost:8788', // wrangler dev default
   'http://127.0.0.1:4000',
+  'http://127.0.0.1:8788',
 ]);
+
+// Accept any *.almosafer-pages.pages.dev preview deployment URL
+function isAllowedOrigin(origin) {
+  if (!origin) return true; // same-origin (no Origin header)
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  if (/^https:\/\/[a-z0-9-]+\.almosafer-pages\.pages\.dev$/.test(origin)) return true;
+  return false;
+}
 
 function corsHeaders(request) {
   const origin = (request && request.headers.get('Origin')) || '';
-  // Echo back the exact origin if it's in the allowlist so browsers accept it.
-  // Fall back to the production origin for same-origin requests (no Origin header).
-  const allow = ALLOWED_ORIGINS.has(origin) ? origin : 'https://skoon-interview-agent.pages.dev';
+  const allow  = isAllowedOrigin(origin) ? (origin || PRODUCTION_ORIGIN) : PRODUCTION_ORIGIN;
+  console.log('[chat] CORS origin:', origin || '(none — same-origin)', '| allowed:', isAllowedOrigin(origin));
   return {
     'Access-Control-Allow-Origin':  allow,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
