@@ -204,6 +204,20 @@ function getCtx(field) { ... }
    Recent          (sb-recent)
 ```
 
+**Sidebar nav icon sizing — per-icon font-size:**
+Different Unicode glyphs render at different optical sizes even at the same `font-size`. The icon spans use `style="font-size:Xpx;line-height:1;"` inline (not Tailwind class) on the affected items:
+
+| Icon | Character | font-size | Reason |
+|------|-----------|-----------|--------|
+| `▦` | Dashboard | `text-[12px]` (Tailwind) | Renders correctly at 12px |
+| `◫` | Interviews | `text-[12px]` (Tailwind) | Renders correctly at 12px |
+| `◎` | Analysis | `text-[12px]` (Tailwind) | Renders correctly at 12px |
+| `◈` | Cross Analysis | `15px` inline | Smaller glyph body — needs bump |
+| `✎` | Edit Context | `12px` inline | Forced inline for consistency |
+| `⌂` | Home | `17px` inline | Smallest glyph body — needs most bump |
+
+**Rule:** Never change `▦`, `◫`, `◎` icon sizing. If `◈` or `⌂` look off, adjust their inline `font-size` only.
+
 `dbInsights` translation key: `'Cross Analysis'` (EN) / `'التحليل المقارن'` (AR) — used for both the sidebar label and the tab heading.
 
 **`dbTab(tab)` — tab switching:**
@@ -569,6 +583,22 @@ The browser sends `clientKey` only when `skoon_api_key` is set in localStorage. 
 - Response `code === 'config_missing'` → no key configured anywhere
 - Network error → unknown
 
+### `_apiBase()` — Unified API routing
+
+```js
+const _CF_READ_API   = 'https://almosafer-pages.pages.dev';
+const _PROD_HOSTNAME = 'almosafer-pages.pages.dev';
+
+function _apiBase() {
+  const h = window.location.hostname;
+  return (h === _PROD_HOSTNAME) ? '' : _CF_READ_API;
+}
+```
+
+**All** fetch calls use `_apiBase() + '/api/...'` — never hardcode the domain per-call.
+
+**Why:** Cloudflare preview deployments get an isolated KV namespace (`SKOON_INTERVIEWS_preview`) that is separate from production. By forcing all non-production environments (preview URLs, localhost) to use the production base URL, interviews are always read/written to the production KV namespace, keeping data in sync.
+
 **Git push workaround** (if `140.82.121.4` is blocked):
 ```
 git -c http.curloptResolve="github.com:443:20.201.28.151" push origin main
@@ -609,7 +639,56 @@ Researcher-only modal opened via the "Edit Context" button in the dashboard side
 
 ---
 
-## 22. Persona Schema — `bookingPreference` field
+## 22. Auto Language Sync in Chat
+
+The UI language automatically follows the language of each AI message. This keeps the chrome (buttons, labels, progress) consistent with what the AI is saying.
+
+**`_detectMsgLang(text)`** — detects language by counting Unicode ranges:
+```js
+function _detectMsgLang(text) {
+  const arabicCount = (text.match(/[؀-ۿݐ-ݿࢠ-ࣿ]/g) || []).length;
+  const latinCount  = (text.match(/[a-zA-Z]/g) || []).length;
+  if (arabicCount === 0 && latinCount === 0) return S.lang;
+  return arabicCount >= latinCount ? 'ar' : 'en';
+}
+```
+
+**Where applied:**
+- `sendIntro()` — after the intro message is added: `const _introLang = _detectMsgLang(introText); if (_introLang !== S.lang) applyLang(_introLang);`
+- `askQuestion()` — after each AI question is added: `const _qLang = _detectMsgLang(q); if (_qLang !== S.lang) applyLang(_qLang);`
+
+**What does NOT change:** User answer bubbles always stay in whatever language the user typed — only the UI chrome follows the AI language.
+
+---
+
+## 23. Single-Use Interview Access Lock
+
+Prevents a participant from refreshing and retaking the interview after completion. Researchers are always exempt.
+
+**Constants:**
+```js
+const _LOCK_KEY = 'almosafer_iv_lock';  // localStorage key
+```
+
+**Flow:**
+1. On interview completion → `_setAccessLock()` stores `S._iid` in `localStorage[_LOCK_KEY]`
+2. On page load → `_checkAccessLock()` reads the key; if set (and user is not researcher) → shows `#access-blocked-ov` fullscreen overlay, blocks `page-setup`
+3. Researcher can generate an unlock link: `?unlock=INTERVIEW_ID` → `_checkAccessLock()` validates the ID matches, removes the lock, strips the param from URL
+
+**Functions:**
+- `_setAccessLock()` — called inside `finishMsg()` before `goTo('page-done')`
+- `_checkAccessLock()` — called on `DOMContentLoaded`; `async`; checks `?unlock` param first
+- `copyReopenLink(ivId, btnEl)` — copies `{origin}{pathname}?unlock={ivId}` to clipboard; shows ✓ feedback on button
+
+**Unlock link button** — rendered in `ivRowHtml()` for completed interviews only (copy icon button beside the delete button).
+
+**Blocked overlay** — `#access-blocked-ov`: fixed, full-viewport, `z-index:8000`, uses `var(--bg)`. Text from translations: `accessBlockedTitle` / `accessBlockedMsg`.
+
+**Researcher bypass:** `S.isResearcher === true` skips `_checkAccessLock()` entirely and skips `_setAccessLock()`.
+
+---
+
+## 25. Persona Schema — `bookingPreference` field
 
 Personas use `bookingPreference` (not `rentalPreference` — that was the old Skoon/rental context).
 
@@ -630,7 +709,7 @@ Note: the translation key `pRentalPref` still exists in `TR` but its label is no
 
 ---
 
-## 23. One-Time Data Migration (`_almosafer_v1`)
+## 26. One-Time Data Migration (`_almosafer_v1`)
 
 On first `DOMContentLoaded` after deployment, a migration script runs once:
 
@@ -654,7 +733,7 @@ This is the only safe way to clear data — never add auto-wipe logic to the mai
 
 ---
 
-## 24. Key Functions Reference
+## 27. Key Functions Reference
 
 | Function | Purpose |
 |----------|---------|
@@ -696,6 +775,11 @@ This is the only safe way to clear data — never add auto-wipe logic to the mai
 | `toggleCxeKeyVis()` | Toggle password/text visibility on the API key input in Edit Context |
 | `checkApiStatus()` | Probe `/api/chat` with empty messages; `bad_request` = connected, `config_missing` = not connected |
 | `_renderApiStatus(status)` | Update dot + label in Edit Context and Profile Panel based on connection result |
+| `_apiBase()` | Returns `''` on production, production URL on preview/localhost — used as prefix for all fetch calls |
+| `_detectMsgLang(text)` | Count Arabic vs Latin chars; returns `'ar'` or `'en'` — used to auto-sync UI lang after each AI message |
+| `_checkAccessLock()` | **async** — on page load, checks `almosafer_iv_lock`; handles `?unlock=ID` param; shows blocked overlay if locked |
+| `_setAccessLock()` | Stores `S._iid` in `almosafer_iv_lock` localStorage on interview completion |
+| `copyReopenLink(ivId, btnEl)` | Copies `?unlock=ID` URL to clipboard; shows ✓ feedback on button |
 | `scrollBtm()` | Scroll chat to bottom |
 | `toggleMic()` | Start/stop speech-to-text |
 | `buildSys()` | Build interview system prompt (AR/EN) — travel/booking context, Almosafer only |
