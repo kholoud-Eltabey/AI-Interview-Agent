@@ -1880,6 +1880,9 @@ function renderTR() {
   ph('chat-ta',     t('taPh'));
 
   // Populate readonly display fields — show researcher-configured value or language default
+  const bizDisplayEl = document.getElementById('inp-biz');
+  if (bizDisplayEl) bizDisplayEl.value = getCtx('businessName') || 'Almosafer App';
+
   const gEl = document.getElementById('inp-goal');
   const aEl = document.getElementById('inp-aud');
   if (gEl) {
@@ -3124,11 +3127,8 @@ function openProfilePanel() {
   setT('spp-lbl-rate',  ar ? 'نسبة الإكمال'   : 'Rate');
   setT('spp-lbl-last',  ar ? 'آخر نشاط'       : 'Last');
 
-  // API status — key is pre-configured on server, always connected
-  const apiDot = document.getElementById('spp-api-dot');
-  const apiTxt = document.getElementById('spp-api-txt');
-  if (apiDot) apiDot.style.background = '#16a34a';
-  if (apiTxt) { apiTxt.textContent = ar ? 'متصل' : 'Connected'; apiTxt.style.color = '#16a34a'; }
+  // API status — reflect actual _apiConnected state (not hardcoded)
+  _renderApiStatus();
 
   // Interview stats
   const allIv  = getAllInterviews();
@@ -4488,10 +4488,20 @@ function _renderApiStatus() {
   const l2 = document.getElementById('api-status-lbl');
   if (d2) d2.style.background = dot;
   if (l2) l2.textContent = lbl;
+
+  // Profile panel dot + label
+  const d3 = document.getElementById('spp-api-dot');
+  const l3 = document.getElementById('spp-api-txt');
+  if (d3) d3.style.background = dot;
+  if (l3) { l3.textContent = lbl; l3.style.color = ok ? '#22c55e' : chk ? 'var(--muted)' : 'var(--danger)'; }
 }
 
 // ─── RESTART ──────────────────────────────────────────────
 function _ensureSetupPrefills() {
+  // Business name — always read from context (never hardcoded)
+  const bizEl = document.getElementById('inp-biz');
+  if (bizEl) bizEl.value = getCtx('businessName') || 'Almosafer App';
+
   const pairs = [
     { id: 'inp-goal', ctxField: 'goal',     defKey: 'goalPre' },
     { id: 'inp-aud',  ctxField: 'audience', defKey: 'audPre'  },
