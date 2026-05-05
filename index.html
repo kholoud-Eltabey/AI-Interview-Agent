@@ -1589,6 +1589,10 @@ const TR = {
     errNoConv: 'Please answer at least a couple of questions first.',
     errAi:     'Something went wrong. Please try again.',
     errAnalysis: 'Analysis failed. Please try again.',
+    accessBlockedTitle: 'Interview Completed',
+    accessBlockedMsg: 'This interview has already been completed. Please contact the researcher if you need access again.',
+    accessReopenBtn: 'Copy Reopen Link',
+    accessReopenDone: '✓ Copied',
     introTagline: 'Your experience shapes what we build',
     introDesc: "We'd love to hear about your travel booking experience with Almosafer. It's a short, friendly chat — no right or wrong answers.",
     introStart: 'Get Started',
@@ -1715,6 +1719,10 @@ const TR = {
     errNoConv: 'جاوب على سؤال أو أكثر أولاً.',
     errAi:     'صار خطأ، جرّب مرة ثانية.',
     errAnalysis: 'ما قدرنا نحلل، جرّب مرة ثانية.',
+    accessBlockedTitle: 'تمّت المقابلة',
+    accessBlockedMsg: 'أكملتَ هذه المقابلة مسبقاً. تواصل مع الباحث إذا احتجت للدخول مجدداً.',
+    accessReopenBtn: 'نسخ رابط إعادة الفتح',
+    accessReopenDone: '✓ تم النسخ',
     introTagline: 'تجربتك تُشكّل ما نبنيه',
     introDesc: 'يسعدنا نسمع تجربتك في حجز السفر مع Almosafer. هي محادثة قصيرة وودية — ما في إجابة صح أو غلط.',
     introStart: 'ابدأ',
@@ -1760,6 +1768,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Restore in-progress session if one exists
   restoreSession();
+
+  // Check single-use access lock (after KV loaded so _ivCache is ready)
+  await _checkAccessLock();
 
   // ── One-time migration: clear any old Skoon/rental interview data ──
   if (!localStorage.getItem('_almosafer_v1')) {
@@ -2767,6 +2778,7 @@ function finishMsg() {
   document.getElementById('done-close-btn').textContent = finishLbl;
 
   saveInterview(null);
+  _setAccessLock(); // mark this browser as having completed an interview
   goTo('page-done');
 }
 
@@ -3486,6 +3498,11 @@ function ivRowHtml(iv, fmt, expandable) {
           <span class="text-muted whitespace-nowrap shrink-0" style="font-size:12px;font-weight:400;min-width:30px;text-align:end;">${pct}%</span>
         </div>` : ''}
       </div>
+      ${iv.completed ? `<button class="iv-del-btn" style="margin-inline-end:2px;" onclick="event.stopPropagation();copyReopenLink('${iv.id}',this)" title="${t('accessReopenBtn')}" aria-label="${t('accessReopenBtn')}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+      </button>` : ''}
       <button class="iv-del-btn" onclick="deleteInterview('${iv.id}',event)" title="${t('dbDeleteConfirm').split('?')[0]}">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="2,4 14,4"/><path d="M5,4V2h6v2"/><path d="M3,4l1,10h8l1-10"/>
@@ -4544,6 +4561,76 @@ function _ensureSetupPrefills() {
   });
 }
 
+// ─── SINGLE-USE INTERVIEW ACCESS LOCK ────────────────────
+// Once a non-researcher completes an interview on this browser,
+// localStorage marks their device as "done". Subsequent visits show a
+// blocked screen. Researchers are never blocked.
+//
+// Researcher unlock: share  ?unlock=INTERVIEW_ID  with the user.
+// The URL clears the lock only if the ID matches what was stored.
+
+const _LOCK_KEY = 'almosafer_iv_lock'; // localStorage key
+
+// Called from DOMContentLoaded — runs after _ivCache is loaded.
+async function _checkAccessLock() {
+  // Researchers are never blocked
+  if (S.isResearcher) return;
+
+  // Handle ?unlock= param first
+  const url = new URL(window.location.href);
+  const unlockId = url.searchParams.get('unlock');
+  if (unlockId !== null) {
+    if (unlockId && unlockId === localStorage.getItem(_LOCK_KEY)) {
+      localStorage.removeItem(_LOCK_KEY);
+    }
+    // Always clean the param from the URL
+    url.searchParams.delete('unlock');
+    window.history.replaceState({}, '', url.pathname + (url.search || ''));
+    if (!localStorage.getItem(_LOCK_KEY)) return; // successfully unlocked
+  }
+
+  const locked = localStorage.getItem(_LOCK_KEY);
+  if (!locked) return; // not locked — proceed normally
+
+  // Show blocked screen
+  const ov = document.getElementById('access-blocked-ov');
+  const ttl = document.getElementById('access-blocked-title');
+  const msg = document.getElementById('access-blocked-msg');
+  if (ttl) ttl.textContent = t('accessBlockedTitle');
+  if (msg) msg.textContent = t('accessBlockedMsg');
+  if (ov)  { ov.style.display = 'flex'; }
+
+  // Disable the setup page so nothing underneath is interactive
+  const sp = document.getElementById('page-setup');
+  if (sp) sp.style.pointerEvents = 'none';
+}
+
+// Set lock on interview completion (called from finishMsg)
+function _setAccessLock() {
+  if (!S.isResearcher && S._iid) {
+    localStorage.setItem(_LOCK_KEY, S._iid);
+  }
+}
+
+// Researcher utility: copy the unlock URL for a specific interview to clipboard.
+// Placed in the interview card via ivRowHtml.
+function copyReopenLink(ivId, btnEl) {
+  const base = window.location.origin + window.location.pathname;
+  const url  = `${base}?unlock=${encodeURIComponent(ivId)}`;
+  navigator.clipboard.writeText(url).catch(() => {
+    // Fallback for browsers without clipboard API
+    const ta = document.createElement('textarea');
+    ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  });
+  if (btnEl) {
+    const orig = btnEl.textContent;
+    btnEl.textContent = t('accessReopenDone');
+    setTimeout(() => { btnEl.textContent = orig; }, 1800);
+  }
+}
+
 function goHome() { goTo('page-setup'); _ensureSetupPrefills(); }
 
 function restart() {
@@ -4554,6 +4641,17 @@ function restart() {
   _ensureSetupPrefills();
 }
 </script>
+
+<!-- ── Access-blocked overlay ─────────────────────────────────────────── -->
+<!-- Shown when this browser has already completed an interview.          -->
+<!-- Researcher bypass: ?unlock=INTERVIEW_ID clears the lock.            -->
+<div id="access-blocked-ov" style="display:none;position:fixed;inset:0;z-index:8000;background:var(--bg);align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:380px;width:100%;text-align:center;">
+    <div style="font-size:36px;margin-bottom:16px;line-height:1;">🔒</div>
+    <p id="access-blocked-title" style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;"></p>
+    <p id="access-blocked-msg" style="font-size:14px;color:var(--muted);line-height:1.7;"></p>
+  </div>
+</div>
 
 <!-- Build marker — visible only in source / devtools, not in UI -->
 <!-- BUILD: AI Interview Agent | almosafer-pages | main | sync-check -->
