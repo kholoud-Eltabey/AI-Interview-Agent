@@ -2520,6 +2520,17 @@ async function _fixJourneyVariety(journey, lang) {
 }
 
 // ─── CHAT HELPERS ─────────────────────────────────────────
+// Detect majority language of a text string (Arabic vs Latin).
+// Called after every AI message so the UI chrome stays in sync with the
+// interview language — even if the user manually toggled the language icon.
+function _detectMsgLang(text) {
+  if (!text || typeof text !== 'string') return S.lang;
+  const arabicCount = (text.match(/[؀-ۿݐ-ݿࢠ-ࣿ]/g) || []).length;
+  const latinCount  = (text.match(/[a-zA-Z]/g) || []).length;
+  if (arabicCount === 0 && latinCount === 0) return S.lang; // emoji/numbers only — keep current
+  return arabicCount >= latinCount ? 'ar' : 'en';
+}
+
 function addMsg(role, content) {
   const wrap  = document.getElementById('msgs');
   const isAI  = role === 'assistant';
@@ -2657,6 +2668,9 @@ async function sendIntro() {
     const introBbl = document.querySelector('#msgs .msg:first-child .bbl');
     if (introBbl) introBbl.id = 'intro-bbl';
     S.msgs.push({ role: 'assistant', content: introText });
+    // Auto-sync UI language to match the AI's message (handles mid-session toggle)
+    const _introLang = _detectMsgLang(introText);
+    if (_introLang !== S.lang) applyLang(_introLang);
     S.waitingForAnswer = true; setSend(false);
     document.getElementById('chat-ta').focus();
   } catch (err) {
@@ -2700,6 +2714,9 @@ async function askQuestion() {
     rmTyping();
     addMsg('assistant', q);
     S.msgs.push({ role: 'assistant', content: q });
+    // Auto-sync UI language to match the AI's response language
+    const _qLang = _detectMsgLang(q);
+    if (_qLang !== S.lang) applyLang(_qLang);
     S.waitingForAnswer = true; setSend(false);
     saveSession();
     document.getElementById('chat-ta').focus();
