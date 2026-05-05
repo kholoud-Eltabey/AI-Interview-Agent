@@ -17,4 +17,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 2e1d019b3ce56166a66eb0ea2217240a
-          command: pages deploy . --project-name=skoon-interview-agent --branch=main
+          command: pages deploy . --project-name=almosafer-pages --branch=main

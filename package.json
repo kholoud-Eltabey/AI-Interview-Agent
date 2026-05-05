@@ -1,7 +1,7 @@
 {
-  "name": "skoon-interview-agent",
+  "name": "almosafer-interview-agent",
   "version": "1.0.0",
-  "description": "Skoon AI-Powered User Interview Agent — Cloudflare Pages app",
+  "description": "Almosafer AI-Powered User Interview Agent — Cloudflare Pages app",
   "scripts": {
     "dev":    "npx serve . --listen 4000",
     "deploy": "git push origin main"
