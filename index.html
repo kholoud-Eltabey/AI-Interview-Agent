@@ -2042,8 +2042,7 @@ function renderProg() {
 // On localhost (npx serve): no Functions running, /api/chat → 404.
 //   Route through the production Cloudflare URL so the key stays server-side.
 async function callAI(messages, temp = 0.85, maxTok = 700) {
-  const _isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  const _chatUrl = _isLocal ? (_CF_READ_API + '/api/chat') : '/api/chat';
+  const _chatUrl = _apiBase() + '/api/chat';
 
   // Client-side timeout — slightly longer than server's 45s to let the server reply first
   const ctrl = new AbortController();
@@ -2775,11 +2774,27 @@ function finishMsg() {
 // _ivCache is the single source of truth at runtime.
 // Interview data always comes from the API — localStorage is NOT a data source.
 //
-// On Cloudflare Pages: fetch('/api/interviews') → same-origin KV Worker
-// On localhost (npx serve): /api/interviews returns 404 — fall back to
-//   the production Cloudflare URL so localhost shows the same data as production.
-const _API_BASE    = '';
-const _CF_READ_API = 'https://almosafer-pages.pages.dev';
+// ─── KV API routing ───────────────────────────────────────
+// All interview reads and writes must go to ONE canonical KV (production).
+// Cloudflare Pages automatically gives preview deployments a SEPARATE KV
+// namespace (SKOON_INTERVIEWS_preview), so a relative /api/interviews POST
+// from a preview URL writes to the preview KV — invisible on production.
+//
+// Fix: treat any non-production origin the same as localhost — always route
+// to the production API URL for both GET and POST/DELETE.
+//
+//   Production:  almosafer-pages.pages.dev  → same-origin relative → production KV ✓
+//   Preview:     {hash}.almosafer-pages.pages.dev → forced to production URL → production KV ✓
+//   Localhost:   localhost:4000             → forced to production URL → production KV ✓
+const _CF_READ_API   = 'https://almosafer-pages.pages.dev';
+const _PROD_HOSTNAME = 'almosafer-pages.pages.dev';
+
+function _apiBase() {
+  const h = window.location.hostname;
+  const isProduction = (h === _PROD_HOSTNAME);
+  return isProduction ? '' : _CF_READ_API;
+}
+
 let _ivCache = [];
 let _ivLoaded = false;
 
@@ -2789,10 +2804,7 @@ async function loadInterviewsFromAPI() {
   try { deletedIds = new Set(JSON.parse(localStorage.getItem('skoon_deleted_ids') || '[]')); }
   catch(_) {}
 
-  // On localhost npx serve, relative /api/interviews returns 404 (no Functions running).
-  // Use the production URL directly so localhost always shows the same data as Cloudflare.
-  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  const apiUrl  = isLocal ? (_CF_READ_API + '/api/interviews') : (_API_BASE + '/api/interviews');
+  const apiUrl = _apiBase() + '/api/interviews';
 
   try {
     const res = await fetch(apiUrl);
@@ -2828,7 +2840,7 @@ function _dedupeById(list) {
 
 async function _postIvToAPI(record) {
   try {
-    await fetch(_API_BASE + '/api/interviews', {
+    await fetch(_apiBase() + '/api/interviews', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(record),
@@ -2914,7 +2926,7 @@ function deleteInterview(id, e) {
   renderCrossTab();
 
   // Also delete from KV so it doesn't come back on next load
-  fetch(_API_BASE + `/api/interviews?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+  fetch(_apiBase() + `/api/interviews?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
     .catch(err => console.warn('[deleteInterview] KV delete failed:', err.message));
 }
 
@@ -4460,8 +4472,7 @@ function deleteCxeKey() {
 let _apiConnected = null; // null = not yet checked
 
 async function checkApiStatus() {
-  const isLocal = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  const chatUrl = isLocal ? (_CF_READ_API + '/api/chat') : '/api/chat';
+  const chatUrl = _apiBase() + '/api/chat';
   console.log('[checkApiStatus] probing:', chatUrl);
   try {
     const clientKey = localStorage.getItem('skoon_api_key') || undefined;
